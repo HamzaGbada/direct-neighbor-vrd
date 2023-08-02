@@ -1,23 +1,15 @@
-import os
 from typing import Any
 
-import torch
-from PIL.Image import Image
-from datasets import load_dataset
 from doctr.datasets.datasets import VisionDataset
 from doctr.datasets.utils import convert_target_to_relative
-from torchvision.transforms import transforms, ToTensor
-from torchtext.vocab import GloVe
-from torchtext.data import get_tokenizer
-import numpy as np
 
 
-class wildreceiptTORCH(VisionDataset):
-    TRAIN = 'https://datasets-server.huggingface.co/splits?dataset=Theivaprakasham%2Fwildreceipt'
+class WILDRECEIPT(VisionDataset):
+    TRAIN = ('https://download.openmmlab.com/mmocr/data/wildreceipt.tar', 'wildreceipt.tar')
 
     def __init__(self, train: bool = True, **kwargs: Any) -> None:
-        url = self.TRAIN
-        super().__init__(url, None, None, True, pre_transforms=convert_target_to_relative, **kwargs)
+        url, filename = self.TRAIN
+        super().__init__(url, filename, None, True, pre_transforms=convert_target_to_relative, **kwargs)
 
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']

@@ -2,13 +2,18 @@ import unittest
 import matplotlib.pyplot as plt
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
+from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 
 
 class TestDataLoader(unittest.TestCase):
-    def test_json(self):
+    def test_cord(self):
         train_set = CORD(train=False, download=True)
         logger.debug(f"the cord dataset {train_set.data}")
+        # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
+    def test_wildreceipt(self):
+        train_set = WILDRECEIPT(train=True, download=True)
+        # logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_sroie(self):
