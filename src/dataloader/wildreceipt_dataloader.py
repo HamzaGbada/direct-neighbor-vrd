@@ -1,5 +1,7 @@
-from typing import Any
+import os
+from typing import Any, List, Tuple, Dict
 
+import numpy as np
 from doctr.datasets.datasets import VisionDataset
 from doctr.datasets.utils import convert_target_to_relative
 
@@ -11,6 +13,13 @@ class WILDRECEIPT(VisionDataset):
         url, filename = self.TRAIN
         super().__init__(url, filename, None, True, pre_transforms=convert_target_to_relative, **kwargs)
 
+        tmp_root = os.path.join(self.root, 'wildreceipt')
+        self.train = train
+
+        self.data: List[Tuple[str, Dict[str, Any]]] = []
+        np_dtype = np.float32
+        text_unit_list = []
+        # TODO: Check FUNSD implementation for more details
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
     #     else:
