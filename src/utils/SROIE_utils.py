@@ -5,6 +5,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import warnings
+
+from src.utils.setup_logger import logger
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 def read_bbox_and_words(path: Path):
@@ -23,10 +26,8 @@ def read_bbox_and_words(path: Path):
             # From the splited line we save (filename, [bounding box points], text line).
             # The filename will be useful in the future
             bbox_and_words_list.append([path.stem, *bbox, text])
-
     dataframe = pd.DataFrame(bbox_and_words_list,
-                             columns=['filename', 'x0', 'y0', 'x1', 'y1', 'x2', 'y2', 'x3', 'y3', 'line'],
-                             dtype=np.int16)
+                             columns=['filename', 'x0', 'y0', 'x1', 'y1', 'x2', 'y2', 'x3', 'y3', 'line'])
     dataframe = dataframe.drop(columns=['x1', 'y1', 'x3', 'y3'])
 
     return dataframe
