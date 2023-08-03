@@ -30,6 +30,33 @@ class WILDRECEIPT(VisionDataset):
         json_strings = data.strip().split('\n')
         logger.debug(f"The json_strings {json_strings}")
         # TODO: Check FUNSD implementation for more details
+        for json_string in json_strings:
+            json_data = json.loads(json_string)
+
+            # Access the data in the JSON object as needed
+            file_name = json_data['file_name']
+            height = json_data['height']
+            width = json_data['width']
+            annotations = json_data['annotations']
+
+            # Process the data or perform any required operations on each JSON separately
+            # For example, print the file name, height, and width
+            print("File Name:", file_name)
+            print("Height:", height)
+            print("Width:", width)
+            _targets = [(annotation['box'], annotation['text'], annotation['label']) for annotation in annotations]
+            box_targets, text_units, labels = zip(*_targets)
+            # Print the annotations for each JSON
+            for annotation in annotations:
+                print("Box:", annotation['box'])
+                print("Text:", annotation['text'])
+                print("Label:", annotation['label'])
+            self.data.append((
+                file_name,
+                dict(boxes=np.asarray(box_targets, dtype=int), labels=list(labels),
+                     text_units=text_units),
+            ))
+            print("\n")  # Separate each JSON output
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
     #     else:
