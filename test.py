@@ -12,7 +12,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
     def test_wildreceipt(self):
-        train_set = WILDRECEIPT(train=True, download=True)
+        train_set = WILDRECEIPT(train=False, download=True)
         # logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 

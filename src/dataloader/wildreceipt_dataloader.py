@@ -5,20 +5,30 @@ import numpy as np
 from doctr.datasets.datasets import VisionDataset
 from doctr.datasets.utils import convert_target_to_relative
 
+from src.utils.setup_logger import logger
+
 
 class WILDRECEIPT(VisionDataset):
-    TRAIN = ('https://download.openmmlab.com/mmocr/data/wildreceipt.tar', 'wildreceipt.tar')
+    dataset = ('https://download.openmmlab.com/mmocr/data/wildreceipt.tar', 'wildreceipt.tar')
 
     def __init__(self, train: bool = True, **kwargs: Any) -> None:
-        url, filename = self.TRAIN
+        url, filename = self.dataset
         super().__init__(url, filename, None, True, pre_transforms=convert_target_to_relative, **kwargs)
 
-        tmp_root = os.path.join(self.root, 'wildreceipt')
+        tmp_root = os.path.join(self.root, 'wildreceipt/')
         self.train = train
 
         self.data: List[Tuple[str, Dict[str, Any]]] = []
         np_dtype = np.float32
         text_unit_list = []
+        self.filename = "train.txt" if self.train else "test.txt"
+        file_path = os.path.join(tmp_root, self.filename)
+        # logger.debug(f'the file names: {tmp_root}')
+        with open(file_path, 'r') as file:
+            data = file.read()
+        # Split the text file into separate JSON strings
+        json_strings = data.strip().split('\n')
+        logger.debug(f"The json_strings {json_strings}")
         # TODO: Check FUNSD implementation for more details
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
