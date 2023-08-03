@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Any, List, Tuple, Dict
 
@@ -28,7 +29,6 @@ class WILDRECEIPT(VisionDataset):
             data = file.read()
         # Split the text file into separate JSON strings
         json_strings = data.strip().split('\n')
-        logger.debug(f"The json_strings {json_strings}")
         # TODO: Check FUNSD implementation for more details
         for json_string in json_strings:
             json_data = json.loads(json_string)
@@ -40,23 +40,24 @@ class WILDRECEIPT(VisionDataset):
             annotations = json_data['annotations']
 
             # Process the data or perform any required operations on each JSON separately
-            # For example, print the file name, height, and width
-            print("File Name:", file_name)
-            print("Height:", height)
-            print("Width:", width)
+            # For example, logger.debug the file name, height, and width
+            logger.debug(f"File Name: {file_name}")
+            logger.debug(f"Height: {height}")
+            logger.debug(f"Width: {width}")
             _targets = [(annotation['box'], annotation['text'], annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
             # Print the annotations for each JSON
             for annotation in annotations:
-                print("Box:", annotation['box'])
-                print("Text:", annotation['text'])
-                print("Label:", annotation['label'])
+                logger.debug(f"Box: {annotation['box']}")
+                logger.debug(f"Text: {annotation['text']}")
+                logger.debug(f"Label: {annotation['label']}")
             self.data.append((
                 file_name,
                 dict(boxes=np.asarray(box_targets, dtype=int), labels=list(labels),
                      text_units=text_units),
             ))
-            print("\n")  # Separate each JSON output
+            logger.debug("\n")  # Separate each JSON output
+
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
     #     else:
@@ -91,7 +92,7 @@ class WILDRECEIPT(VisionDataset):
     #             self.word_tensors.append(embedding)
     #
     # def __len__(self):
-    #     print(len(self.img_labels), len(self.images), len(self.word_tensors))
+    #     logger.debug(len(self.img_labels), len(self.images), len(self.word_tensors))
     #     return len(self.img_labels)
     #
     # def __getitem__(self, idx):
@@ -106,3 +107,5 @@ class WILDRECEIPT(VisionDataset):
     #     label = self.img_labels[idx]
     #
     #     return image, word_embed, label
+    def extra_repr(self) -> str:
+        return f"train={self.train}"
