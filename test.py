@@ -1,9 +1,14 @@
+import os
 import unittest
 import matplotlib.pyplot as plt
+from PIL import Image
+from datasets import load_dataset
+
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
+from src.utils.utils import convert_format3, convert_format1, convert_format2, plot_cropped_image
 
 
 class TestDataLoader(unittest.TestCase):
@@ -12,9 +17,55 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
     def test_wildreceipt(self):
-        train_set = WILDRECEIPT(train=False, download=True)
-        logger.debug(f"train set data #: {train_set.data}")
-        logger.debug(f"train set data #: {len(train_set.data)}")
+        train = True
+        if train:
+            dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
+        else:
+            dataset = load_dataset("Theivaprakasham/wildreceipt")['test']
+
+
+        train_set = WILDRECEIPT(train=train, download=True)
+        doc_index = 1
+        logger.debug(f"train set data # dataset[1]['words']: {dataset[doc_index]['words']}")
+        logger.debug(f"train set data # dataset[1]['bboxes']: {dataset[doc_index]['bboxes']}")
+        logger.debug(f"train set data # dataset[1]['ner_tags']: {dataset[doc_index]['ner_tags']}")
+        logger.debug(f"train set data # dataset[1]['image_path']: {dataset[doc_index]['image_path']}")
+        logger.debug(f"train set data # dataset[1]['words']: {len(dataset[doc_index]['words'])}")
+        logger.debug(f"train set data # dataset[1]['bboxes']: {len(dataset[doc_index]['bboxes'])}")
+        logger.debug(f"train set data # dataset[1]['ner_tags']: {len(dataset[doc_index]['ner_tags'])}")
+        logger.debug(f"train set data # dataset[1]['image_path']: {len(dataset[doc_index]['image_path'])}")
+        logger.debug(f"train set data # doctr implementation: {train_set.data[doc_index]}")
+
+
+        filename = train_set.data[doc_index][0]
+        image_path = os.path.join(train_set.root, filename)
+        image_doctr = Image.open(image_path)
+        plt.imshow(image_doctr)
+        plt.title("The Current Image, Doctr Implementation")
+
+        image_hugging = Image.open(dataset[doc_index]['image_path'])
+        plt.imshow(image_hugging)
+        plt.title("The Current Image, HuggingFace Implementation")
+
+        bbox_doctr = train_set.data[doc_index][1]['boxes'][1]
+        text_unit_doctr = train_set.data[doc_index][1]['text_units'][1]
+        logger.debug(f"Doctr bounding boxes : {bbox_doctr}")
+
+
+        bbox_hugging_face = dataset[doc_index]['bboxes'][1]
+        text_unit_face = dataset[doc_index]['words'][1]
+        logger.debug(f"HuggingFace bounding boxes : {bbox_hugging_face}")
+
+        common_box_doctr = convert_format3(bbox_doctr)
+
+        common_box_hugface_1 = convert_format1(bbox_hugging_face)
+        common_box_hugface_2 = convert_format2(bbox_hugging_face)
+
+
+        plot_cropped_image(image_doctr, common_box_doctr, f'Doctr bouding boxes and label text unit {text_unit_doctr}')
+        plot_cropped_image(image_hugging, common_box_hugface_1, f'Hungging Face bouding boxes 1 and label text unit {text_unit_face}')
+        plot_cropped_image(image_hugging, common_box_hugface_2, f'Hungging Face bouding boxes 2 and label text unit {text_unit_face}')
+
         # logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 

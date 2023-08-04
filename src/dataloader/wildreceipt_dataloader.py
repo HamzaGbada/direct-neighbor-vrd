@@ -47,16 +47,16 @@ class WILDRECEIPT(VisionDataset):
             _targets = [(annotation['box'], annotation['text'], annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
             # Print the annotations for each JSON
-            for annotation in annotations:
-                logger.debug(f"Box: {annotation['box']}")
-                logger.debug(f"Text: {annotation['text']}")
-                logger.debug(f"Label: {annotation['label']}")
+            # for annotation in annotations:
+            #     logger.debug(f"Box: {annotation['box']}")
+            #     logger.debug(f"Text: {annotation['text']}")
+            #     logger.debug(f"Label: {annotation['label']}")
             self.data.append((
                 file_name,
                 dict(boxes=np.asarray(box_targets, dtype=int), labels=list(labels),
                      text_units=text_units),
             ))
-            logger.debug("\n")  # Separate each JSON output
+        self.root = tmp_root
 
     #     if train:
     #         dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
