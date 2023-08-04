@@ -16,17 +16,19 @@ class TestDataLoader(unittest.TestCase):
         train_set = CORD(train=False, download=True)
         logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
+
     def test_wildreceipt(self):
+        # TODO: try with the other vairent of wildreceipt dataset of Huggingface
+        #       Here is a similar issue: https://github.com/huggingface/datasets/issues/4775
         train = True
         if train:
             dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
         else:
             dataset = load_dataset("Theivaprakasham/wildreceipt")['test']
 
-
         train_set = WILDRECEIPT(train=train, download=True)
-        doc_index = 1
-        word_index = 1
+        doc_index = 0
+        word_index = 10
         logger.debug(f"train set data # dataset[1]['words']: {dataset[doc_index]['words']}")
         logger.debug(f"train set data # dataset[1]['bboxes']: {dataset[doc_index]['bboxes']}")
         logger.debug(f"train set data # dataset[1]['ner_tags']: {dataset[doc_index]['ner_tags']}")
@@ -37,21 +39,21 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"train set data # dataset[1]['image_path']: {len(dataset[doc_index]['image_path'])}")
         logger.debug(f"train set data # doctr implementation: {train_set.data[doc_index]}")
 
-
         filename = train_set.data[doc_index][0]
         image_path = os.path.join(train_set.root, filename)
         image_doctr = Image.open(image_path)
         plt.imshow(image_doctr)
         plt.title("The Current Image, Doctr Implementation")
+        plt.show()
 
         image_hugging = Image.open(dataset[doc_index]['image_path'])
         plt.imshow(image_hugging)
         plt.title("The Current Image, HuggingFace Implementation")
+        plt.show()
 
         bbox_doctr = train_set.data[doc_index][1]['boxes'][word_index]
         text_unit_doctr = train_set.data[doc_index][1]['text_units'][word_index]
         logger.debug(f"Doctr bounding boxes : {bbox_doctr}")
-
 
         bbox_hugging_face = dataset[doc_index]['bboxes'][word_index]
         text_unit_face = dataset[doc_index]['words'][word_index]
@@ -61,15 +63,17 @@ class TestDataLoader(unittest.TestCase):
 
         common_box_hugface_1 = convert_format1(bbox_hugging_face)
         common_box_hugface_2 = convert_format2(bbox_hugging_face)
-        common_box_hugface_3 = convert_format3(bbox_hugging_face)
 
+        plot_cropped_image(image_doctr, common_box_doctr,
+                           f'Doctr bouding boxes and label text unit: \n {text_unit_doctr}')
+        plot_cropped_image(image_hugging, common_box_hugface_1,
+                           f'Hungging Face bouding boxes 1 and label text unit: \n {text_unit_face}')
+        plot_cropped_image(image_hugging, common_box_hugface_2,
+                           f'Hungging Face bouding boxes 2 and label text unit: \n {text_unit_face}')
 
-        plot_cropped_image(image_doctr, common_box_doctr, f'Doctr bouding boxes and label text unit {text_unit_doctr}')
-        plot_cropped_image(image_hugging, common_box_hugface_1, f'Hungging Face bouding boxes 1 and label text unit {text_unit_face}')
-        plot_cropped_image(image_hugging, common_box_hugface_2, f'Hungging Face bouding boxes 2 and label text unit {text_unit_face}')
 
         # logger.debug(f"the cord dataset {train_set.data}")
-        # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
+        self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
 
     def test_sroie(self):
         train_set = SROIE(train=True)
