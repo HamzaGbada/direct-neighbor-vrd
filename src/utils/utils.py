@@ -29,4 +29,5 @@ def plot_cropped_image(image, box, title):
     plt.imshow(cropped_image)
     plt.title(title)
     plt.axis('off')
+    plt.savefig(title+'.png')
     plt.show()

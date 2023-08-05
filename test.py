@@ -23,21 +23,22 @@ class TestDataLoader(unittest.TestCase):
         train = True
         if train:
             dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
+            # dataset = load_dataset("jinhybr/WildReceipt")['train']
         else:
             dataset = load_dataset("Theivaprakasham/wildreceipt")['test']
-
+            # dataset = load_dataset("jinhybr/WildReceipt")['test']
         train_set = WILDRECEIPT(train=train, download=True)
-        doc_index = 0
-        word_index = 10
-        logger.debug(f"train set data # dataset[1]['words']: {dataset[doc_index]['words']}")
-        logger.debug(f"train set data # dataset[1]['bboxes']: {dataset[doc_index]['bboxes']}")
-        logger.debug(f"train set data # dataset[1]['ner_tags']: {dataset[doc_index]['ner_tags']}")
-        logger.debug(f"train set data # dataset[1]['image_path']: {dataset[doc_index]['image_path']}")
-        logger.debug(f"train set data # dataset[1]['words']: {len(dataset[doc_index]['words'])}")
-        logger.debug(f"train set data # dataset[1]['bboxes']: {len(dataset[doc_index]['bboxes'])}")
-        logger.debug(f"train set data # dataset[1]['ner_tags']: {len(dataset[doc_index]['ner_tags'])}")
-        logger.debug(f"train set data # dataset[1]['image_path']: {len(dataset[doc_index]['image_path'])}")
-        logger.debug(f"train set data # doctr implementation: {train_set.data[doc_index]}")
+        doc_index = 1
+        word_index = 3
+        # logger.debug(f"train set data # dataset[1]['words']: {dataset[doc_index]['words']}")
+        # logger.debug(f"train set data # dataset[1]['bboxes']: {dataset[doc_index]['bboxes']}")
+        # logger.debug(f"train set data # dataset[1]['ner_tags']: {dataset[doc_index]['ner_tags']}")
+        # logger.debug(f"train set data # dataset[1]['image_path']: {dataset[doc_index]['image_path']}")
+        # logger.debug(f"train set data # dataset[1]['words']: {len(dataset[doc_index]['words'])}")
+        # logger.debug(f"train set data # dataset[1]['bboxes']: {len(dataset[doc_index]['bboxes'])}")
+        # logger.debug(f"train set data # dataset[1]['ner_tags']: {len(dataset[doc_index]['ner_tags'])}")
+        # logger.debug(f"train set data # dataset[1]['image_path']: {len(dataset[doc_index]['image_path'])}")
+        # logger.debug(f"train set data # doctr implementation: {train_set.data[doc_index]}")
 
         filename = train_set.data[doc_index][0]
         image_path = os.path.join(train_set.root, filename)
@@ -65,11 +66,11 @@ class TestDataLoader(unittest.TestCase):
         common_box_hugface_2 = convert_format2(bbox_hugging_face)
 
         plot_cropped_image(image_doctr, common_box_doctr,
-                           f'Doctr bouding boxes and label text unit: \n {text_unit_doctr}')
+                           f'Bouding boxes (my implementation) \n its associated text unit: {text_unit_doctr}')
         plot_cropped_image(image_hugging, common_box_hugface_1,
-                           f'Hungging Face bouding boxes 1 and label text unit: \n {text_unit_face}')
+                           f'Hugging Face Bouding boxes (x,y,w,h format) \n its associated text unit: {text_unit_face}')
         plot_cropped_image(image_hugging, common_box_hugface_2,
-                           f'Hungging Face bouding boxes 2 and label text unit: \n {text_unit_face}')
+                           f'Hugging Face Bouding boxes (x1,y1,x2, y2 format) \n its associated text unit: {text_unit_face}')
 
 
         # logger.debug(f"the cord dataset {train_set.data}")
