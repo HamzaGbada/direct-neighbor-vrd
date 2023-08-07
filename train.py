@@ -1,5 +1,5 @@
-# TODO: - Prepare the required Dataloader (CORD, WildReceipt, and SROIE(maybe))
-#       - Prepare the utils (helper) to create the graphs
+# TODO: - Prepare the utils (helper) to create the graphs
+#       - Prepare CNN (UNET and VGG) and Word Embedding model
 #       - The graph building process is independent to training
 #       - Use pretrained (I train by my self) for wordEmbedding (use BERT)
 #       - Graph building process is as follow:
