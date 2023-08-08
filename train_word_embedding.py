@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from transformers import BertTokenizer, AdamW
 
 from src.dataloader.sentence_classification_dataloader import create_dataloader
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
@@ -26,7 +27,6 @@ def train(model, dataloader, loss_fn, optimizer, device):
     return total_loss / len(dataloader)
 
 
-# Step 5: Training Loop
 def main():
     sentences = [...]  # List of sentences
     labels = [...]  # List of labels (numeric values)

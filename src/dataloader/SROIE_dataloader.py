@@ -9,6 +9,8 @@ from src.utils.SROIE_utils import read_bbox_and_words, read_entities, assign_lab
 
 __all__ = ['SROIE']
 
+from src.utils.setup_logger import logger
+
 
 class SROIE(VisionDataset):
     """SROIE dataset from `"ICDAR2019 Competition on Scanned Receipt OCR and Information Extraction"
@@ -77,6 +79,7 @@ class SROIE(VisionDataset):
                 bbox_labeled = assign_labels(bbox, entities)
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
+                logger.debug(f'the condition {os.path.isdir("data/SROIE_CSV/test/")}')
                 if not os.path.isdir("data/SROIE_CSV/test/"):
                     os.makedirs("data/SROIE_CSV/test/")
                 bbox_labeled.to_csv("data/SROIE_CSV/test/" + filename[:-4] + ".csv")
@@ -88,6 +91,7 @@ class SROIE(VisionDataset):
             path = 'data/SROIE_CSV/test/'
             img_path = 'data/SROIE2019/test/img/'
         self.data_update = []
+
         for csv_file in os.listdir(path):
             bbox_and_label = {}
             df = pd.read_csv(path + csv_file)
