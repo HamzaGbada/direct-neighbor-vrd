@@ -75,9 +75,11 @@ class TestDataLoader(unittest.TestCase):
 
         # logger.debug(f"the cord dataset {train_set.data}")
         self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
+
     def test_sentences_label(self):
         dataset = WILDRECEIPT(train=False)
-        logger.debug(f'the dataset contains {dataset}')
+        # TODO: retrieve sentence and label sperately
+        logger.debug(f'the dataset contains {dataset.data}')
 
 
     def test_sroie(self):
