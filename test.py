@@ -78,7 +78,8 @@ class TestDataLoader(unittest.TestCase):
 
     def test_sentences_label(self):
         dataset = WILDRECEIPT(train=False)
-        # TODO: retrieve sentence and label sperately
+        # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
+
         logger.debug(f'the dataset contains {dataset.data}')
 
 
