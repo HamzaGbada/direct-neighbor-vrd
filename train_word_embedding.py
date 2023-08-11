@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from transformers import BertTokenizer, AdamW
 
+from src.dataloader.cord_dataloader import CORD
 from src.dataloader.sentence_classification_dataloader import create_dataloader
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
 
@@ -27,9 +28,9 @@ def train(model, dataloader, loss_fn, optimizer, device):
     return total_loss / len(dataloader)
 
 
-def main():
-    sentences = [...]  # List of sentences
-    labels = [...]  # List of labels (numeric values)
+def main(dataset):
+    sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
+    labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
 
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     max_len = 128
@@ -52,4 +53,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    dataset = CORD(train=True)
+    main(dataset)
