@@ -91,13 +91,19 @@ class SROIE(VisionDataset):
             path = 'data/SROIE_CSV/test/'
             img_path = 'data/SROIE2019/test/img/'
         self.data_update = []
-
+        encoded_dic = {"TOTAL": 0,
+                       "DATE": 1,
+                       "ADDRESS": 2,
+                       "COMPANY": 3,
+                       "O": 4
+                       }
         for csv_file in os.listdir(path):
             bbox_and_label = {}
             df = pd.read_csv(path + csv_file)
             bbox_array = df[["x0", "y0", "x2", "y2"]].to_numpy()
             bbox_and_label['boxes'] = bbox_array
-            bbox_and_label['labels'] = [tuple(x) for x in df[["line", "label"]].to_numpy()]
+            bbox_and_label['labels'] = [encoded_dic[x] for x in df["label"]]
+            bbox_and_label['text_units'] = [x for x in df["line"]]
             t_data = (csv_file[:-4] + ".jpg", bbox_and_label)
 
             self.data.append(t_data)
