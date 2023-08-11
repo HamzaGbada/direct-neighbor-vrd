@@ -63,7 +63,6 @@ class CORD(VisionDataset):
         self.data: List[Tuple[str, Dict[str, Any]]] = []
 
         np_dtype = np.float32
-        text_unit_list = []
         for img_path in os.listdir(tmp_root):
             # File existence check
             if not os.path.exists(os.path.join(tmp_root, img_path)):
@@ -99,18 +98,14 @@ class CORD(VisionDataset):
                             else:
                                 # Reduce 8 coords to 4 -> xmin, ymin, xmax, ymax
                                 box = [min(x), min(y), max(x), max(y)]
-                            _targets.append(((word['text'].lower(), line["category"]), box))
+                            _targets.append((word['text'].lower(), line["category"], box))
 
-                    # logger.debug(f"row id dict: {row_id_dic}")
-                text_unit_list.append(row_id_dic)
-
-            text_targets, box_targets = zip(*_targets)
+            text_targets, labels,  box_targets = zip(*_targets)
 
             self.data.append((
                 img_path,
-                dict(boxes=np.asarray(box_targets, dtype=int).clip(min=0), labels=list(text_targets))
+                dict(boxes=np.asarray(box_targets, dtype=int).clip(min=0), text_units=list(text_targets), labels=list(labels), )
             ))
-        self.text_units = text_unit_list
         self.root = tmp_root
 
     def extra_repr(self) -> str:

@@ -77,7 +77,7 @@ class TestDataLoader(unittest.TestCase):
         self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
 
     def test_sentences_label(self):
-        dataset = SROIE(train=False)
+        dataset = CORD(train=False)
         # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
 
         logger.debug(f'the dataset contains {dataset.data}')
