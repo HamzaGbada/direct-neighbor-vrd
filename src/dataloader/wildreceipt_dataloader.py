@@ -34,8 +34,6 @@ class WILDRECEIPT(VisionDataset):
 
             # Access the data in the JSON object as needed
             file_name = json_data['file_name']
-            height = json_data['height']
-            width = json_data['width']
             annotations = json_data['annotations']
 
             # Process the data or perform any required operations on each JSON separately
@@ -43,6 +41,7 @@ class WILDRECEIPT(VisionDataset):
 
             _targets = [(annotation['box'], annotation['text'], annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
+            logger.debug(f"The text units are {labels}")
             # Print the annotations for each JSON
             # for annotation in annotations:
             #     logger.debug(f"Box: {annotation['box']}")
@@ -51,7 +50,7 @@ class WILDRECEIPT(VisionDataset):
             self.data.append((
                 file_name,
                 dict(boxes=np.asarray(box_targets, dtype=int), labels=list(labels),
-                     text_units=text_units),
+                     text_units=list(text_units)),
             ))
         self.root = tmp_root
 

@@ -80,7 +80,7 @@ class TestDataLoader(unittest.TestCase):
         dataset = WILDRECEIPT(train=False)
         # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
 
-        logger.debug(f'the dataset contains {dataset.data}')
+        # logger.debug(f'the dataset contains {dataset.data}')
 
 
     def test_sroie(self):
