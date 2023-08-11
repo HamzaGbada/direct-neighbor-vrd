@@ -31,22 +31,11 @@ class WILDRECEIPT(VisionDataset):
         # TODO: Check FUNSD implementation for more details
         for json_string in json_strings:
             json_data = json.loads(json_string)
-
-            # Access the data in the JSON object as needed
             file_name = json_data['file_name']
             annotations = json_data['annotations']
-
-            # Process the data or perform any required operations on each JSON separately
-            # For example, logger.debug the file name, height, and width
-
             _targets = [(annotation['box'], annotation['text'].lower(), annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
-            logger.debug(f"The text units are {labels}")
-            # Print the annotations for each JSON
-            # for annotation in annotations:
-            #     logger.debug(f"Box: {annotation['box']}")
-            #     logger.debug(f"Text: {annotation['text']}")
-            #     logger.debug(f"Label: {annotation['label']}")
+
             self.data.append((
                 file_name,
                 dict(boxes=np.asarray(box_targets, dtype=int), labels=list(labels),

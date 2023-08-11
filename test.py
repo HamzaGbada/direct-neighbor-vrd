@@ -78,8 +78,14 @@ class TestDataLoader(unittest.TestCase):
 
     def test_sentences_label(self):
         dataset = WILDRECEIPT(train=False)
-        # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
+        # sentences = []
+        # for doc_index in range(len(dataset)):
+        #     for x in dataset.data[doc_index][1]['text_units']:
+        #         sentences.append(x)
 
+        sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
+        # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
+        logger.debug(f"sentences {sentences}")
         logger.debug(f'the dataset contains {dataset.data}')
 
 
