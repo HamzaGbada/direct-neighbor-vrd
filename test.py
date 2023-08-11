@@ -77,16 +77,13 @@ class TestDataLoader(unittest.TestCase):
         self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
 
     def test_sentences_label(self):
-        dataset = WILDRECEIPT(train=False)
-        # sentences = []
-        # for doc_index in range(len(dataset)):
-        #     for x in dataset.data[doc_index][1]['text_units']:
-        #         sentences.append(x)
+        dataset = CORD(train=False)
 
         sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
-        # TODO: retrieve sentence and label sperately perform encoding to pass it BERT model
-        logger.debug(f"sentences {sentences}")
-        logger.debug(f'the dataset contains {dataset.data}')
+        labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+
+        self.assertEqual(sentences[2], dataset.data[0][1]['text_units'][2])
+        self.assertEqual(labels[2], dataset.data[0][1]['labels'][2])
 
 
     def test_sroie(self):
