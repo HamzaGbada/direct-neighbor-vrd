@@ -103,7 +103,7 @@ class SROIE(VisionDataset):
             bbox_array = df[["x0", "y0", "x2", "y2"]].to_numpy()
             bbox_and_label['boxes'] = bbox_array
             bbox_and_label['labels'] = [encoded_dic[x] for x in df["label"]]
-            bbox_and_label['text_units'] = [x for x in df["line"]]
+            bbox_and_label['text_units'] = [x.lower() for x in df["line"]]
             t_data = (csv_file[:-4] + ".jpg", bbox_and_label)
 
             self.data.append(t_data)

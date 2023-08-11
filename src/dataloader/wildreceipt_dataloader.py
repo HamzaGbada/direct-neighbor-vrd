@@ -39,7 +39,7 @@ class WILDRECEIPT(VisionDataset):
             # Process the data or perform any required operations on each JSON separately
             # For example, logger.debug the file name, height, and width
 
-            _targets = [(annotation['box'], annotation['text'], annotation['label']) for annotation in annotations]
+            _targets = [(annotation['box'], annotation['text'].lower(), annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
             logger.debug(f"The text units are {labels}")
             # Print the annotations for each JSON
