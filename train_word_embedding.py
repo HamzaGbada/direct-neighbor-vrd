@@ -1,8 +1,11 @@
+import numpy as np
 import torch
+from sklearn.metrics import classification_report
 from torch import nn
 from transformers import BertTokenizer, AdamW
 
 from src.dataloader.cord_dataloader import CORD
+from src.utils.setup_logger import logger
 from src.dataloader.sentence_classification_dataloader import create_dataloader
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
 
@@ -27,6 +30,26 @@ def train(model, dataloader, loss_fn, optimizer, device):
 
     return total_loss / len(dataloader)
 
+def evaluate(model, dataloader, device):
+    model.eval()
+    all_labels = []
+    all_predictions = []
+
+    with torch.no_grad():
+        for batch in dataloader:
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].cpu().numpy()
+
+            logits = model(input_ids, attention_mask)
+            predictions = np.argmax(logits.cpu().numpy(), axis=1)
+
+            all_labels.extend(labels)
+            all_predictions.extend(predictions)
+
+    report = classification_report(all_labels, all_predictions, target_names=["CLASS_1", "CLASS_2", ...])  # Replace with your class names
+    return report
+
 
 def main(dataset):
     sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
@@ -49,7 +72,9 @@ def main(dataset):
     num_epochs = 10
     for epoch in range(num_epochs):
         train_loss = train(model, train_dataloader, loss_fn, optimizer, device)
-        print(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
+        logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
+
+    logger.debug(evaluate(model, train_dataloader, device) )
 
 
 if __name__ == '__main__':
