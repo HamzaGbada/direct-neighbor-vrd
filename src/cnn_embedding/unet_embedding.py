@@ -5,7 +5,7 @@ from torch import nn
 
 
 class UNet(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, num_classes):
         super(UNet, self).__init__()
 
         # Encoder (contracting path)
@@ -21,8 +21,7 @@ class UNet(nn.Module):
         self.decoder = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(64, out_channels, kernel_size=3, padding=1),
-            nn.Sigmoid()  # Use Sigmoid for binary classification, adjust for multi-class
+            nn.Conv2d(64, num_classes, kernel_size=3, padding=1),
         )
 
     def forward(self, x):
