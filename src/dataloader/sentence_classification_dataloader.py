@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 
 
-class CustomDataset(Dataset):
+class SentenceDataset(Dataset):
     def __init__(self, sentences, labels, tokenizer, max_len):
         self.sentences = sentences
         self.labels = labels
@@ -34,6 +34,6 @@ class CustomDataset(Dataset):
 
 # Step 2: Create Dataloader
 def create_dataloader(sentences, labels, tokenizer, max_len, batch_size):
-    dataset = CustomDataset(sentences, labels, tokenizer, max_len)
+    dataset = SentenceDataset(sentences, labels, tokenizer, max_len)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader

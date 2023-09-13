@@ -14,6 +14,7 @@ from src.utils.utils import convert_format3, convert_format1, convert_format2, p
 class TestDataLoader(unittest.TestCase):
     def test_cord(self):
         train_set = CORD(train=False, download=True)
+        logger.debug(f"the cord dataset {len(train_set.data)}")
         logger.debug(f"the cord dataset {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 

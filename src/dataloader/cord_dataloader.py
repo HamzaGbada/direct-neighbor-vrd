@@ -110,3 +110,14 @@ class CORD(VisionDataset):
 
     def extra_repr(self) -> str:
         return f"train={self.train}"
+    # def __len__(self):
+    #     return len(self.image_paths)
+    #
+    # def __getitem__(self, idx):
+    #     image = Image.open(self.image_paths[idx]).convert("RGB")  # Convert to RGB if needed
+    #     label = self.labels[idx]
+    #
+    #     if self.transform:
+    #         image = self.transform(image)
+    #
+    #     return image, label
