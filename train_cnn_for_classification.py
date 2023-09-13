@@ -1,6 +1,8 @@
 import torch
 from torch.utils.data import DataLoader
 
+from src.dataloader.image_classification_dataloader import ImageDataset
+
 
 def train(model, dataloader, loss_fn, optimizer, device):
     model.train()
@@ -46,8 +48,12 @@ def evaluate(model, dataloader, device):
 
 
 def image_dataloader(dataset, batch_size=1):
-
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    # TODO: crop images from bbox and put them in list of tensor then pass to ImageDataset only the cropped image with label
+    image = None
+    boxes = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]
+    labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+    image_dataset = ImageDataset(image, boxes, labels)
+    dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
 
