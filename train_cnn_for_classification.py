@@ -1,8 +1,10 @@
 import os
 
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from PIL import Image
+from sklearn.metrics import classification_report
 
 from src.dataloader.image_classification_dataloader import ImageDataset
 
@@ -51,12 +53,11 @@ def evaluate(model, dataloader, device):
 
 
 def image_dataloader(dataset, batch_size=1):
-    # TODO: crop images from bbox and put them in list of tensor then pass to ImageDataset only the cropped image with label
     cropped_images = [Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox) for doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
     labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     image_dataset = ImageDataset(cropped_images, labels)
     dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True)
-    return cropped_images, labels,
+    return dataloader
 
 
 def main(train_dataloader, num_classes=5, num_epochs = 10, device = torch.device('cpu')):
