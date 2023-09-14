@@ -49,7 +49,7 @@ def evaluate(model, dataloader, device):
             all_predictions.extend(predictions)
 
     report = classification_report(all_labels, all_predictions,
-                                   target_names=["CLASS_1", "CLASS_2", ...])  # Replace with your class names
+                                   target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
     return report
 
 
