@@ -21,8 +21,9 @@ class UNet(nn.Module):
         self.decoder = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(64, num_classes, kernel_size=3, padding=1),
+            nn.Conv2d(64, num_classes, kernel_size=1),
         )
+        self.linear = nn.LazyLinear(num_classes)
 
     def forward(self, x):
         x1 = self.encoder(x)

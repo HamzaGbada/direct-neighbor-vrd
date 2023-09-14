@@ -1,9 +1,11 @@
 import os
 import unittest
 import matplotlib.pyplot as plt
+import torch
 from PIL import Image
 from datasets import load_dataset
 
+from src.cnn_embedding.unet_embedding import UNet
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
@@ -143,3 +145,13 @@ class TestDataLoader(unittest.TestCase):
         plt.imshow(image, cmap='gray')
         plt.imshow(cropped_images[5], cmap='gray')
         plt.show()
+
+    def test_unet_test(self):
+        # Open the image using PIL
+        inputs = torch.rand(3, 23, 15).to(device="cuda")
+        model = UNet(3,5).to(device="cuda")
+
+        outputs = model(inputs)
+
+        logger.debug(f"outputs {outputs}")
+        logger.debug(f"outputs shape {outputs.shape}")
