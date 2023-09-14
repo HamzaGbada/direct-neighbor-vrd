@@ -7,6 +7,7 @@ from doctr.datasets.datasets import VisionDataset
 from doctr.datasets.utils import convert_target_to_relative
 
 from src.utils.setup_logger import logger
+from src.utils.utils import convert_format3
 
 
 class WILDRECEIPT(VisionDataset):
@@ -33,7 +34,7 @@ class WILDRECEIPT(VisionDataset):
             json_data = json.loads(json_string)
             file_name = json_data['file_name']
             annotations = json_data['annotations']
-            _targets = [(annotation['box'], annotation['text'].lower(), annotation['label']) for annotation in annotations]
+            _targets = [(convert_format3(annotation['box']), annotation['text'].lower(), annotation['label']) for annotation in annotations]
             box_targets, text_units, labels = zip(*_targets)
 
             self.data.append((

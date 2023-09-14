@@ -117,7 +117,7 @@ class TestDataLoader(unittest.TestCase):
         image = Image.open(path)
 
         # Define the bounding box coordinates (left, upper, right, lower)
-        bbox = convert_format3(train_set.data[0][1]['boxes'][0])
+        bbox = train_set.data[0][1]['boxes'][0]
         text_units = train_set.data[0][1]['text_units'][0]
         logger.debug(f"bbox {bbox}")
         logger.debug(f"text_units {text_units}")
