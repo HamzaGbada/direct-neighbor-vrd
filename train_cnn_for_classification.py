@@ -2,11 +2,16 @@ import os
 
 import numpy as np
 import torch
+from torch import nn
+import torch.optim as optim
 from torch.utils.data import DataLoader
 from PIL import Image
 from sklearn.metrics import classification_report
 
+from src.cnn_embedding.unet_embedding import UNet
+from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
+from src.utils.setup_logger import logger
 
 
 def train(model, dataloader, loss_fn, optimizer, device):
@@ -60,26 +65,26 @@ def image_dataloader(dataset, batch_size=1):
     return dataloader
 
 
-def main(train_dataloader, num_classes=5, num_epochs = 10, device = torch.device('cpu')):
-    model = BertForSentenceClassification(num_classes)
-    optimizer = AdamW(model.parameters(), lr=2e-5)
+def main(dataloader, num_classes=5, num_epochs = 10, device = torch.device('cuda')):
+    model = UNet(in_channels=3, num_classes=num_classes)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
     model.to(device)
 
     for epoch in range(num_epochs):
-        train_loss = train(model, train_dataloader, loss_fn, optimizer, device)
+        train_loss = train(model, dataloader, loss_fn, optimizer, device)
         logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
 
-    logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
+    logger.debug(f"Train evalution report{evaluate(model, dataloader, device)}")
     return model
 
 
 if __name__ == '__main__':
     dataset_train = CORD(train=True)
     dataset_test = CORD(train=False)
-    train_dataloader = word_embedding_dataloader(dataset_train)
-    test_dataloader = word_embedding_dataloader(dataset_test)
+    train_dataloader = image_dataloader(dataset_train)
+    test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = main(train_dataloader)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
