@@ -13,9 +13,14 @@ from src.utils.utils import convert_format3, convert_format1, convert_format2, p
 
 class TestDataLoader(unittest.TestCase):
     def test_cord(self):
-        train_set = CORD(train=False, download=True)
-        logger.debug(f"the cord dataset {len(train_set.data)}")
-        logger.debug(f"the cord dataset {train_set.data}")
+        # train_set = CORD(train=True, download=True)
+        # train_set2 = SROIE(train=False)
+        # train_set = SROIE(train=True)
+        # train_set3 = CORD(train=False, download=True)
+        train_set = WILDRECEIPT(train=True, download=True)
+        # train_set5 = WILDRECEIPT(train=False, download=True)
+
+        logger.debug(f"the cord dataset {train_set.root}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_wildreceipt(self):
@@ -103,3 +108,24 @@ class TestDataLoader(unittest.TestCase):
         #     j+=1
         logger.debug(f"The sroie dataset: {train_set.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
+
+    def test_cropped_bbox(self):
+        # Open the image using PIL
+        train_set = WILDRECEIPT(train=True)
+        path = os.path.join(train_set.root, train_set.data[0][0])
+        logger.debug(f"the path is {path}")
+        image = Image.open(path)
+
+        # Define the bounding box coordinates (left, upper, right, lower)
+        bbox = convert_format3(train_set.data[0][1]['boxes'][0])
+        text_units = train_set.data[0][1]['text_units'][0]
+        logger.debug(f"bbox {bbox}")
+        logger.debug(f"text_units {text_units}")
+
+        # Crop the image
+        cropped_image = image.crop(bbox)
+
+        # Save or display the cropped image
+        plt.imshow(image, cmap='gray')
+        plt.imshow(cropped_image, cmap='gray')
+        plt.show()

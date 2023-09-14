@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -25,6 +26,7 @@ def convert_format3(box):
 
 # Crop the image based on the bounding box and plot
 def plot_cropped_image(image, box, title):
+
     cropped_image = image.crop(box)
     plt.imshow(cropped_image)
     plt.title(title)
