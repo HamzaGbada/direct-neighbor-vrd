@@ -111,7 +111,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_cropped_bbox(self):
         # Open the image using PIL
-        train_set = WILDRECEIPT(train=True)
+        train_set = CORD(train=True)
         path = os.path.join(train_set.root, train_set.data[0][0])
         logger.debug(f"the path is {path}")
         image = Image.open(path)
