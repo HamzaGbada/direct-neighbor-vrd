@@ -4,6 +4,8 @@
 import torch
 from torch import nn
 
+from src.utils.setup_logger import logger
+
 
 class UNet(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -32,16 +34,23 @@ class UNet(nn.Module):
         return self.linear(x2)
 
 class SimpleCNN(nn.Module):
+    # 128 - 3 + 2 = 127 + 1 = 128
+    # 128 - 2 / = 126 / 2 = 63+1=64
     def __init__(self, num_classes):
         super(SimpleCNN, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(32 * 16 * 16, 128)
-        self.fc2 = nn.Linear(128, num_classes)
+        self.relu1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.fc1 = nn.Linear(32 * 16 * 16 * 16, num_classes)
+        # self.fc1 = nn.LazyLinear(num_classes)
 
     def forward(self, x):
-        x = self.pool(torch.relu(self.conv1(x)))
-        x = x.view(-1, 32 * 16 * 16)
-        x = torch.relu(self.fc1(x))
-        x = self.fc2(x)
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.pool1(x)
+        logger.debug(f'size equal to {x.shape}')
+        x = x.view(1, -1)
+        logger.debug(f'size equal to {x.shape}')
+        x = self.fc1(x)
         return x
+
