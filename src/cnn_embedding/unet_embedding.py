@@ -49,6 +49,7 @@ class SimpleCNN(nn.Module):
         x = self.relu1(x)
         x = self.pool1(x)
         logger.debug(f'size equal to {x.shape}')
+        # TODO: the point here is to transform it to [1,5], check how critron is calculated
         x = x.view(1, -1)
         logger.debug(f'size equal to {x.shape}')
         x = self.fc1(x)
