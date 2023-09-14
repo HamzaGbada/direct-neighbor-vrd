@@ -2,31 +2,13 @@ from torch.utils.data import Dataset
 
 
 class ImageDataset(Dataset):
-    def __init__(self, image, bbox, labels):
-        self.sentences = sentences
+    def __init__(self, cropped_bbox, labels):
+        self.cropped_bbox = cropped_bbox
         self.labels = labels
-        self.tokenizer = tokenizer
-        self.max_len = max_len
 
     def __len__(self):
-        return len(self.sentences)
+        return len(self.labels)
 
     def __getitem__(self, idx):
-        sentence = str(self.sentences[idx])
-        label = int(self.labels[idx])
-
-        encoding = self.tokenizer.encode_plus(
-            sentence,
-            add_special_tokens=True,
-            max_length=self.max_len,
-            return_tensors='pt',
-            pad_to_max_length=True,
-            truncation=True
-        )
-
-        return {
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'label': torch.tensor(label, dtype=torch.long)
-        }
+        return self.cropped_bbox[idx], self.labels[idx]
 

@@ -9,6 +9,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 from src.utils.utils import convert_format3, convert_format1, convert_format2, plot_cropped_image
+from train_cnn_for_classification import image_dataloader
 
 
 class TestDataLoader(unittest.TestCase):
@@ -78,7 +79,6 @@ class TestDataLoader(unittest.TestCase):
         plot_cropped_image(image_hugging, common_box_hugface_2,
                            f'Hugging Face Bouding boxes (x1,y1,x2, y2 format) \n its associated text unit: {text_unit_face}')
 
-
         # logger.debug(f"the cord dataset {train_set.data}")
         self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
 
@@ -90,7 +90,6 @@ class TestDataLoader(unittest.TestCase):
 
         self.assertEqual(sentences[2], dataset.data[0][1]['text_units'][2])
         self.assertEqual(labels[2], dataset.data[0][1]['labels'][2])
-
 
     def test_sroie(self):
         train_set = SROIE(train=True)
@@ -128,4 +127,19 @@ class TestDataLoader(unittest.TestCase):
         # Save or display the cropped image
         plt.imshow(image, cmap='gray')
         plt.imshow(cropped_image, cmap='gray')
+        plt.show()
+
+    def test_image_dataloader(self):
+
+        # Open the image using PIL
+        train_set = CORD(train=True)
+        cropped_images, boxes, labels, text_units = image_dataloader(train_set)
+        path = os.path.join(train_set.root, train_set.data[0][0])
+        logger.debug(f"the path is {path}")
+        image = Image.open(path)
+
+        logger.debug(f"text_units {text_units[5]}")
+
+        plt.imshow(image, cmap='gray')
+        plt.imshow(cropped_images[5], cmap='gray')
         plt.show()
