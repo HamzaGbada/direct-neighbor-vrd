@@ -18,21 +18,19 @@ from src.utils.setup_logger import logger
 
 def train(model, dataloader, loss_fn, optimizer, device):
     model.train()
-    total_loss = 0.0
+    total_loss = 0
 
-    for batch in dataloader:
-        input_ids = batch['input_ids'].to(device)
-        attention_mask = batch['attention_mask'].to(device)
-        labels = batch['label'].to(device)
+    for inputs, labels in dataloader:
+        inputs, labels = inputs.to(device), labels.to(device)
 
         optimizer.zero_grad()
-        logits = model(input_ids, attention_mask)
 
-        loss = loss_fn(logits, labels)
-        total_loss += loss.item()
-
+        outputs = model(inputs)
+        loss = loss_fn(outputs, labels)
         loss.backward()
         optimizer.step()
+
+        total_loss += loss.item()
 
     return total_loss / len(dataloader)
 
