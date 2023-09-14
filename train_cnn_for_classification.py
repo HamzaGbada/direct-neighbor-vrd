@@ -5,10 +5,12 @@ import torch
 from torch import nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from torchvision import transforms
 from PIL import Image
 from sklearn.metrics import classification_report
 
 from src.cnn_embedding.unet_embedding import UNet
+from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
@@ -58,7 +60,8 @@ def evaluate(model, dataloader, device):
 
 
 def image_dataloader(dataset, batch_size=1):
-    cropped_images = [Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox) for doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
+    convert_tensor = transforms.ToTensor()
+    cropped_images = [convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox)) for doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
     labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     image_dataset = ImageDataset(cropped_images, labels)
     dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True)
@@ -81,8 +84,8 @@ def main(dataloader, num_classes=5, num_epochs = 10, device = torch.device('cuda
 
 
 if __name__ == '__main__':
-    dataset_train = CORD(train=True)
-    dataset_test = CORD(train=False)
+    dataset_train = SROIE(train=True)
+    dataset_test = SROIE(train=False)
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
