@@ -30,6 +30,7 @@ class UNet(nn.Module):
         self.linear = nn.LazyLinear(num_classes)
 
     def forward(self, x, device="cuda"):
+        logger.debug(f"the input shape {x.shape}")
         x1 = self.encoder(x)
         x2 = self.decoder(x1)
         logger.debug(f"shape before view {x2.shape}")

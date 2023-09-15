@@ -62,7 +62,7 @@ def evaluate(model, dataloader, device):
 
 def image_dataloader(dataset, batch_size=1):
     convert_tensor = transforms.ToTensor()
-    cropped_images = [convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox)) for doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
+    cropped_images = [convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).convert("L").crop(bbox)) for doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
     labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     labels = torch.tensor(labels).reshape(-1, 1)
     # TODO: Change THE dependening on Dataset (In this case SROIE)
@@ -76,7 +76,7 @@ def image_dataloader(dataset, batch_size=1):
 
 
 def main(dataloader, num_classes=5, num_epochs = 10, device = torch.device('cuda')):
-    model = UNet(in_channels=3, num_classes=num_classes)
+    model = UNet(in_channels=1, num_classes=num_classes)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 

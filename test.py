@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from PIL import Image
 from datasets import load_dataset
+from torchvision import transforms
 from torch import nn
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
 
@@ -118,7 +119,7 @@ class TestDataLoader(unittest.TestCase):
         train_set = CORD(train=True)
         path = os.path.join(train_set.root, train_set.data[0][0])
         logger.debug(f"the path is {path}")
-        image = Image.open(path)
+        image = Image.open(path).convert("L")
 
         # Define the bounding box coordinates (left, upper, right, lower)
         bbox = train_set.data[0][1]['boxes'][0]
@@ -127,11 +128,13 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"text_units {text_units}")
 
         # Crop the image
-        cropped_image = image.crop(bbox)
+        convert_tensor = transforms.ToTensor()
+        cropped_image = convert_tensor(image.crop(bbox))
+        logger.debug(f"shape before remove channel{cropped_image.shape}")
 
         # Save or display the cropped image
         plt.imshow(image, cmap='gray')
-        plt.imshow(cropped_image, cmap='gray')
+        # plt.imshow(cropped_image, cmap='gray')
         plt.show()
 
     def test_image_dataloader(self):
@@ -177,4 +180,5 @@ class TestDataLoader(unittest.TestCase):
 
         outputs = model(inputs)
         logger.debug(f"loss_fn shape {outputs.shape}")
+
 
