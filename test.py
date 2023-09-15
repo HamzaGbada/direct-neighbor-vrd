@@ -148,8 +148,8 @@ class TestDataLoader(unittest.TestCase):
 
     def test_unet_test(self):
         # Open the image using PIL
-        inputs = torch.rand(3, 128, 128).to(device="cpu")
-        model = SimpleCNN(5).to(device="cpu")
+        inputs = torch.rand(3, 128, 128).to(device="cuda")
+        model = SimpleCNN(5).to(device="cuda")
 
         outputs = model(inputs)
 
