@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import torch
 from PIL import Image
 from datasets import load_dataset
+from torch import nn
 
 from src.cnn_embedding.unet_embedding import UNet, SimpleCNN
 from src.dataloader.SROIE_dataloader import SROIE
@@ -148,10 +149,16 @@ class TestDataLoader(unittest.TestCase):
 
     def test_unet_test(self):
         # Open the image using PIL
-        inputs = torch.rand(3, 128, 128).to(device="cuda")
-        model = SimpleCNN(5).to(device="cuda")
+        inputs = torch.rand(3, 63, 45).to(device="cuda")
+        model = UNet(3,5).to(device="cuda")
 
         outputs = model(inputs)
-
-        logger.debug(f"outputs {outputs}")
         logger.debug(f"outputs shape {outputs.shape}")
+        loss_fn = nn.CrossEntropyLoss()
+        labels = torch.randn(1, 5).softmax(dim=1).to(device="cuda")
+        loss = loss_fn(outputs, labels)
+
+        logger.debug(f"Labels {labels}")
+
+        logger.debug(f"loss_fn shape {loss.shape}")
+        logger.debug(f"loss_fn {loss}")

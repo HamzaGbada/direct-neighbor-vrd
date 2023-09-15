@@ -26,12 +26,16 @@ class UNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, num_classes, kernel_size=1),
         )
+        self.softmax = nn.Softmax()
         self.linear = nn.LazyLinear(num_classes)
 
     def forward(self, x):
         x1 = self.encoder(x)
         x2 = self.decoder(x1)
-        return self.linear(x2)
+        x2 = x2.view(1, -1)
+        x2 = self.linear(x2)
+        return self.softmax(x2)
+
 
 class SimpleCNN(nn.Module):
     # 128 - 3 + 2 = 127 + 1 = 128
@@ -50,8 +54,7 @@ class SimpleCNN(nn.Module):
         x = self.pool1(x)
         logger.debug(f'size equal to {x.shape}')
         # TODO: the point here is to transform it to [1,5], check how critron is calculated
-        x = x.view(1, -1)
+
         logger.debug(f'size equal to {x.shape}')
         x = self.fc1(x)
         return x
-
