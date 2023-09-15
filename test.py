@@ -1,10 +1,12 @@
 import os
 import unittest
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from PIL import Image
 from datasets import load_dataset
 from torch import nn
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
 
 from src.cnn_embedding.unet_embedding import UNet, SimpleCNN
 from src.dataloader.SROIE_dataloader import SROIE
@@ -151,14 +153,22 @@ class TestDataLoader(unittest.TestCase):
         # Open the image using PIL
         inputs = torch.rand(3, 63, 45).to(device="cuda")
         model = UNet(3,5).to(device="cuda")
-
+        #
         outputs = model(inputs)
-        logger.debug(f"outputs shape {outputs.shape}")
+        # logger.debug(f"outputs shape {outputs.shape}")
         loss_fn = nn.CrossEntropyLoss()
-        labels = torch.randn(1, 5).softmax(dim=1).to(device="cuda")
+        labels = torch.tensor([0]).reshape(-1, 1)
+        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        enc = OneHotEncoder(sparse=False)
+        enc.fit(X)
+        logger.debug(f"Labels {labels}")
+        labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
+
+
         loss = loss_fn(outputs, labels)
 
         logger.debug(f"Labels {labels}")
+
 
         logger.debug(f"loss_fn shape {loss.shape}")
         logger.debug(f"loss_fn {loss}")
