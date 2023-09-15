@@ -29,12 +29,16 @@ class UNet(nn.Module):
         self.softmax = nn.Softmax()
         self.linear = nn.LazyLinear(num_classes)
 
-    def forward(self, x):
+    def forward(self, x, device="cuda"):
         x1 = self.encoder(x)
         x2 = self.decoder(x1)
-        x2 = x2.view(1, -1)
-        x2 = self.linear(x2)
-        return self.softmax(x2)
+        logger.debug(f"shape before view {x2.shape}")
+        x3 = x2.view(1, -1)
+        lazy = nn.LazyLinear(32).to(device=device)
+        x3 = lazy(x3)
+        logger.debug(f"shape after view {x3.shape}")
+        x4 = self.linear(x3)
+        return self.softmax(x4)
 
 
 class SimpleCNN(nn.Module):
