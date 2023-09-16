@@ -14,7 +14,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
-from src.utils.utils import convert_format3, convert_format1, convert_format2, plot_cropped_image
+from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image
 from train_cnn_for_classification import image_dataloader
 
 
@@ -73,7 +73,7 @@ class TestDataLoader(unittest.TestCase):
         text_unit_face = dataset[doc_index]['words'][word_index]
         logger.debug(f"HuggingFace bounding boxes : {bbox_hugging_face}")
 
-        common_box_doctr = convert_format3(bbox_doctr)
+        common_box_doctr = convert_xmin_ymin(bbox_doctr)
 
         common_box_hugface_1 = convert_format1(bbox_hugging_face)
         common_box_hugface_2 = convert_format2(bbox_hugging_face)
@@ -182,3 +182,5 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn shape {outputs.shape}")
 
 
+    def test_bbox_area(self):
+        pass
