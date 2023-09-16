@@ -11,6 +11,10 @@ from src.utils.utils import convert_xmin_ymin
 
 
 class WILDRECEIPT(VisionDataset):
+    """
+    :return:
+        Bounding boxes are in the Format (xmin, ymin, xmax, ymax) top left, bottom right corners
+    """
     dataset = ('https://download.openmmlab.com/mmocr/data/wildreceipt.tar', 'wildreceipt.tar')
 
     def __init__(self, train: bool = True, **kwargs: Any) -> None:

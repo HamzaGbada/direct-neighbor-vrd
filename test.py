@@ -14,7 +14,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
-from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image
+from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image, get_area
 from train_cnn_for_classification import image_dataloader
 
 
@@ -183,4 +183,7 @@ class TestDataLoader(unittest.TestCase):
 
 
     def test_bbox_area(self):
-        pass
+        dataset = CORD(train=True)
+        bbox = [get_area(convert_xmin_ymin(x)) for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]
+        logger.debug(f"Sorted area bbox area : {bbox}")
+

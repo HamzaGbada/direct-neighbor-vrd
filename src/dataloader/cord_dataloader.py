@@ -38,6 +38,8 @@ class CORD(VisionDataset):
         train: whether the subset should be the training one
         use_polygons: whether polygons should be considered as rotated bounding box (instead of straight ones)
         **kwargs: keyword arguments from `VisionDataset`.
+    :return:
+        Bounding boxes are in the Format (xmin, ymin, xmax, ymax) top left, bottom right corners
     """
     TRAIN = ('https://github.com/mindee/doctr/releases/download/v0.1.1/cord_train.zip',
              '45f9dc77f126490f3e52d7cb4f70ef3c57e649ea86d19d862a2757c9c455d7f8')

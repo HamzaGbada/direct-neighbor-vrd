@@ -27,6 +27,8 @@ class SROIE(VisionDataset):
         train: whether the subset should be the training one
         use_polygons: whether polygons should be considered as rotated bounding box (instead of straight ones)
         **kwargs: keyword arguments from `VisionDataset`.
+    :return:
+        Bounding boxes are in the Format (xmin, ymin, xmax, ymax) top left, bottom right corners
     """
 
     def __init__(
