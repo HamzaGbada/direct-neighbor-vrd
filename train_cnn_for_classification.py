@@ -48,7 +48,7 @@ def evaluate(model, dataloader, device):
             inputs, labels = inputs.to(device), labels.to(device)
 
             outputs = model(inputs)
-            predictions = np.argmax(outputs.numpy(), axis=1)
+            predictions = np.argmax(outputs.cpu.numpy(), axis=1)
 
             all_labels.extend(labels.cpu())
             all_predictions.extend(predictions.cpu())
