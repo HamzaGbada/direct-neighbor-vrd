@@ -50,10 +50,10 @@ def evaluate(model, dataloader, device):
             outputs = model(inputs)
             predictions = np.argmax(outputs.numpy(), axis=1)
 
-            all_labels.extend(labels)
-            all_predictions.extend(predictions)
+            all_labels.extend(labels.cpu())
+            all_predictions.extend(predictions.cpu())
 
-    report = classification_report(all_labels.cpu(), all_predictions.cpu(),
+    report = classification_report(all_labels, all_predictions,
                                    target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
     return report
 
