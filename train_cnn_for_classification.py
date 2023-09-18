@@ -45,12 +45,10 @@ def evaluate(model, dataloader, device):
 
     with torch.no_grad():
         for batch in dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].cpu().numpy()
+            inputs, labels = inputs.to(device), labels.to(device)
 
-            logits = model(input_ids, attention_mask)
-            predictions = np.argmax(logits.cpu().numpy(), axis=1)
+            outputs = model(inputs)
+            predictions = np.argmax(outputs.cpu().numpy(), axis=1)
 
             all_labels.extend(labels)
             all_predictions.extend(predictions)
