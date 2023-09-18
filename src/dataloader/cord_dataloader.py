@@ -21,6 +21,8 @@ from src.utils.setup_logger import logger
 
 __all__ = ['CORD']
 
+from src.utils.utils import get_area
+
 
 # TODO: create a documentation for each dataloader especially the json of the output
 class CORD(VisionDataset):
@@ -100,7 +102,9 @@ class CORD(VisionDataset):
                             else:
                                 # Reduce 8 coords to 4 -> xmin, ymin, xmax, ymax
                                 box = [min(x), min(y), max(x), max(y)]
-                            _targets.append((word['text'].lower(), line["category"], box))
+                            if get_area(box) >= 50:
+                                _targets.append((word['text'].lower(), line["category"], box))
+
 
             text_targets, labels,  box_targets = zip(*_targets)
 
