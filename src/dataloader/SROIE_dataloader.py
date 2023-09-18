@@ -10,6 +10,7 @@ from src.utils.SROIE_utils import read_bbox_and_words, read_entities, assign_lab
 __all__ = ['SROIE']
 
 from src.utils.setup_logger import logger
+from src.utils.utils import get_area
 
 
 class SROIE(VisionDataset):
@@ -66,6 +67,9 @@ class SROIE(VisionDataset):
                 bbox_labeled = assign_labels(bbox, entities)
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
+                # bbox_area =
+                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 50].index
+                bbox_labeled.drop(index_bbox, inplace=True)
                 if not os.path.isdir("data/SROIE_CSV/train/"):
                     os.makedirs("data/SROIE_CSV/train/")
                 bbox_labeled.to_csv("data/SROIE_CSV/train/" + filename[:-4] + ".csv")

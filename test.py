@@ -184,7 +184,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_bbox_area(self):
         # TODO remove the bbox that are littele
-        dataset = CORD(train=True)
+        dataset = SROIE(train=True)
         bbox = [get_area(x) for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]
         bbox.sort()
         logger.debug(f"Sorted area bbox area : {bbox}")
