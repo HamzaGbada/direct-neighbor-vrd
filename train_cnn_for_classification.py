@@ -44,7 +44,7 @@ def evaluate(model, dataloader, device):
     all_predictions = []
 
     with torch.no_grad():
-        for batch in dataloader:
+        for inputs, labels in dataloader:
             inputs, labels = inputs.to(device), labels.to(device)
 
             outputs = model(inputs)
