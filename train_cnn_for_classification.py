@@ -55,7 +55,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimiz
                 predictions = np.argmax(val_outputs.cpu().numpy(), axis=1)
 
                 all_labels.extend(val_labels.cpu())
-                all_predictions.extend(predictions.cpu())
+                all_predictions.extend(predictions)
 
                 total_val_loss += val_loss.item()
 
