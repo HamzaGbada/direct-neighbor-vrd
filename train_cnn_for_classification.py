@@ -115,11 +115,11 @@ def evaluate(model, dataloader, device):
             predictions = np.argmax(outputs.cpu().numpy(), axis=1)
 
             all_labels.extend(labels.cpu())
-            all_predictions.extend(predictions.cpu())
+            all_predictions.extend(predictions)
 
-    report = classification_report(all_labels, all_predictions,
-                                   target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
-    return report
+    # report = classification_report(all_labels, all_predictions,
+    #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
+    return all_predictions
 
 
 def image_dataloader(dataset, batch_size=1):
@@ -151,9 +151,9 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
     #     logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
 
     model, all_labels, all_predictions, train_losses, val_losses = train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimizer, device, num_epochs)
-    report = classification_report(all_labels, all_predictions,
-                                   target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
-    logger.debug(f"classification report {report}")
+    # report = classification_report(all_labels, all_predictions,
+    #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
+    # logger.debug(f"classification report {report}")
     logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
     plot_loss(num_epochs, train_losses, val_losses)
     model_path = 'Unet_classification.pth'
@@ -165,6 +165,7 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
 
 
 if __name__ == '__main__':
+    # TODO: Add f1 score, Precesion, Recall metrics and maximise epochs
     dataset_train = SROIE(train=True)
     dataset_test = SROIE(train=False)
     train_dataloader = image_dataloader(dataset_train)
