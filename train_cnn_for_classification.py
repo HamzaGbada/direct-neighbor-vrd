@@ -37,7 +37,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             optimizer.zero_grad()
 
             outputs = model(inputs)
-            f1_score_train = multiclass_f1_score(inputs, outputs, num_classes=num_classes)
+            f1_score_train = multiclass_f1_score(inputs.view(-1), outputs.view(-1), num_classes=num_classes)
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
@@ -58,7 +58,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
                 val_inputs, val_labels = val_inputs.to(device), val_labels.to(device)
 
                 val_outputs = model(val_inputs)
-                f1_score_val = multiclass_f1_score(val_inputs, val_outputs, num_classes=num_classes)
+                f1_score_val = multiclass_f1_score(val_inputs.view(-1), val_outputs.view(-1), num_classes=num_classes)
                 val_loss = loss_fn(val_outputs, val_labels)
                 predictions = np.argmax(val_outputs.cpu().numpy(), axis=1)
 
