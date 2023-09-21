@@ -37,7 +37,12 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             optimizer.zero_grad()
 
             outputs = model(inputs)
-            f1_score_train = multiclass_f1_score(inputs.view(-1), outputs.view(-1), num_classes=num_classes)
+            logger.debug(f"labels shape {labels.shape}")
+            logger.debug(f"labels view shape {labels.view(-1).shape}")
+            logger.debug(f"outputs shape {outputs.shape}")
+            logger.debug(f"outputs view shape {outputs.view(-1).shape}")
+
+            f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
