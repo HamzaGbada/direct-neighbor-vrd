@@ -10,6 +10,7 @@ from torchvision import transforms
 from PIL import Image
 from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
+from torcheval.metrics.functional import multiclass_f1_score
 
 from src.cnn_embedding.unet_embedding import UNet
 from src.dataloader.SROIE_dataloader import SROIE
