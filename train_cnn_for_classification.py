@@ -18,14 +18,17 @@ from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
 
 
-def train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimizer, device, num_epochs):
+def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
     train_losses = []  # To store training loss for each epoch
     val_losses = []  # To store validation loss for each epoch
+    train_f1 = []  # To store validation loss for each epoch
+    val_f1 = []  # To store validation loss for each epoch
     all_labels = []
     all_predictions = []
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0
+        total_f1_score = 0
 
         for inputs, labels in train_dataloader:
             inputs, labels = inputs.to(device), labels.to(device)
@@ -33,24 +36,28 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimiz
             optimizer.zero_grad()
 
             outputs = model(inputs)
+            f1_score_train = multiclass_f1_score(inputs, outputs, num_classes=num_classes)
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
-
+            total_f1_score += f1_score_train
             total_train_loss += loss.item()
-
+        avg_f1_score_train = total_f1_score / len(train_dataloader)
         avg_train_loss = total_train_loss / len(train_dataloader)
         train_losses.append(avg_train_loss)
+        train_f1.append(avg_f1_score_train)
 
         # Validation loss calculation
         model.eval()
         total_val_loss = 0
+        total_f1_score_val = 0
 
         with torch.no_grad():
             for val_inputs, val_labels in val_dataloader:
                 val_inputs, val_labels = val_inputs.to(device), val_labels.to(device)
 
                 val_outputs = model(val_inputs)
+                f1_score_val = multiclass_f1_score(val_inputs, val_outputs, num_classes=num_classes)
                 val_loss = loss_fn(val_outputs, val_labels)
                 predictions = np.argmax(val_outputs.cpu().numpy(), axis=1)
 
@@ -58,26 +65,29 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimiz
                 all_predictions.extend(predictions)
 
                 total_val_loss += val_loss.item()
+                total_f1_score_val += f1_score_val.item()
 
+        avg_f1_score_val = total_f1_score_val / len(val_dataloader)
         avg_val_loss = total_val_loss / len(val_dataloader)
         val_losses.append(avg_val_loss)
+        val_f1.append(avg_f1_score_val)
 
         # Print and plot the losses
         logger.debug(
-            f'Epoch [{epoch + 1}/{num_epochs}] - Train Loss: {avg_train_loss:.4f} - Validation Loss: {avg_val_loss:.4f}')
+            f'Epoch [{epoch + 1}/{num_epochs}] - Train Loss: {avg_train_loss:.4f} - Train F1 score: {avg_f1_score_train:.4f} - Validation Loss: {avg_val_loss:.4f} - Validation F1 score: {avg_f1_score_val:.4f}')
 
-    return model, all_labels, all_predictions, train_losses, val_losses
+    return model, all_labels, all_predictions, train_losses, val_losses, train_f1, val_f1
 
 
-def plot_loss(epochs, train_losses, val_losses):
+def plots(epochs, train_losses, val_losses, type='Loss'):
     plt.figure(figsize=(10, 5))
-    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train Loss')
-    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation Loss')
+    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train '+type)
+    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation '+type)
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel(type)
     plt.legend()
-    plt.title('Training and Validation Loss')
-    plt.savefig('loss_plot.png')
+    plt.title('Training and Validation '+type)
+    plt.savefig(type+'_plot.png')
     plt.show()
 
 
@@ -150,12 +160,15 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
     #     train_loss = train(model, dataloader, loss_fn, optimizer, device)
     #     logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
 
-    model, all_labels, all_predictions, train_losses, val_losses = train_and_evaluate(model, train_dataloader, val_dataloader, loss_fn, optimizer, device, num_epochs)
+    model, all_labels, all_predictions, train_losses, val_losses, train_f1, val_f1 = train_and_evaluate(model, train_dataloader,
+                                                                                      val_dataloader, 5, loss_fn,
+                                                                                      optimizer, device, num_epochs)
     # report = classification_report(all_labels, all_predictions,
     #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
     # logger.debug(f"classification report {report}")
     logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
-    plot_loss(num_epochs, train_losses, val_losses)
+    plots(num_epochs, train_losses, val_losses)
+    plots(num_epochs, train_f1, val_f1)
     model_path = 'Unet_classification.pth'
 
     # Save the model to a file
@@ -171,5 +184,5 @@ if __name__ == '__main__':
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader)
+    model = main(train_dataloader, test_dataloader, num_epochs=500)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
