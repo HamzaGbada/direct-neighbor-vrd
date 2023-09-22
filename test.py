@@ -216,7 +216,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn {loss}")
 
         inputs = torch.rand(3, 15, 52).to(device="cuda")
-
+        inputs = inputs.unsqueeze(0)
         outputs = model(inputs)
         logger.debug(f"loss_fn shape {outputs.shape}")
 
