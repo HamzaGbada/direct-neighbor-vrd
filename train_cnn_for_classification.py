@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 from torcheval.metrics.functional import multiclass_f1_score
 
-from src.cnn_embedding.unet_embedding import UNet
+from src.cnn_embedding.unet_embedding import UNet, EfficientNetV2MultiClass
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
@@ -152,7 +152,7 @@ def image_dataloader(dataset, batch_size=1):
 
 
 def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=torch.device('cuda')):
-    model = UNet(in_channels=1, num_classes=num_classes)
+    model = EfficientNetV2MultiClass(in_channels=1, num_classes=num_classes)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
@@ -186,5 +186,5 @@ if __name__ == '__main__':
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_epochs=2)
+    model = main(train_dataloader, test_dataloader, num_epochs=10)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
