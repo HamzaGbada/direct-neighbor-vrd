@@ -3,6 +3,8 @@
 #   https://saturncloud.io/blog/how-to-remove-the-last-fc-layer-from-a-resnet-model-in-pytorch/
 import torch
 from torch import nn
+from torchvision import models
+from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
 
 from src.utils.setup_logger import logger
 
@@ -63,3 +65,21 @@ class SimpleCNN(nn.Module):
         logger.debug(f'size equal to {x.shape}')
         x = self.fc1(x)
         return x
+
+
+class EfficientNetV2MultiClass(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(EfficientNetV2MultiClass, self).__init__()
+        self.num_classes = num_classes
+        # Load a pretrained U-Net model (e.g., ResNet-UNet)
+        self.pretrained_eff_v2 = efficientnet_v2_l(pretrained=True)
+
+        # Modify the classifier head for your specific number of classes
+        # self.pretrained_unet.classifier[4] = nn.Conv2d(128, num_classes, kernel_size=(1, 1))
+
+    def forward(self, x):
+        # Forward pass through the pretrained U-Net model
+        self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(self.num_classes)
+        output = self.pretrained_eff_v2(x)['out']
+
+        return output

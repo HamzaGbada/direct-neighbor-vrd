@@ -46,7 +46,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             total_train_loss += loss.item()
         avg_f1_score_train = total_f1_score / len(train_dataloader)
         avg_train_loss = total_train_loss / len(train_dataloader)
-        train_losses.append(avg_train_loss.cpu())
+        train_losses.append(avg_train_loss)
         train_f1.append(avg_f1_score_train.cpu())
 
         # Validation loss calculation
@@ -71,7 +71,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
         avg_f1_score_val = total_f1_score_val / len(val_dataloader)
         avg_val_loss = total_val_loss / len(val_dataloader)
-        val_losses.append(avg_val_loss.cpu())
+        val_losses.append(avg_val_loss)
         val_f1.append(avg_f1_score_val.cpu())
 
         # Print and plot the losses
@@ -186,5 +186,5 @@ if __name__ == '__main__':
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_epochs=500)
+    model = main(train_dataloader, test_dataloader, num_epochs=2)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
