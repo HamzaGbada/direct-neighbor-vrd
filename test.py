@@ -9,7 +9,7 @@ from torchvision import transforms
 from torch import nn
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
 
-from src.cnn_embedding.unet_embedding import UNet, SimpleCNN
+from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2MultiClass
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
@@ -187,4 +187,36 @@ class TestDataLoader(unittest.TestCase):
         bbox = [get_area(x) for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]
         bbox.sort()
         logger.debug(f"Sorted area bbox area : {bbox}")
+
+    def test_efficient_test(self):
+        # Open the image using PIL
+        inputs = torch.rand(3, 63, 45).to(device="cuda")
+        inputs = inputs.unsqueeze(0)
+        logger.debug(f"inputs shape {inputs.shape}")
+        logger.debug(inputs.device)
+        model = EfficientNetV2MultiClass(3,5).to(torch.device('cuda'))
+        #
+        outputs = model(inputs)
+        # logger.debug(f"outputs shape {outputs.shape}")
+        loss_fn = nn.CrossEntropyLoss()
+        labels = torch.tensor([0]).reshape(-1, 1)
+        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        enc = OneHotEncoder(sparse=False)
+        enc.fit(X)
+        logger.debug(f"Labels {labels}")
+        labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
+
+
+        loss = loss_fn(outputs, labels)
+
+        logger.debug(f"Labels {labels}")
+
+
+        logger.debug(f"loss_fn shape {loss.shape}")
+        logger.debug(f"loss_fn {loss}")
+
+        inputs = torch.rand(3, 15, 52).to(device="cuda")
+
+        outputs = model(inputs)
+        logger.debug(f"loss_fn shape {outputs.shape}")
 

@@ -72,7 +72,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         avg_f1_score_val = total_f1_score_val / len(val_dataloader)
         avg_val_loss = total_val_loss / len(val_dataloader)
         val_losses.append(avg_val_loss)
-        val_f1.append(avg_f1_score_val.cpu())
+        val_f1.append(avg_f1_score_val)
 
         # Print and plot the losses
         logger.debug(
