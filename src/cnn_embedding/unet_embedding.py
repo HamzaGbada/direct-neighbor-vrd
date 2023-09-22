@@ -73,8 +73,6 @@ class EfficientNetV2MultiClass(nn.Module):
         self.num_classes = num_classes
         # Load a pretrained U-Net model (e.g., ResNet-UNet)
         self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
-        logger.debug("self.pretrained_eff_v2")
-        logger.debug(self.pretrained_eff_v2)
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(1,
                                      out_channels = 32,
@@ -86,8 +84,6 @@ class EfficientNetV2MultiClass(nn.Module):
                                      activation_layer = nn.SiLU
                                      )
         )
-        logger.debug("self.pretrained_eff_v2    ddfsqfdsdfsqdfsdf         ")
-        logger.debug(self.pretrained_eff_v2)
 
         # Modify the classifier head for your specific number of classes
         # self.pretrained_unet.classifier[4] = nn.Conv2d(128, num_classes, kernel_size=(1, 1))
