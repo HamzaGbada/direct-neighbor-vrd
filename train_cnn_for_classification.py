@@ -33,7 +33,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
         for inputs, labels in train_dataloader:
             inputs, labels = inputs.to(device), labels.to(device)
-
+            inputs = inputs.unsqueeze(0)
             optimizer.zero_grad()
 
             outputs = model(inputs)
