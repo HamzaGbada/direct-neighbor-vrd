@@ -190,7 +190,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_efficient_test(self):
         # Open the image using PIL
-        inputs = torch.rand(3, 63, 45).to(device="cuda")
+        inputs = torch.rand(1, 63, 45).to(device="cuda")
         inputs = inputs.unsqueeze(0)
         logger.debug(f"inputs shape {inputs.shape}")
         logger.debug(inputs.device)
@@ -215,7 +215,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn shape {loss.shape}")
         logger.debug(f"loss_fn {loss}")
 
-        inputs = torch.rand(3, 15, 52).to(device="cuda")
+        inputs = torch.rand(1, 15, 52).to(device="cuda")
         inputs = inputs.unsqueeze(0)
         outputs = model(inputs)
         logger.debug(f"loss_fn shape {outputs.shape}")
