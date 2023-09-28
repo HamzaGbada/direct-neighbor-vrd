@@ -246,19 +246,21 @@ class TestDataLoader(unittest.TestCase):
 
 
         for epoch in range(num_epochs):
+            logger.debug(f"epoch {epoch+1} | {num_epochs} processing")
             model.train()
 
             total_train_loss = 0
             total_f1_score = 0
 
-            for _ in range(data_size):
-                inputs, labels = torch.rand(3, random.randint(15,100), random.randint(15,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
+            for image_index in range(data_size):
+                logger.debug(f"image {image_index + 1} | {data_size} processing")
+                inputs, labels = torch.rand(1, 3, random.randint(70,100), random.randint(70,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
                 logger.debug(f"input shape {inputs.shape}")
                 logger.debug(f"labels shape {labels.shape}")
                 optimizer.zero_grad()
 
                 outputs = model(inputs)
-                labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
+                labels = torch.from_numpy(enc.transform(labels.cpu())).to(device="cuda")
 
                 f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
                 loss = loss_fn(outputs, labels)
@@ -267,8 +269,8 @@ class TestDataLoader(unittest.TestCase):
                 total_f1_score += f1_score_train
                 total_train_loss += loss.item()
 
-            avg_f1_score_train = total_f1_score / len(data_size)
-            avg_train_loss = total_train_loss / len(data_size)
+            avg_f1_score_train = total_f1_score / data_size
+            avg_train_loss = total_train_loss / data_size
             train_losses.append(avg_train_loss)
             train_f1.append(avg_f1_score_train.cpu())
 
