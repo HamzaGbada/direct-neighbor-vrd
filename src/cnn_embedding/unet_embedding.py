@@ -68,19 +68,19 @@ class SimpleCNN(nn.Module):
 
 
 class EfficientNetV2MultiClass(nn.Module):
-    def __init__(self, in_channels, num_classes):
+    def __init__(self, num_classes):
         super(EfficientNetV2MultiClass, self).__init__()
         self.num_classes = num_classes
         # Load a pretrained U-Net model (e.g., ResNet-UNet)
         self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
         self.pretrained_eff_v2.features[0] = nn.Sequential(
-            ops.Conv2dNormActivation(1,
+            ops.Conv2dNormActivation(3,
                                      out_channels = 32,
                                      kernel_size = (3,3),
                                      stride = (2,2),
                                      padding = (1,1),
                                      bias=False,
-                                     norm_layer = nn.BatchNorm2d,
+                                     # norm_layer = nn.BatchNorm2d,
                                      activation_layer = nn.SiLU
                                      )
         )

@@ -26,6 +26,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
     val_f1 = []  # To store validation loss for each epoch
     all_labels = []
     all_predictions = []
+    model.eval()
     for epoch in range(num_epochs):
         model.train()
         total_train_loss = 0
@@ -33,7 +34,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
         for inputs, labels in train_dataloader:
             inputs, labels = inputs.to(device), labels.to(device)
-            inputs = inputs.unsqueeze(0)
+            # inputs = inputs.unsqueeze(0)
             optimizer.zero_grad()
 
             outputs = model(inputs)
@@ -137,17 +138,18 @@ def evaluate(model, dataloader, device):
 def image_dataloader(dataset, batch_size=1):
     convert_tensor = transforms.ToTensor()
     cropped_images = [
-        convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).convert("L").crop(bbox)) for
+        convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox)) for
         doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
     labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     labels = torch.tensor(labels).reshape(-1, 1)
+
     # TODO: Change THE dependening on Dataset (In this case SROIE)
     X = torch.tensor([0, 1, 2, 3, 4]).view(-1, 1)
     enc = OneHotEncoder(sparse=False)
     enc.fit(X)
     labels = torch.from_numpy(enc.transform(labels))
     image_dataset = ImageDataset(cropped_images, labels)
-    dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     return dataloader
 
 

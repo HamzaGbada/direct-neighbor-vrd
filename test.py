@@ -1,4 +1,5 @@
 import os
+import random
 import unittest
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,6 +8,8 @@ from PIL import Image
 from datasets import load_dataset
 from torchvision import transforms
 from torch import nn
+import torch.optim as optim
+from torcheval.metrics.functional import multiclass_f1_score
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
 
 from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2MultiClass
@@ -190,11 +193,11 @@ class TestDataLoader(unittest.TestCase):
 
     def test_efficient_test(self):
         # Open the image using PIL
-        inputs = torch.rand(1, 63, 45).to(device="cuda")
+        inputs = torch.rand(3, 63, 45).to(device="cuda")
         inputs = inputs.unsqueeze(0)
         logger.debug(f"inputs shape {inputs.shape}")
         logger.debug(inputs.device)
-        model = EfficientNetV2MultiClass(3,5).to(torch.device('cuda'))
+        model = EfficientNetV2MultiClass(5).to(torch.device('cuda'))
         #
         outputs = model(inputs)
         # logger.debug(f"outputs shape {outputs.shape}")
@@ -203,7 +206,11 @@ class TestDataLoader(unittest.TestCase):
         X = torch.tensor([0,1,2,3,4]).view(-1,1)
         enc = OneHotEncoder(sparse=False)
         enc.fit(X)
-        logger.debug(f"Labels {labels}")
+        logger.debug(f"Labels {labels.shape}")
+        logger.debug(f"Labels {labels.shape}")
+        logger.debug(f"Labels {labels.shape}")
+        logger.debug(f"Labels {labels.shape}")
+        logger.debug(f"Labels {labels.shape}")
         labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
 
 
@@ -215,8 +222,55 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn shape {loss.shape}")
         logger.debug(f"loss_fn {loss}")
 
-        inputs = torch.rand(1, 15, 52).to(device="cuda")
+        inputs = torch.rand(3, 15, 52).to(device="cuda")
         inputs = inputs.unsqueeze(0)
         outputs = model(inputs)
         logger.debug(f"loss_fn shape {outputs.shape}")
+
+    def test_efficient_train_test(self):
+
+        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        enc = OneHotEncoder(sparse=False)
+        enc.fit(X)
+
+        num_classes = 5
+        num_epochs = 10
+        data_size = 50
+
+        model = EfficientNetV2MultiClass(num_classes).to(torch.device('cuda'))
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+        loss_fn = nn.CrossEntropyLoss()
+
+        train_losses = []  # To store training loss for each epoch
+        train_f1 = []  # To store validation loss for each epoch
+
+
+        for epoch in range(num_epochs):
+            model.train()
+
+            total_train_loss = 0
+            total_f1_score = 0
+
+            for _ in range(data_size):
+                inputs, labels = torch.rand(3, random.randint(15,100), random.randint(15,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
+                logger.debug(f"input shape {inputs.shape}")
+                logger.debug(f"labels shape {labels.shape}")
+                optimizer.zero_grad()
+
+                outputs = model(inputs)
+                labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
+
+                f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
+                loss = loss_fn(outputs, labels)
+                loss.backward()
+                optimizer.step()
+                total_f1_score += f1_score_train
+                total_train_loss += loss.item()
+
+            avg_f1_score_train = total_f1_score / len(data_size)
+            avg_train_loss = total_train_loss / len(data_size)
+            train_losses.append(avg_train_loss)
+            train_f1.append(avg_f1_score_train.cpu())
+
+
 
