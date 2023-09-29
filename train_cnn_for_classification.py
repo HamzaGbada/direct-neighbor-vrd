@@ -138,7 +138,7 @@ def evaluate(model, dataloader, device):
 def image_dataloader(dataset, batch_size=1):
     convert_tensor = transforms.ToTensor()
     cropped_images = [
-        convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).crop(bbox)) for
+        convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).convert('L').crop(bbox)) for
         doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
     labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     labels = torch.tensor(labels).reshape(-1, 1)
