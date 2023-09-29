@@ -143,10 +143,10 @@ class TestDataLoader(unittest.TestCase):
     def test_image_dataloader(self):
 
         # Open the image using PIL
-        train_set = CORD(train=True)
+        train_set = CORD(train=False)
         cropped_images, boxes, labels, text_units = image_dataloader(train_set)
         path = os.path.join(train_set.root, train_set.data[0][0])
-        logger.debug(f"the path is {path}")
+        logger.debug(f"the path is {labels}")
         image = Image.open(path)
 
         logger.debug(f"text_units {text_units[5]}")
@@ -185,6 +185,42 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn shape {outputs.shape}")
 
 
+    def test_label(self):
+        dataset = CORD(train=True, download=True)
+        if type(dataset).__name__ == "CORD":
+            encoded_dic = {'menu.sub_cnt': 0,
+                           'sub_total.othersvc_price': 1,
+                           'total.total_price': 2,
+                           'menu.etc': 3,
+                           'sub_total.discount_price': 4,
+                           'menu.unitprice': 5,
+                           'menu.discountprice': 6,
+                           'void_menu.price': 7,
+                           'menu.nm': 8,
+                           'total.menutype_cnt': 9,
+                           'sub_total.subtotal_price': 10,
+                           'menu.sub_nm': 11,
+                           'void_menu.nm': 12,
+                           'menu.sub_unitprice': 13,
+                           'menu.sub_etc': 14,
+                           'menu.cnt': 15,
+                           'menu.vatyn': 16,
+                           'total.total_etc': 17,
+                           'total.menuqty_cnt': 18,
+                           'total.cashprice': 19,
+                           'menu.num': 20,
+                           'total.changeprice': 21,
+                           'sub_total.tax_price': 22,
+                           'sub_total.etc': 23,
+                           'menu.price': 24,
+                           'total.creditcardprice': 25,
+                           'total.emoneyprice': 26,
+                           'sub_total.service_price': 27,
+                           'menu.itemsubtotal': 28,
+                           'menu.sub_price': 29
+                           }
+        labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+        logger.debug(f"label {labels}")
     def test_bbox_area(self):
         dataset = CORD(train=True, download=True)
         bbox = [get_area(x) for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]

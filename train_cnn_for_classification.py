@@ -141,11 +141,45 @@ def image_dataloader(dataset, batch_size=1):
     cropped_images = [
         convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).convert('L').crop(bbox)) for
         doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
-    labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+    if type(dataset).__name__ == "CORD":
+        encoded_dic = {'menu.sub_cnt': 0,
+                       'sub_total.othersvc_price': 1,
+                       'total.total_price': 2,
+                       'menu.etc': 3,
+                       'sub_total.discount_price': 4,
+                       'menu.unitprice': 5,
+                       'menu.discountprice': 6,
+                       'void_menu.price': 7,
+                       'menu.nm': 8,
+                       'total.menutype_cnt': 9,
+                       'sub_total.subtotal_price': 10,
+                       'menu.sub_nm': 11,
+                       'void_menu.nm': 12,
+                       'menu.sub_unitprice': 13,
+                       'menu.sub_etc': 14,
+                       'menu.cnt': 15,
+                       'menu.vatyn': 16,
+                       'total.total_etc': 17,
+                       'total.menuqty_cnt': 18,
+                       'total.cashprice': 19,
+                       'menu.num': 20,
+                       'total.changeprice': 21,
+                       'sub_total.tax_price': 22,
+                       'sub_total.etc': 23,
+                       'menu.price': 24,
+                       'total.creditcardprice': 25,
+                       'total.emoneyprice': 26,
+                       'sub_total.service_price': 27,
+                       'menu.itemsubtotal': 28,
+                       'menu.sub_price': 29
+                       }
+        X = torch.arange(0,29).view(-1, 1)
+        labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+    elif type(dataset).__name__ == "SROIE":
+        labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+        X = torch.arange(0, 4).view(-1, 1)
     labels = torch.tensor(labels).reshape(-1, 1)
 
-    # TODO: Change THE dependening on Dataset (In this case SROIE)
-    X = torch.tensor([0, 1, 2, 3, 4]).view(-1, 1)
     enc = OneHotEncoder(sparse=False)
     enc.fit(X)
     labels = torch.from_numpy(enc.transform(labels))
@@ -189,5 +223,5 @@ if __name__ == '__main__':
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_epochs=10)
+    model = main(train_dataloader, test_dataloader, num_epochs=10, num_classes=25)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
