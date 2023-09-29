@@ -102,7 +102,7 @@ class CORD(VisionDataset):
                             else:
                                 # Reduce 8 coords to 4 -> xmin, ymin, xmax, ymax
                                 box = [min(x), min(y), max(x), max(y)]
-                            if get_area(box) >= 50:
+                            if get_area(box) >= 1000:
                                 _targets.append((word['text'].lower(), line["category"], box))
 
 
