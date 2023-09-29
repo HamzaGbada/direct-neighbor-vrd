@@ -105,8 +105,8 @@ class CORD(VisionDataset):
                             if get_area(box) >= 1000:
                                 _targets.append((word['text'].lower(), line["category"], box))
 
-
-            text_targets, labels,  box_targets = zip(*_targets)
+            if not _targets:
+                text_targets, labels,  box_targets = zip(*_targets)
 
             self.data.append((
                 img_path,
