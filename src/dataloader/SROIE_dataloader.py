@@ -68,7 +68,7 @@ class SROIE(VisionDataset):
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
                 # bbox_area =
-                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 50].index
+                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 150].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 if not os.path.isdir("data/SROIE_CSV/train/"):
                     os.makedirs("data/SROIE_CSV/train/")
@@ -85,7 +85,7 @@ class SROIE(VisionDataset):
                 bbox_labeled = assign_labels(bbox, entities)
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
-                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 50].index
+                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 150].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 logger.debug(f'the condition {os.path.isdir("data/SROIE_CSV/test/")}')
                 if not os.path.isdir("data/SROIE_CSV/test/"):

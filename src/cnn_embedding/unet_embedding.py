@@ -91,6 +91,8 @@ class EfficientNetV2MultiClass(nn.Module):
     def forward(self, x, device = "cuda"):
         # Forward pass through the pretrained U-Net model
         self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(self.num_classes, device=device)
+        logger.debug(f"x shape before {x.shape}")
         output = self.pretrained_eff_v2(x)
+        logger.debug(f"x shape after {output.shape}")
 
         return output

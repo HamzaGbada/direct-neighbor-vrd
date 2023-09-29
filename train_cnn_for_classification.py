@@ -154,7 +154,7 @@ def image_dataloader(dataset, batch_size=1):
 
 
 def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=torch.device('cuda')):
-    model = EfficientNetV2MultiClass(in_channels=1, num_classes=num_classes)
+    model = EfficientNetV2MultiClass(num_classes=num_classes)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     loss_fn = nn.CrossEntropyLoss()
 
