@@ -74,7 +74,7 @@ class EfficientNetV2MultiClass(nn.Module):
         # Load a pretrained U-Net model (e.g., ResNet-UNet)
         self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
         self.pretrained_eff_v2.features[0] = nn.Sequential(
-            ops.Conv2dNormActivation(3,
+            ops.Conv2dNormActivation(1,
                                      out_channels = 32,
                                      kernel_size = (3,3),
                                      stride = (2,2),
