@@ -107,11 +107,10 @@ class CORD(VisionDataset):
 
             if not _targets:
                 text_targets, labels,  box_targets = zip(*_targets)
-
-            self.data.append((
-                img_path,
-                dict(boxes=np.asarray(box_targets, dtype=int).clip(min=0), text_units=list(text_targets), labels=list(labels), )
-            ))
+                self.data.append((
+                    img_path,
+                    dict(boxes=np.asarray(box_targets, dtype=int).clip(min=0), text_units=list(text_targets), labels=list(labels), )
+                ))
         self.root = tmp_root
 
     def extra_repr(self) -> str:
