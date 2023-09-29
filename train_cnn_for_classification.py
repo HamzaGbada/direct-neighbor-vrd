@@ -28,6 +28,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
     all_predictions = []
     model.eval()
     for epoch in range(num_epochs):
+        logger.debug(f"the epoch is {epoch+1}/{num_epochs}")
         model.train()
         total_train_loss = 0
         total_f1_score = 0

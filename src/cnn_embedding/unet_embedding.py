@@ -76,7 +76,7 @@ class EfficientNetV2MultiClass(nn.Module):
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(1,
                                      out_channels = 32,
-                                     kernel_size = (3,3),
+                                     kernel_size = (2,2),
                                      stride = (2,2),
                                      padding = (1,1),
                                      bias=False,
