@@ -105,8 +105,8 @@ def train(model, dataloader, loss_fn, optimizer, device):
         optimizer.zero_grad()
 
         outputs = model(inputs)
-        logger.debug(f"shape of output {outputs.shape}")
-        logger.debug(f"shape of labels {labels.shape}")
+        # logger.debug(f"shape of output {outputs.shape}")
+        # logger.debug(f"shape of labels {labels.shape}")
         loss = loss_fn(outputs, labels)
         loss.backward()
         optimizer.step()
