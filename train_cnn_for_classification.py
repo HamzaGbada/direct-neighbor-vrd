@@ -173,11 +173,11 @@ def image_dataloader(dataset, batch_size=1):
                        'menu.itemsubtotal': 28,
                        'menu.sub_price': 29
                        }
-        X = torch.arange(0,29).view(-1, 1)
+        X = torch.arange(0,30).view(-1, 1)
         labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     elif type(dataset).__name__ == "SROIE":
         labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
-        X = torch.arange(0, 4).view(-1, 1)
+        X = torch.arange(0, 5).view(-1, 1)
     labels = torch.tensor(labels).reshape(-1, 1)
 
     enc = OneHotEncoder(sparse=False)
