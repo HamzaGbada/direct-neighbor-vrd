@@ -6,6 +6,7 @@ from torch import nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.metrics import f1_score
 from torchvision import transforms
 from PIL import Image
 from sklearn.metrics import classification_report
@@ -17,6 +18,17 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
+
+def compute_f1_score(label, pred):
+    threshold = 0.5
+    predicted_labels = (pred > threshold).float()
+
+    # Convert tensors to numpy arrays for compatibility with scikit-learn
+    predicted_labels = predicted_labels.cpu().numpy()
+    true_labels = label.cpu().numpy()
+
+    # Compute the F1 score
+    return f1_score(true_labels, predicted_labels, average='micro')
 
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
