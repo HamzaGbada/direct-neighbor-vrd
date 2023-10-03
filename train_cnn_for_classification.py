@@ -81,8 +81,8 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         avg_accuracy_loss = total_accuracy / len(train_dataloader)
 
         train_losses.append(avg_train_loss)
-        train_f1.append(avg_f1_score_train.cpu())
-        train_accuracy.append(avg_accuracy_loss.cpu())
+        train_f1.append(avg_f1_score_train)
+        train_accuracy.append(avg_accuracy_loss)
 
         # Validation loss calculation
         model.eval()
