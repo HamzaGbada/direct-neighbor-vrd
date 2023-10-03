@@ -290,15 +290,20 @@ class TestDataLoader(unittest.TestCase):
 
             for image_index in range(data_size):
                 logger.debug(f"image {image_index + 1} | {data_size} processing")
-                inputs, labels = torch.rand(1, 3, random.randint(70,100), random.randint(70,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
+                inputs, labels = torch.rand(1, 1, random.randint(70,100), random.randint(70,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
                 logger.debug(f"input shape {inputs.shape}")
                 logger.debug(f"labels shape {labels.shape}")
                 optimizer.zero_grad()
 
                 outputs = model(inputs)
                 labels = torch.from_numpy(enc.transform(labels.cpu())).to(device="cuda")
-
+                logger.debug("labels.view(-1)")
+                logger.debug(labels.view(-1))
+                logger.debug("outputs.view(-1)")
+                logger.debug(outputs.view(-1))
                 f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
+                logger.debug("f1_score_train")
+                logger.debug(f1_score_train)
                 loss = loss_fn(outputs, labels)
                 loss.backward()
                 optimizer.step()

@@ -87,7 +87,7 @@ class EfficientNetV2MultiClass(nn.Module):
 
         # Modify the classifier head for your specific number of classes
         # self.pretrained_unet.classifier[4] = nn.Conv2d(128, num_classes, kernel_size=(1, 1))
-
+        self.softmax = nn.Softmax()
     def forward(self, x, device = "cuda"):
         # Forward pass through the pretrained U-Net model
         self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(self.num_classes, device=device)
@@ -95,4 +95,4 @@ class EfficientNetV2MultiClass(nn.Module):
         output = self.pretrained_eff_v2(x)
         # logger.debug(f"x shape after {output.shape}")
 
-        return output
+        return self.softmax(output)
