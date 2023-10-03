@@ -200,7 +200,7 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
     #     logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
 
     model, all_labels, all_predictions, train_losses, val_losses, train_f1, val_f1 = train_and_evaluate(model, train_dataloader,
-                                                                                      val_dataloader, 5, loss_fn,
+                                                                                      val_dataloader, num_classes, loss_fn,
                                                                                       optimizer, device, num_epochs)
     # report = classification_report(all_labels, all_predictions,
     #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
@@ -223,5 +223,5 @@ if __name__ == '__main__':
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_epochs=10, num_classes=30)
+    model = main(train_dataloader, test_dataloader, num_epochs=20, num_classes=30)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
