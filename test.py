@@ -18,7 +18,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image, get_area
-from train_cnn_for_classification import image_dataloader
+from train_cnn_for_classification import image_dataloader, compute_f1_score, compute_accuracy
 
 
 class TestDataLoader(unittest.TestCase):
@@ -301,7 +301,8 @@ class TestDataLoader(unittest.TestCase):
                 logger.debug(labels.view(-1))
                 logger.debug("outputs.view(-1)")
                 logger.debug(outputs.view(-1))
-                f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
+                f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
+                accuracy = compute_accuracy(labels.view(-1), outputs.view(-1))
                 logger.debug("f1_score_train")
                 logger.debug(f1_score_train)
                 loss = loss_fn(outputs, labels)
