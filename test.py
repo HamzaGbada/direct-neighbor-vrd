@@ -303,8 +303,9 @@ class TestDataLoader(unittest.TestCase):
                 logger.debug(outputs.view(-1))
                 f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
                 accuracy = compute_accuracy(labels.view(-1), outputs.view(-1))
-                logger.debug("f1_score_train")
-                logger.debug(f1_score_train)
+                logger.debug(f"f1_score_train {f1_score_train}")
+                logger.debug(f"accuracy{accuracy}")
+
                 loss = loss_fn(outputs, labels)
                 loss.backward()
                 optimizer.step()
@@ -314,7 +315,7 @@ class TestDataLoader(unittest.TestCase):
             avg_f1_score_train = total_f1_score / data_size
             avg_train_loss = total_train_loss / data_size
             train_losses.append(avg_train_loss)
-            train_f1.append(avg_f1_score_train.cpu())
+            train_f1.append(avg_f1_score_train)
 
 
 
