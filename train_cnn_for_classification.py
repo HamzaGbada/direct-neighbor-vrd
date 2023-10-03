@@ -30,6 +30,18 @@ def compute_f1_score(label, pred):
     # Compute the F1 score
     return f1_score(true_labels, predicted_labels, average='micro')
 
+def compute_accuracy(label, pred):
+
+    # Convert predicted probabilities to class labels by selecting the class with the highest probability
+    predicted_labels = torch.argmax(pred)
+
+    # Compute accuracy by comparing the predicted labels to the true labels
+    correct_predictions = (predicted_labels == label).float()
+
+    # Calculate the overall accuracy
+    return correct_predictions.sum() / len(label)
+
+
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
     train_losses = []  # To store training loss for each epoch
@@ -51,11 +63,9 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             optimizer.zero_grad()
 
             outputs = model(inputs)
-            logger.debug("labels.view(-1)")
-            logger.debug(labels.view(-1))
-            logger.debug("outputs.view(-1)")
-            logger.debug(outputs.view(-1))
-            f1_score_train = multiclass_f1_score(labels.view(-1), outputs.view(-1), num_classes=num_classes)
+
+            f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
+            f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
             loss = loss_fn(outputs, labels)
             loss.backward()
             optimizer.step()
