@@ -110,7 +110,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
         val_losses.append(avg_val_loss)
         val_f1.append(avg_f1_score_val)
-        val_accuracy.append(avg_accuracy_loss)
+        val_accuracy.append(avg_accuracy_loss.cpu())
 
         # Print and plot the losses
         logger.debug(
