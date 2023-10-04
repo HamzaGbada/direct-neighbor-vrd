@@ -1,23 +1,24 @@
 import os
+import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from torch import nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.metrics import f1_score
-from torchvision import transforms
 from PIL import Image
-from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt
-from torcheval.metrics.functional import multiclass_f1_score
+from sklearn.metrics import f1_score
+from sklearn.preprocessing import OneHotEncoder
+from torch import nn
+from torch.utils.data import DataLoader
+from torchvision import transforms
 
-from src.cnn_embedding.unet_embedding import UNet, EfficientNetV2MultiClass
-from src.dataloader.SROIE_dataloader import SROIE
+from src.cnn_embedding.unet_embedding import EfficientNetV2MultiClass
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
+
+warnings.filterwarnings("ignore")
+
 
 def compute_f1_score(label, pred):
     threshold = 0.5
@@ -30,8 +31,8 @@ def compute_f1_score(label, pred):
     # Compute the F1 score
     return f1_score(true_labels, predicted_labels, average='micro')
 
-def compute_accuracy(label, pred):
 
+def compute_accuracy(label, pred):
     # Convert predicted probabilities to class labels by selecting the class with the highest probability
     predicted_labels = torch.argmax(pred)
 
@@ -40,7 +41,6 @@ def compute_accuracy(label, pred):
 
     # Calculate the overall accuracy (we did not divde by len(label) because we will do it later
     return correct_predictions.sum()
-
 
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
@@ -54,7 +54,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
     all_predictions = []
     model.eval()
     for epoch in range(num_epochs):
-        logger.debug(f"the epoch is {epoch+1}/{num_epochs}")
+        logger.debug(f"the epoch is {epoch + 1}/{num_epochs}")
         model.train()
         total_train_loss = 0
         total_f1_score = 0
@@ -122,13 +122,13 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
 def plots(epochs, train_losses, val_losses, type='Loss'):
     plt.figure(figsize=(10, 5))
-    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train '+type)
-    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation '+type)
+    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train ' + type)
+    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation ' + type)
     plt.xlabel('Epochs')
     plt.ylabel(type)
     plt.legend()
-    plt.title('Training and Validation '+ type)
-    plt.savefig(type+'_plot.png')
+    plt.title('Training and Validation ' + type)
+    plt.savefig(type + '_plot.png')
     plt.show()
 
 
@@ -210,7 +210,7 @@ def image_dataloader(dataset, batch_size=1):
                        'menu.itemsubtotal': 28,
                        'menu.sub_price': 29
                        }
-        X = torch.arange(0,30).view(-1, 1)
+        X = torch.arange(0, 30).view(-1, 1)
         labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
     elif type(dataset).__name__ == "SROIE":
         labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
@@ -237,8 +237,10 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
     #     logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
 
     model, train_losses, val_losses, train_f1, val_f1, train_acc, val_acc = train_and_evaluate(model, train_dataloader,
-                                                                                      val_dataloader, num_classes, loss_fn,
-                                                                                      optimizer, device, num_epochs)
+                                                                                               val_dataloader,
+                                                                                               num_classes, loss_fn,
+                                                                                               optimizer, device,
+                                                                                               num_epochs)
     # report = classification_report(all_labels, all_predictions,
     #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
     # logger.debug(f"classification report {report}")
