@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.optim as optim
+from tqdm import tqdm
 from PIL import Image
 from sklearn.metrics import f1_score
 from sklearn.preprocessing import OneHotEncoder
@@ -60,7 +61,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         total_f1_score = 0
         total_accuracy = 0
 
-        for inputs, labels in train_dataloader:
+        for inputs, labels in tqdm(train_dataloader):
             inputs, labels = inputs.to(device), labels.to(device)
             # inputs = inputs.unsqueeze(0)
             optimizer.zero_grad()
@@ -90,9 +91,9 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         total_val_loss = 0
         total_f1_score_val = 0
         total_accuracy_val = 0
-
+        logger.debug(f"The validation for the epoch is {epoch + 1} start")
         with torch.no_grad():
-            for val_inputs, val_labels in val_dataloader:
+            for val_inputs, val_labels in tqdm(val_dataloader):
                 val_inputs, val_labels = val_inputs.to(device), val_labels.to(device)
 
                 val_outputs = model(val_inputs)
