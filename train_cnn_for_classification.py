@@ -51,8 +51,6 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
     train_accuracy = []  # To store validation loss for each epoch
     val_f1 = []  # To store validation loss for each epoch
     val_accuracy = []  # To store validation loss for each epoch
-    all_labels = []
-    all_predictions = []
     model.eval()
     for epoch in range(num_epochs):
         logger.debug(f"the epoch is {epoch + 1}/{num_epochs}")
@@ -84,7 +82,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
         train_losses.append(avg_train_loss)
         train_f1.append(avg_f1_score_train)
-        train_accuracy.append(avg_accuracy_loss)
+        train_accuracy.append(avg_accuracy_loss.cpu())
 
         # Validation loss calculation
         model.eval()
