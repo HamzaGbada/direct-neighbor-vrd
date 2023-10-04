@@ -1,12 +1,12 @@
-# TODO develop UNET for classification
-#   Remove the last layer for embedding (Same for VGG)
-#   https://saturncloud.io/blog/how-to-remove-the-last-fc-layer-from-a-resnet-model-in-pytorch/
-import torch
+import warnings
+
 from torch import nn
 from torchvision import ops
 from torchvision.models import efficientnet_v2_l
 
 from src.utils.setup_logger import logger
+
+warnings.filterwarnings("ignore")
 
 
 class UNet(nn.Module):
@@ -75,20 +75,21 @@ class EfficientNetV2MultiClass(nn.Module):
         self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(1,
-                                     out_channels = 32,
-                                     kernel_size = (2,2),
-                                     stride = (2,2),
-                                     padding = (1,1),
+                                     out_channels=32,
+                                     kernel_size=(2, 2),
+                                     stride=(2, 2),
+                                     padding=(1, 1),
                                      bias=False,
                                      # norm_layer = nn.BatchNorm2d,
-                                     activation_layer = nn.SiLU
+                                     activation_layer=nn.SiLU
                                      )
         )
 
         # Modify the classifier head for your specific number of classes
         # self.pretrained_unet.classifier[4] = nn.Conv2d(128, num_classes, kernel_size=(1, 1))
         self.softmax = nn.Softmax()
-    def forward(self, x, device = "cuda"):
+
+    def forward(self, x, device="cuda"):
         # Forward pass through the pretrained U-Net model
         self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(self.num_classes, device=device)
         # logger.debug(f"x shape before {x.shape}")
