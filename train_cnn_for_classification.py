@@ -41,7 +41,7 @@ def compute_accuracy(label, pred):
     correct_predictions = (predicted_labels == label).float()
 
     # Calculate the overall accuracy (we did not divde by len(label) because we will do it later
-    return correct_predictions.sum() / len(label)
+    return (correct_predictions.sum() / len(label))
 
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
