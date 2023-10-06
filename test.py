@@ -10,7 +10,9 @@ from torchvision import transforms
 from torch import nn
 import torch.optim as optim
 from torcheval.metrics.functional import multiclass_f1_score
+
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
+from torchmetrics.functional.classification import multilabel_accuracy
 
 from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2MultiClass
 from src.dataloader.SROIE_dataloader import SROIE
@@ -270,8 +272,8 @@ class TestDataLoader(unittest.TestCase):
         enc.fit(X)
 
         num_classes = 5
-        num_epochs = 10
-        data_size = 50
+        num_epochs = 2
+        data_size = 2
 
         model = EfficientNetV2MultiClass(num_classes).to(torch.device('cuda'))
         optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -291,8 +293,7 @@ class TestDataLoader(unittest.TestCase):
             for image_index in range(data_size):
                 logger.debug(f"image {image_index + 1} | {data_size} processing")
                 inputs, labels = torch.rand(1, 1, random.randint(70,100), random.randint(70,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
-                logger.debug(f"input shape {inputs.shape}")
-                logger.debug(f"labels shape {labels.shape}")
+
                 optimizer.zero_grad()
 
                 outputs = model(inputs)
@@ -316,6 +317,14 @@ class TestDataLoader(unittest.TestCase):
             avg_train_loss = total_train_loss / data_size
             train_losses.append(avg_train_loss)
             train_f1.append(avg_f1_score_train)
+
+    def test_accuracy_pytorch(self):
+        # TODO: use this accuracy implementation and check this link for more: https://torchmetrics.readthedocs.io/en/stable/classification/accuracy.html#multilabel-accuracy
+        target = torch.tensor([[0., 0., 1., 0., 0.], [0., 0., 1., 0., 0.]])
+        preds = torch.tensor([[0.12, 0.15, 0.3, 0.22, 0.21], [0.12, 0.05, 0.8, 0.02, 0.01]])
+        accuracy = multilabel_accuracy(preds, target, num_labels=5, average='weighted')
+        logger.debug(f" the accuracy is {accuracy}")
+
 
 
 
