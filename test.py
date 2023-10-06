@@ -322,8 +322,10 @@ class TestDataLoader(unittest.TestCase):
         # TODO: use this accuracy implementation and check this link for more: https://torchmetrics.readthedocs.io/en/stable/classification/accuracy.html#multilabel-accuracy
         target = torch.tensor([[0., 0., 1., 0., 0.], [0., 0., 1., 0., 0.]])
         preds = torch.tensor([[0.12, 0.15, 0.3, 0.22, 0.21], [0.12, 0.05, 0.8, 0.02, 0.01]])
-        accuracy = multilabel_accuracy(preds, target, num_labels=5, average='weighted')
+        accuracy = multilabel_accuracy(preds, target, num_labels=5, average='macro')
+        accuracy1 = compute_accuracy(target, preds)
         logger.debug(f" the accuracy is {accuracy}")
+        logger.debug(f" the accuracy is {accuracy1}")
 
 
 
