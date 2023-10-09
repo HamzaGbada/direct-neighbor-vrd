@@ -68,11 +68,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             outputs = model(inputs)
 
             f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
-            logger.debug(f"labels.view(-1) {labels.view(-1)}")
-            logger.debug(f"outputs.view(-1) {outputs.view(-1)}")
-            logger.debug(f"labels.view(-1).shape {labels.view(-1).shape}")
-            logger.debug(f"outputs.view(-1).shape {outputs.view(-1).shape}")
-            accuracy_train = multilabel_accuracy(outputs.view(-1), labels.view(-1), num_labels=num_classes, average='macro')
+            accuracy_train = multilabel_accuracy(outputs, labels, num_labels=num_classes, average='macro')
             loss = loss_fn(outputs, labels)
 
             loss.backward()
