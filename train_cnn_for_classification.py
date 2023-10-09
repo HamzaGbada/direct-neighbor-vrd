@@ -12,6 +12,7 @@ from sklearn.preprocessing import OneHotEncoder
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
+from torchmetrics.functional.classification import multilabel_accuracy
 
 from src.cnn_embedding.unet_embedding import EfficientNetV2MultiClass
 from src.dataloader.cord_dataloader import CORD
@@ -67,7 +68,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             outputs = model(inputs)
 
             f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
-            accuracy_train = compute_accuracy(labels.view(-1), outputs.view(-1))
+            accuracy_train = multilabel_accuracy(outputs.view(-1), labels.view(-1), num_labels=num_classes, average='macro')
             loss = loss_fn(outputs, labels)
 
             loss.backward()
@@ -97,7 +98,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
                 val_outputs = model(val_inputs)
 
                 f1_score_val = compute_f1_score(val_labels.view(-1), val_outputs.view(-1))
-                accuracy_val = compute_accuracy(val_labels.view(-1), val_outputs.view(-1))
+                accuracy_val = multilabel_accuracy(val_outputs.view(-1), val_labels.view(-1), num_labels=num_classes, average='macro')
                 val_loss = loss_fn(val_outputs, val_labels)
 
                 total_val_loss += val_loss.item()
