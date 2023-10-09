@@ -98,7 +98,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
                 val_outputs = model(val_inputs)
 
                 f1_score_val = compute_f1_score(val_labels.view(-1), val_outputs.view(-1))
-                accuracy_val = multilabel_accuracy(val_outputs.view(-1), val_labels.view(-1), num_labels=num_classes, average='macro')
+                accuracy_val = multilabel_accuracy(val_outputs, val_labels, num_labels=num_classes, average='macro')
                 val_loss = loss_fn(val_outputs, val_labels)
 
                 total_val_loss += val_loss.item()
