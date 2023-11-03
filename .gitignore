@@ -4,3 +4,7 @@ venv/
 /file.log
 /downloader.py
 /video_urls.txt
+/Accuracy_plot.png
+/F1 score_plot.png
+/Loss_plot.png
+/Unet_classification*

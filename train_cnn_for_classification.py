@@ -258,8 +258,8 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
 
 if __name__ == '__main__':
     # TODO: Add f1 score, Precesion, Recall metrics and maximise epochs
-    dataset_train = CORD(train=True)
-    dataset_test = CORD(train=False)
+    dataset_train = CORD(train=True, download=True)
+    dataset_test = CORD(train=False, download=True)
     train_dataloader = image_dataloader(dataset_train)
     test_dataloader = image_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
