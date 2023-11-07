@@ -132,9 +132,8 @@ def evaluate(model, dataloader, device):
             all_labels.extend(labels)
             all_predictions.extend(predictions)
 
-    report = classification_report(all_labels, all_predictions,
-                                   target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
-    return report
+    # report = classification_report(all_labels, all_predictions,
+    #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
 
 
 def word_embedding_dataloader(dataset, max_len=128, batch_size=16):

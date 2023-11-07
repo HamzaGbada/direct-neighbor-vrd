@@ -138,7 +138,6 @@ def train(model, dataloader, loss_fn, optimizer, device):
 
         total_loss += loss.item()
 
-    return total_loss / len(dataloader)
 
 
 def evaluate(model, dataloader, device):
