@@ -10,7 +10,9 @@ class BertForSentenceClassification(nn.Module):
 
         self.bert = BertForSequenceClassification.from_pretrained(pretrained_model_name, num_labels=num_classes)
 
+        self.softmax = nn.Softmax()
+
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         logits = outputs.logits
-        return logits
+        return self.softmax(logits)
