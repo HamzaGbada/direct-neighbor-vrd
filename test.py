@@ -331,6 +331,13 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f" the accuracy is {accuracy}")
         logger.debug(f" the accuracy is {accuracy1}")
 
+    def test_pretrained_model(self):
+        model = torch.load("Unet_classification.pth")
+        inputs = torch.rand(3, 63, 45).to(device="cuda")
+        output = model(inputs)
+        logger.debug(f"output shape{output.shape}")
+        logger.debug(f"output shape{output}")
+
 
 
 

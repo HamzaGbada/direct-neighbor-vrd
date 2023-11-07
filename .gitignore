@@ -8,3 +8,4 @@ venv/
 /F1 score_plot.png
 /Loss_plot.png
 /Unet_classification*
+/downloaded_videos.zip
