@@ -41,7 +41,7 @@ def plot_cropped_image(image, box, title):
     plt.show()
 
 
-def plots(epochs, train_losses, val_losses, type='Loss'):
+def plots(epochs, train_losses, val_losses, type='Loss', name = "CORD"):
     plt.figure(figsize=(10, 5))
     plt.plot(np.arange(1, epochs + 1), train_losses, label='Train ' + type)
     plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation ' + type)
@@ -49,5 +49,5 @@ def plots(epochs, train_losses, val_losses, type='Loss'):
     plt.ylabel(type)
     plt.legend()
     plt.title('Training and Validation ' + type)
-    plt.savefig(type + '_plot.png')
+    plt.savefig(name+"_"+type + '_plot.png')
     plt.show()
