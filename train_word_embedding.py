@@ -2,13 +2,93 @@ import numpy as np
 import torch
 from sklearn.metrics import classification_report
 from torch import nn
+from torchmetrics.functional.classification import multilabel_accuracy
 from transformers import BertTokenizer, AdamW
+from tqdm import tqdm
 
 from src.dataloader.cord_dataloader import CORD
 from src.utils.setup_logger import logger
 from src.dataloader.sentence_classification_dataloader import create_dataloader
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
+from train_cnn_for_classification import compute_f1_score
 
+
+def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
+    train_losses = []  # To store training loss for each epoch
+    val_losses = []  # To store validation loss for each epoch
+    train_f1 = []  # To store validation loss for each epoch
+    train_accuracy = []  # To store validation loss for each epoch
+    val_f1 = []  # To store validation loss for each epoch
+    val_accuracy = []  # To store validation loss for each epoch
+    model.eval()
+    for epoch in range(num_epochs):
+        logger.debug(f"the epoch is {epoch + 1}/{num_epochs}")
+        model.train()
+        total_train_loss = 0
+        total_f1_score = 0
+        total_accuracy = 0
+
+        for batch in tqdm(train_dataloader):
+            input_ids = batch['input_ids'].to(device)
+            attention_mask = batch['attention_mask'].to(device)
+            labels = batch['label'].to(device)
+
+            optimizer.zero_grad()
+            outputs = model(input_ids, attention_mask)
+
+            f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
+            accuracy_train = multilabel_accuracy(outputs, labels, num_labels=num_classes, average='macro')
+            loss = loss_fn(outputs, labels)
+
+            loss.backward()
+            optimizer.step()
+            total_f1_score += f1_score_train
+            total_train_loss += loss.item()
+            total_accuracy += accuracy_train
+
+        avg_f1_score_train = total_f1_score / len(train_dataloader)
+        avg_train_loss = total_train_loss / len(train_dataloader)
+        avg_accuracy_loss = total_accuracy / len(train_dataloader)
+
+        train_losses.append(avg_train_loss)
+        train_f1.append(avg_f1_score_train)
+        train_accuracy.append(avg_accuracy_loss.cpu())
+
+        # Validation loss calculation
+        model.eval()
+        total_val_loss = 0
+        total_f1_score_val = 0
+        total_accuracy_val = 0
+        logger.debug(f"The validation for the epoch is {epoch + 1} start")
+        with torch.no_grad():
+            for batch in tqdm(test_dataloader):
+                val_input_ids = batch['input_ids'].to(device)
+                val_attention_mask = batch['attention_mask'].to(device)
+                val_labels = batch['label'].to(device)
+
+                val_outputs = model(val_input_ids, val_attention_mask)
+
+                f1_score_val = compute_f1_score(val_labels.view(-1), val_outputs.view(-1))
+                accuracy_val = multilabel_accuracy(val_outputs, val_labels, num_labels=num_classes, average='macro')
+                val_loss = loss_fn(val_outputs, val_labels)
+
+                total_val_loss += val_loss.item()
+                total_f1_score_val += f1_score_val
+                total_accuracy_val += accuracy_val
+
+        avg_f1_score_val = total_f1_score_val / len(val_dataloader)
+        avg_val_loss = total_val_loss / len(val_dataloader)
+        avg_accuracy_loss = total_accuracy_val / len(val_dataloader)
+
+        val_losses.append(avg_val_loss)
+        val_f1.append(avg_f1_score_val)
+        val_accuracy.append(avg_accuracy_loss.cpu())
+
+        # Print and plot the losses
+        logger.debug(
+            f'Epoch [{epoch + 1}/{num_epochs}] - Train Loss: {avg_train_loss:.4f} - Train F1 score: {avg_f1_score_train:.4f} - Train accuracy: {avg_accuracy_loss:.4f} - Validation Loss: {avg_val_loss:.4f} - Validation F1 score: {avg_f1_score_val:.4f} - Validation accuracy: {avg_accuracy_loss:.4f}')
+
+    return model, train_losses, val_losses, train_f1, val_f1, train_accuracy, val_accuracy
 
 def train(model, dataloader, loss_fn, optimizer, device):
     model.train()
@@ -63,16 +143,19 @@ def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
     return dataloader
 
 
-def main(train_dataloader, num_classes=5, num_epochs = 10, device = torch.device('cpu')):
+def main(train_dataloader, val_dataloader,num_classes=5, num_epochs = 10, device = torch.device('cpu')):
     model = BertForSentenceClassification(num_classes)
     optimizer = AdamW(model.parameters(), lr=2e-5)
     loss_fn = nn.CrossEntropyLoss()
 
     model.to(device)
 
-    for epoch in range(num_epochs):
-        train_loss = train(model, train_dataloader, loss_fn, optimizer, device)
-        logger.debug(f'Epoch [{epoch + 1}/{num_epochs}], Train Loss: {train_loss:.4f}')
+
+    model, train_losses, val_losses, train_f1, val_f1, train_acc, val_acc = train_and_evaluate(model, train_dataloader,
+                                                                                               val_dataloader,
+                                                                                               num_classes, loss_fn,
+                                                                                               optimizer, device,
+                                                                                               num_epochs)
 
     logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
     return model
