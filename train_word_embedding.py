@@ -6,10 +6,11 @@ from torchmetrics.functional.classification import multilabel_accuracy
 from transformers import BertTokenizer, AdamW
 from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
+from torch.utils.data import DataLoader, Dataset
 
 from src.dataloader.cord_dataloader import CORD
 from src.utils.setup_logger import logger
-from src.dataloader.sentence_classification_dataloader import create_dataloader
+from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
 from train_cnn_for_classification import compute_f1_score
 
@@ -28,8 +29,9 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         total_train_loss = 0
         total_f1_score = 0
         total_accuracy = 0
-
-        for batch in tqdm(train_dataloader):
+        # logger.debug(f"THEEEEEE BATCH 11 {train_dataloader}")
+        # logger.debug(f"THEEEEEE BATCH 000 {train_dataloader.__iter__()}")
+        for batch in train_dataloader:
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['label'].to(device)
@@ -39,6 +41,8 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
 
             f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
             accuracy_train = multilabel_accuracy(outputs, labels, num_labels=num_classes, average='macro')
+            logger.debug(f"type(outputs) {outputs}")
+            logger.debug(f"type(labels) {labels}")
             loss = loss_fn(outputs, labels)
 
             loss.backward()
@@ -180,8 +184,8 @@ def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
     enc.fit(X)
     labels = torch.from_numpy(enc.transform(labels))
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
-    dataloader = create_dataloader(sentences, labels, tokenizer, max_len, batch_size)
+    dataset = SentenceDataset(sentences, labels, tokenizer, max_len)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
 

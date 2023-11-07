@@ -1,5 +1,5 @@
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 
 
 class SentenceDataset(Dataset):
@@ -14,7 +14,7 @@ class SentenceDataset(Dataset):
 
     def __getitem__(self, idx):
         sentence = str(self.sentences[idx])
-        label = int(self.labels[idx])
+        label = self.labels[idx]
 
         encoding = self.tokenizer.encode_plus(
             sentence,
@@ -31,9 +31,3 @@ class SentenceDataset(Dataset):
             'label': torch.tensor(label, dtype=torch.long)
         }
 
-
-# Step 2: Create Dataloader
-def create_dataloader(sentences, labels, tokenizer, max_len, batch_size):
-    dataset = SentenceDataset(sentences, labels, tokenizer, max_len)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
-    return dataloader
