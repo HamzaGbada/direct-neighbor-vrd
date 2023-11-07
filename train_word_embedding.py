@@ -13,6 +13,7 @@ from src.utils.setup_logger import logger
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
 from train_cnn_for_classification import compute_f1_score
+from src.utils.utils import plots
 
 
 def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, loss_fn, optimizer, device, num_epochs):
@@ -31,7 +32,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
         total_accuracy = 0
         # logger.debug(f"THEEEEEE BATCH 11 {train_dataloader}")
         # logger.debug(f"THEEEEEE BATCH 000 {train_dataloader.__iter__()}")
-        for batch in train_dataloader:
+        for batch in tqdm(train_dataloader):
             input_ids = batch['input_ids'].to(device)
             attention_mask = batch['attention_mask'].to(device)
             labels = batch['label'].to(device)
@@ -202,6 +203,13 @@ def main(train_dataloader, val_dataloader,num_classes=5, num_epochs = 10, device
                                                                                                num_epochs)
 
     logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
+    plots(num_epochs, train_losses, val_losses, "Loss")
+    plots(num_epochs, train_f1, val_f1, "F1 score")
+    plots(num_epochs, train_acc, val_acc, "Accuracy")
+    model_path = 'word_classification.pth'
+
+    # Save the model to a file
+    torch.save(model.state_dict(), model_path)
     return model
 
 

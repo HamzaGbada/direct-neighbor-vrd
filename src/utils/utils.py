@@ -1,5 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import pyplot as plt
 
 
 # Define functions to convert bounding box formats
@@ -36,4 +38,16 @@ def plot_cropped_image(image, box, title):
     plt.title(title)
     plt.axis('off')
     plt.savefig(title+'.png')
+    plt.show()
+
+
+def plots(epochs, train_losses, val_losses, type='Loss'):
+    plt.figure(figsize=(10, 5))
+    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train ' + type)
+    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation ' + type)
+    plt.xlabel('Epochs')
+    plt.ylabel(type)
+    plt.legend()
+    plt.title('Training and Validation ' + type)
+    plt.savefig(type + '_plot.png')
     plt.show()

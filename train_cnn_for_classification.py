@@ -1,7 +1,6 @@
 import os
 import warnings
 
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torch.optim as optim
@@ -18,6 +17,7 @@ from src.cnn_embedding.unet_embedding import EfficientNetV2MultiClass
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
+from src.utils.utils import plots
 
 warnings.filterwarnings("ignore")
 
@@ -118,18 +118,6 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, num_classes, los
             f'Epoch [{epoch + 1}/{num_epochs}] - Train Loss: {avg_train_loss:.4f} - Train F1 score: {avg_f1_score_train:.4f} - Train accuracy: {avg_accuracy_loss:.4f} - Validation Loss: {avg_val_loss:.4f} - Validation F1 score: {avg_f1_score_val:.4f} - Validation accuracy: {avg_accuracy_loss:.4f}')
 
     return model, train_losses, val_losses, train_f1, val_f1, train_accuracy, val_accuracy
-
-
-def plots(epochs, train_losses, val_losses, type='Loss'):
-    plt.figure(figsize=(10, 5))
-    plt.plot(np.arange(1, epochs + 1), train_losses, label='Train ' + type)
-    plt.plot(np.arange(1, epochs + 1), val_losses, label='Validation ' + type)
-    plt.xlabel('Epochs')
-    plt.ylabel(type)
-    plt.legend()
-    plt.title('Training and Validation ' + type)
-    plt.savefig(type + '_plot.png')
-    plt.show()
 
 
 def train(model, dataloader, loss_fn, optimizer, device):
