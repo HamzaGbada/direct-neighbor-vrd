@@ -165,6 +165,7 @@ def image_dataloader(dataset, batch_size=1):
     cropped_images = [
         convert_tensor(Image.open(os.path.join(dataset.root, dataset.data[doc_index][0])).convert('L').crop(bbox)) for
         doc_index in range(len(dataset)) for bbox in dataset.data[doc_index][1]['boxes']]
+    name = "WILDRECEIPT"
     if type(dataset).__name__ == "CORD":
         encoded_dic = {'menu.sub_cnt': 0,
                        'sub_total.othersvc_price': 1,
@@ -199,15 +200,17 @@ def image_dataloader(dataset, batch_size=1):
                        }
         X = torch.arange(0, 30).view(-1, 1)
         labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+        name = "CORD"
     elif type(dataset).__name__ == "SROIE":
         labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
         X = torch.arange(0, 5).view(-1, 1)
+        name = "SROIE"
     labels = torch.tensor(labels).reshape(-1, 1)
 
     enc = OneHotEncoder(sparse=False)
     enc.fit(X)
     labels = torch.from_numpy(enc.transform(labels))
-    image_dataset = ImageDataset(cropped_images, labels)
+    image_dataset = ImageDataset(cropped_images, labels, name)
     dataloader = DataLoader(image_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     return dataloader
 
@@ -232,10 +235,11 @@ def main(train_dataloader, val_dataloader, num_classes=5, num_epochs=10, device=
     #                                target_names=["0", "1", "3", "4", "5"])  # Replace with your class names
     # logger.debug(f"classification report {report}")
     # logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
-    plots(num_epochs, train_losses, val_losses, "Loss")
-    plots(num_epochs, train_f1, val_f1, "F1 score")
-    plots(num_epochs, train_acc, val_acc, "Accuracy")
-    model_path = 'Unet_classification.pth'
+    name = train_dataloader.dataset.__str__()
+    plots(num_epochs, train_losses, val_losses, "Loss", name)
+    plots(num_epochs, train_f1, val_f1, "F1 score", name)
+    plots(num_epochs, train_acc, val_acc, "Accuracy", name)
+    model_path = name+'_image_classification.pth'
 
     # Save the model to a file
     torch.save(model.state_dict(), model_path)

@@ -204,7 +204,7 @@ def main(train_dataloader, val_dataloader,num_classes=5, num_epochs = 10, device
                                                                                                optimizer, device,
                                                                                                num_epochs)
 
-    logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
+    # logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
     name = train_dataloader.dataset.__str__()
     plots(num_epochs, train_losses, val_losses, "Loss", name)
     plots(num_epochs, train_f1, val_f1, "F1 score", name)
