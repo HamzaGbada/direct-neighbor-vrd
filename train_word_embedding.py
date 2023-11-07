@@ -219,5 +219,5 @@ if __name__ == '__main__':
     train_dataloader = word_embedding_dataloader(dataset_train)
     test_dataloader = word_embedding_dataloader(dataset_test)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_classes=30)
+    model = main(train_dataloader, test_dataloader, num_classes=30, device=device)
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
