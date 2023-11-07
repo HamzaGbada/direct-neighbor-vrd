@@ -185,7 +185,7 @@ def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
     enc.fit(X)
     labels = torch.from_numpy(enc.transform(labels))
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    dataset = SentenceDataset(sentences, labels, tokenizer, max_len)
+    dataset = SentenceDataset(sentences, labels, tokenizer, max_len, name)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     return dataloader
 
@@ -205,10 +205,11 @@ def main(train_dataloader, val_dataloader,num_classes=5, num_epochs = 10, device
                                                                                                num_epochs)
 
     logger.debug(f"Train evalution report{evaluate(model, train_dataloader, device)}")
-    plots(num_epochs, train_losses, val_losses, "Loss")
-    plots(num_epochs, train_f1, val_f1, "F1 score")
-    plots(num_epochs, train_acc, val_acc, "Accuracy")
-    model_path = 'word_classification.pth'
+    name = train_dataloader.dataset.__str__()
+    plots(num_epochs, train_losses, val_losses, "Loss", name)
+    plots(num_epochs, train_f1, val_f1, "F1 score", name)
+    plots(num_epochs, train_acc, val_acc, "Accuracy", name)
+    model_path = name+'_word_classification.pth'
 
     # Save the model to a file
     torch.save(model.state_dict(), model_path)
@@ -221,8 +222,6 @@ if __name__ == '__main__':
     train_dataloader = word_embedding_dataloader(dataset_train)
     test_dataloader = word_embedding_dataloader(dataset_test)
     # logger.debug(f"train dataset {train_dataloader.__str__()}")
-    logger.debug(f"train dataset {train_dataloader.dataset.__str__()}")
-    # logger.debug(f"train dataset {train_dataloader.__module__}")
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # model = main(train_dataloader, test_dataloader, num_classes=30, device=device)
-    # logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = main(train_dataloader, test_dataloader, num_classes=30, device=device)
+    logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
