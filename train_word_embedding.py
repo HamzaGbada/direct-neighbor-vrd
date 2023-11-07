@@ -182,7 +182,7 @@ def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
 
     enc = OneHotEncoder(sparse=False)
     enc.fit(X)
-    labels = torch.from_numpy(enc.transform(labels)).type(torch.DoubleTensor)
+    labels = torch.from_numpy(enc.transform(labels))
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     dataset = SentenceDataset(sentences, labels, tokenizer, max_len)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
