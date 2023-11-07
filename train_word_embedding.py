@@ -139,6 +139,7 @@ def evaluate(model, dataloader, device):
 def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
     sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
     # labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+    name = "WILDRECEIPT"
     if type(dataset).__name__ == "CORD":
         encoded_dic = {'menu.sub_cnt': 0,
                        'sub_total.othersvc_price': 1,
@@ -173,9 +174,11 @@ def word_embedding_dataloader(dataset, max_len=128, batch_size=16):
                        }
         X = torch.arange(0, 30).view(-1, 1)
         labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+        name = "CORD"
     elif type(dataset).__name__ == "SROIE":
         labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
         X = torch.arange(0, 5).view(-1, 1)
+        name = "SROIE"
     labels = torch.tensor(labels).reshape(-1, 1)
 
     enc = OneHotEncoder(sparse=False)
@@ -217,6 +220,9 @@ if __name__ == '__main__':
     dataset_test = CORD(train=False)
     train_dataloader = word_embedding_dataloader(dataset_train)
     test_dataloader = word_embedding_dataloader(dataset_test)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = main(train_dataloader, test_dataloader, num_classes=30, device=device)
-    logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
+    # logger.debug(f"train dataset {train_dataloader.__str__()}")
+    logger.debug(f"train dataset {train_dataloader.dataset.__str__()}")
+    # logger.debug(f"train dataset {train_dataloader.__module__}")
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # model = main(train_dataloader, test_dataloader, num_classes=30, device=device)
+    # logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")

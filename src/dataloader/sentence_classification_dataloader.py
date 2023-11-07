@@ -3,15 +3,18 @@ from torch.utils.data import Dataset
 
 
 class SentenceDataset(Dataset):
-    def __init__(self, sentences, labels, tokenizer, max_len):
+    def __init__(self, sentences, labels, tokenizer, max_len, name = "CORD"):
         self.sentences = sentences
         self.labels = labels
         self.tokenizer = tokenizer
         self.max_len = max_len
+        self.name = name
 
     def __len__(self):
         return len(self.sentences)
 
+    def __str__(self):
+        return self.name
     def __getitem__(self, idx):
         sentence = str(self.sentences[idx])
         label = self.labels[idx]
