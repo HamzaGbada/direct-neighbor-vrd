@@ -1,19 +1,18 @@
 import numpy as np
 import torch
-from sklearn.metrics import classification_report
-from torch import nn
-from torchmetrics.functional.classification import multilabel_accuracy
-from transformers import BertTokenizer, AdamW
-from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
-from torch.utils.data import DataLoader, Dataset
+from torch import nn
+from torch.utils.data import DataLoader
+from torchmetrics.functional.classification import multilabel_accuracy
+from tqdm import tqdm
+from transformers import BertTokenizer, AdamW
 
 from src.dataloader.cord_dataloader import CORD
-from src.utils.setup_logger import logger
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
+from src.utils.setup_logger import logger
+from src.utils.utils import plots
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
 from train_cnn_for_classification import compute_f1_score
-from src.utils.utils import plots
 
 
 def train_and_evaluate(

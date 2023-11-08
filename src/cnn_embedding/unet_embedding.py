@@ -2,7 +2,7 @@ import warnings
 
 from torch import nn
 from torchvision import ops
-from torchvision.models import efficientnet_v2_l
+from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
 
 from src.utils.setup_logger import logger
 
@@ -71,8 +71,12 @@ class EfficientNetV2MultiClass(nn.Module):
     def __init__(self, num_classes):
         super(EfficientNetV2MultiClass, self).__init__()
         self.num_classes = num_classes
-        # Load a pretrained U-Net model (e.g., ResNet-UNet)
-        self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
+        weights = EfficientNet_V2_L_Weights.DEFAULT
+        self.pretrained_eff_v2 = efficientnet_v2_l(weights=weights)
+
+        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(self.pretrained_eff_v2.classifier[1].weight[:self.num_classes])
+        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(self.pretrained_eff_v2.classifier[1].bias[:self.num_classes])
+
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(
                 1,
