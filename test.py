@@ -339,8 +339,18 @@ class TestDataLoader(unittest.TestCase):
 
 
         # x =
+        # model.to(device="cuda")
+        reshaping_layers = nn.Sequential(
+            nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
+            nn.Tanh()  # You can add activation functions as needed
+        )
+
+        # Transfer the model and reshaping layers to the GPU
         model.to(device="cuda")
+        reshaping_layers.to(device="cuda")
+
         model.eval()
+        # model.eval()
         # model = torch.load("Unet_classification.pth")
         # checkpoint = torch.load('Unet_classification.pth')
         # model = checkpoint['model']
@@ -348,8 +358,11 @@ class TestDataLoader(unittest.TestCase):
         # model.eval()
         inputs = torch.rand(1, 1, 63, 45).to(device="cuda")
         output = model(inputs)
-        logger.debug(f"output shape{output.shape}")
-        logger.debug(f"output shape{output}")
+
+        reshaped_output = reshaping_layers(output)
+
+        logger.debug(f"output shape{reshaped_output.shape}")
+        logger.debug(f"output shape{reshaped_output}")
 
 
 
