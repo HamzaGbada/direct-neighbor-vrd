@@ -36,13 +36,13 @@ class VGG(nn.Module):
         self.conv1 = nn.Sequential(
             nn.ReLU(True),
             nn.Conv2d(in_channels=64, out_channels=128, kernel_size=2, padding=1),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
             nn.ReLU(True),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
         self.conv3 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
@@ -50,7 +50,7 @@ class VGG(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
             nn.ReLU(True),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
         self.conv4 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
@@ -58,7 +58,7 @@ class VGG(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
             nn.ReLU(True),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
         self.conv5 = nn.Sequential(
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
@@ -66,7 +66,7 @@ class VGG(nn.Module):
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
             nn.ReLU(True),
             nn.Conv2d(in_channels=128, out_channels=128, kernel_size=2, padding=1),
-            nn.ReLU(True)
+            nn.ReLU(True),
         )
         self.max_pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
@@ -90,14 +90,18 @@ class VGG(nn.Module):
         #         print("len(images.shape)")
         #         print(len(images.shape))
         if len(images.shape) == 2:
-
             channels = 1  # single (grayscale)
 
         else:
-
             channels = images.shape[1]
 
-        images = nn.Conv2d(in_channels=channels, out_channels=64, kernel_size=2, padding=1, device=device)(images)
+        images = nn.Conv2d(
+            in_channels=channels,
+            out_channels=64,
+            kernel_size=2,
+            padding=1,
+            device=device,
+        )(images)
         images1 = self.conv1(images)
         images1 = self.conv2(images1)
         #         images1 = self.conv3(images1)
@@ -115,7 +119,11 @@ class VGG(nn.Module):
         images = self.flatten(images1)
         ### print("flatten.shape")
         ### print(images.shape)
-        images = nn.Linear(images1.shape[1] * images1.shape[2] * images1.shape[3], EBMBED_SIZE, device=device)(images)
+        images = nn.Linear(
+            images1.shape[1] * images1.shape[2] * images1.shape[3],
+            EBMBED_SIZE,
+            device=device,
+        )(images)
         ### print("lazy_linear.shape")
         ### print(images.shape)
         word_embed = torch.reshape(word_embed, (1, EBMBED_SIZE))

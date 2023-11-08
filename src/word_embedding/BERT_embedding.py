@@ -5,10 +5,12 @@ from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 
 
 class BertForSentenceClassification(nn.Module):
-    def __init__(self, num_classes, pretrained_model_name='bert-base-uncased'):
+    def __init__(self, num_classes, pretrained_model_name="bert-base-uncased"):
         super(BertForSentenceClassification, self).__init__()
 
-        self.bert = BertForSequenceClassification.from_pretrained(pretrained_model_name, num_labels=num_classes)
+        self.bert = BertForSequenceClassification.from_pretrained(
+            pretrained_model_name, num_labels=num_classes
+        )
 
         self.softmax = nn.Softmax()
 

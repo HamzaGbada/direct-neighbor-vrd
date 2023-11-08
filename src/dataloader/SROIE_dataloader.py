@@ -7,7 +7,7 @@ from doctr.datasets.datasets.pytorch import VisionDataset
 
 from src.utils.SROIE_utils import read_bbox_and_words, read_entities, assign_labels
 
-__all__ = ['SROIE']
+__all__ = ["SROIE"]
 
 from src.utils.setup_logger import logger
 from src.utils.utils import get_area
@@ -33,13 +33,12 @@ class SROIE(VisionDataset):
     """
 
     def __init__(
-            self,
-            train: bool = True,
-            img_transforms: Optional[Callable[[Any], Any]] = None,
-            sample_transforms: Optional[Callable[[Any, Any], Tuple[Any, Any]]] = None,
-            pre_transforms: Optional[Callable[[Any, Any], Tuple[Any, Any]]] = None,
+        self,
+        train: bool = True,
+        img_transforms: Optional[Callable[[Any], Any]] = None,
+        sample_transforms: Optional[Callable[[Any, Any], Tuple[Any, Any]]] = None,
+        pre_transforms: Optional[Callable[[Any, Any], Tuple[Any, Any]]] = None,
     ) -> None:
-
         self.train = train
         self.img_transforms = img_transforms
         self.sample_transforms = sample_transforms
@@ -47,9 +46,9 @@ class SROIE(VisionDataset):
 
         self.data: List[Tuple[str, Dict[str, Any]]] = []
 
-        if not os.path.isdir('data/SROIE_CSV/'):
-            train_path = 'data/SROIE2019/train/'
-            test_path = 'data/SROIE2019/test/'
+        if not os.path.isdir("data/SROIE_CSV/"):
+            train_path = "data/SROIE2019/train/"
+            test_path = "data/SROIE2019/test/"
 
             bbox_train_path = train_path + "box/"
             entities_train_path = train_path + "entities/"
@@ -68,7 +67,17 @@ class SROIE(VisionDataset):
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
                 # bbox_area =
-                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 1000].index
+                index_bbox = bbox_labeled[
+                    get_area(
+                        [
+                            bbox_labeled["x0"],
+                            bbox_labeled["y0"],
+                            bbox_labeled["x2"],
+                            bbox_labeled["y2"],
+                        ]
+                    )
+                    < 1000
+                ].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 if not os.path.isdir("data/SROIE_CSV/train/"):
                     os.makedirs("data/SROIE_CSV/train/")
@@ -85,7 +94,17 @@ class SROIE(VisionDataset):
                 bbox_labeled = assign_labels(bbox, entities)
                 # indexAge = bbox_labeled[bbox_labeled['label'] == 'O'].index
                 # bbox_labeled.drop(indexAge, inplace=True)
-                index_bbox = bbox_labeled[get_area([bbox_labeled['x0'], bbox_labeled['y0'], bbox_labeled['x2'], bbox_labeled['y2']]) < 1000].index
+                index_bbox = bbox_labeled[
+                    get_area(
+                        [
+                            bbox_labeled["x0"],
+                            bbox_labeled["y0"],
+                            bbox_labeled["x2"],
+                            bbox_labeled["y2"],
+                        ]
+                    )
+                    < 1000
+                ].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 logger.debug(f'the condition {os.path.isdir("data/SROIE_CSV/test/")}')
                 if not os.path.isdir("data/SROIE_CSV/test/"):
@@ -93,25 +112,20 @@ class SROIE(VisionDataset):
                 bbox_labeled.to_csv("data/SROIE_CSV/test/" + filename[:-4] + ".csv")
 
         if self.train:
-            path = 'data/SROIE_CSV/train/'
-            img_path = 'data/SROIE2019/train/img/'
+            path = "data/SROIE_CSV/train/"
+            img_path = "data/SROIE2019/train/img/"
         else:
-            path = 'data/SROIE_CSV/test/'
-            img_path = 'data/SROIE2019/test/img/'
+            path = "data/SROIE_CSV/test/"
+            img_path = "data/SROIE2019/test/img/"
         self.data_update = []
-        encoded_dic = {"TOTAL": 0,
-                       "DATE": 1,
-                       "ADDRESS": 2,
-                       "COMPANY": 3,
-                       "O": 4
-                       }
+        encoded_dic = {"TOTAL": 0, "DATE": 1, "ADDRESS": 2, "COMPANY": 3, "O": 4}
         for csv_file in os.listdir(path):
             bbox_and_label = {}
             df = pd.read_csv(path + csv_file)
             bbox_array = df[["x0", "y0", "x2", "y2"]].to_numpy()
-            bbox_and_label['boxes'] = bbox_array
-            bbox_and_label['labels'] = [encoded_dic[x] for x in df["label"]]
-            bbox_and_label['text_units'] = [x.lower() for x in df["line"]]
+            bbox_and_label["boxes"] = bbox_array
+            bbox_and_label["labels"] = [encoded_dic[x] for x in df["label"]]
+            bbox_and_label["text_units"] = [x.lower() for x in df["line"]]
             t_data = (csv_file[:-4] + ".jpg", bbox_and_label)
 
             self.data.append(t_data)

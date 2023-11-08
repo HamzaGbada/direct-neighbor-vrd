@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 
 
 class SentenceDataset(Dataset):
-    def __init__(self, sentences, labels, tokenizer, max_len, name = "CORD"):
+    def __init__(self, sentences, labels, tokenizer, max_len, name="CORD"):
         self.sentences = sentences
         self.labels = labels
         self.tokenizer = tokenizer
@@ -15,6 +15,7 @@ class SentenceDataset(Dataset):
 
     def __str__(self):
         return self.name
+
     def __getitem__(self, idx):
         sentence = str(self.sentences[idx])
         label = self.labels[idx]
@@ -23,14 +24,13 @@ class SentenceDataset(Dataset):
             sentence,
             add_special_tokens=True,
             max_length=self.max_len,
-            return_tensors='pt',
+            return_tensors="pt",
             pad_to_max_length=True,
-            truncation=True
+            truncation=True,
         )
 
         return {
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'label': torch.tensor(label, dtype=torch.float)
+            "input_ids": encoding["input_ids"].flatten(),
+            "attention_mask": encoding["attention_mask"].flatten(),
+            "label": torch.tensor(label, dtype=torch.float),
         }
-

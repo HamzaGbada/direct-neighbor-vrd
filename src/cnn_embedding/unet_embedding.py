@@ -19,7 +19,7 @@ class UNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=2, stride=2)
+            nn.MaxPool2d(kernel_size=2, stride=2),
         )
 
         # Decoder (expansive path)
@@ -59,10 +59,10 @@ class SimpleCNN(nn.Module):
         x = self.conv1(x)
         x = self.relu1(x)
         x = self.pool1(x)
-        logger.debug(f'size equal to {x.shape}')
+        logger.debug(f"size equal to {x.shape}")
         # TODO: the point here is to transform it to [1,5], check how critron is calculated
 
-        logger.debug(f'size equal to {x.shape}')
+        logger.debug(f"size equal to {x.shape}")
         x = self.fc1(x)
         return x
 
@@ -74,15 +74,16 @@ class EfficientNetV2MultiClass(nn.Module):
         # Load a pretrained U-Net model (e.g., ResNet-UNet)
         self.pretrained_eff_v2 = efficientnet_v2_l(weights="DEFAULT")
         self.pretrained_eff_v2.features[0] = nn.Sequential(
-            ops.Conv2dNormActivation(1,
-                                     out_channels=32,
-                                     kernel_size=(2, 2),
-                                     stride=(2, 2),
-                                     padding=(1, 1),
-                                     bias=False,
-                                     # norm_layer = nn.BatchNorm2d,
-                                     activation_layer=nn.SiLU
-                                     )
+            ops.Conv2dNormActivation(
+                1,
+                out_channels=32,
+                kernel_size=(2, 2),
+                stride=(2, 2),
+                padding=(1, 1),
+                bias=False,
+                # norm_layer = nn.BatchNorm2d,
+                activation_layer=nn.SiLU,
+            )
         )
 
         # Modify the classifier head for your specific number of classes
@@ -91,7 +92,9 @@ class EfficientNetV2MultiClass(nn.Module):
 
     def forward(self, x, device="cuda"):
         # Forward pass through the pretrained U-Net model
-        self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(self.num_classes, device=device)
+        self.pretrained_eff_v2.classifier[1] = nn.LazyLinear(
+            self.num_classes, device=device
+        )
         # logger.debug(f"x shape before {x.shape}")
         output = self.pretrained_eff_v2(x)
         # logger.debug(f"x shape after {output.shape}")

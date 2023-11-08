@@ -6,7 +6,6 @@ torch.manual_seed(1)
 
 
 class NGramLanguageModeler(nn.Module):
-
     def __init__(self, vocab_size, embedding_dim, context_size):
         super(NGramLanguageModeler, self).__init__()
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
