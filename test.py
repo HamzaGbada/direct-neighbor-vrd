@@ -335,21 +335,18 @@ class TestDataLoader(unittest.TestCase):
         model = EfficientNetV2MultiClass(30)
         state_dict = torch.load("Unet_classification.pth")
 
-        # state_dict['fc.weight'] = state_dict['fc.weight'][:30]
-        # state_dict['fc.bias'] = state_dict['fc.bias'][:30]
-
         model.load_state_dict(state_dict)  # works
 
 
         # x =
-        # model.load_state_dict(x)
+        model.to(device="cuda")
         model.eval()
         # model = torch.load("Unet_classification.pth")
         # checkpoint = torch.load('Unet_classification.pth')
         # model = checkpoint['model']
         # model.load_state_dict(checkpoint['state_dict'])
         # model.eval()
-        inputs = torch.rand(3, 63, 45).to(device="cuda")
+        inputs = torch.rand(1, 1, 63, 45).to(device="cuda")
         output = model(inputs)
         logger.debug(f"output shape{output.shape}")
         logger.debug(f"output shape{output}")

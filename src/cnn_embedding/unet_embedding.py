@@ -74,8 +74,8 @@ class EfficientNetV2MultiClass(nn.Module):
         weights = EfficientNet_V2_L_Weights.DEFAULT
         self.pretrained_eff_v2 = efficientnet_v2_l(weights=weights)
 
-        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(self.pretrained_eff_v2.classifier[1].weight[:30])
-        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(self.pretrained_eff_v2.classifier[1].bias[:30])
+        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(self.pretrained_eff_v2.classifier[1].weight[:self.num_classes])
+        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(self.pretrained_eff_v2.classifier[1].bias[:self.num_classes])
 
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(1,
