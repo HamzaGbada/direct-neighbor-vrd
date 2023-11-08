@@ -405,6 +405,8 @@ class TestDataLoader(unittest.TestCase):
         }
         input_ids = batch['input_ids'].to(device="cuda")
         attention_mask = batch['attention_mask'].to(device="cuda")
+        input_ids = input_ids.unsqueeze(0)
+        attention_mask = attention_mask.unsqueeze(0)
         # labels = batch['label'].to(device="cuda")
 
         outputs = model(input_ids, attention_mask)
