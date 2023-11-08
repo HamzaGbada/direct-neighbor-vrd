@@ -387,10 +387,12 @@ class TestDataLoader(unittest.TestCase):
         sentence = "18.167$"
         label = 2
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        max_len = 128
+
         encoding = tokenizer.encode_plus(
             sentence,
             add_special_tokens=True,
-            max_length=self.max_len,
+            max_length=max_len,
             return_tensors='pt',
             pad_to_max_length=True,
             truncation=True
