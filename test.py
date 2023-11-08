@@ -9,6 +9,7 @@ from datasets import load_dataset
 from torchvision import transforms
 from torch import nn
 import torch.optim as optim
+from transformers import BertTokenizer
 from torcheval.metrics.functional import multiclass_f1_score
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
@@ -20,6 +21,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image, get_area
+from src.word_embedding.BERT_embedding import BertForSentenceClassification
 from train_cnn_for_classification import image_dataloader, compute_f1_score, compute_accuracy
 
 
@@ -331,7 +333,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f" the accuracy is {accuracy}")
         logger.debug(f" the accuracy is {accuracy1}")
 
-    def test_pretrained_model(self):
+    def test_pretrained_model_cnn(self):
         model = EfficientNetV2MultiClass(30)
         state_dict = torch.load("Unet_classification.pth")
 
@@ -360,6 +362,52 @@ class TestDataLoader(unittest.TestCase):
         output = model(inputs)
 
         reshaped_output = reshaping_layers(output)
+
+        logger.debug(f"output shape{reshaped_output.shape}")
+        logger.debug(f"output shape{reshaped_output}")
+
+    def test_pretrained_model_word(self):
+        model = BertForSentenceClassification(30)
+        state_dict = torch.load("CORD_word_classification.pth")
+
+        model.load_state_dict(state_dict)  # works
+
+        # x =
+        # model.to(device="cuda")
+        reshaping_layers = nn.Sequential(
+            nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
+            nn.Tanh()  # You can add activation functions as needed
+        )
+
+        # Transfer the model and reshaping layers to the GPU
+        model.to(device="cuda")
+        reshaping_layers.to(device="cuda")
+
+        model.eval()
+        sentence = "18.167$"
+        label = 2
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        encoding = tokenizer.encode_plus(
+            sentence,
+            add_special_tokens=True,
+            max_length=self.max_len,
+            return_tensors='pt',
+            pad_to_max_length=True,
+            truncation=True
+        )
+
+        batch =  {
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
+            'label': torch.tensor(label, dtype=torch.float)
+        }
+        input_ids = batch['input_ids'].to(device="cuda")
+        attention_mask = batch['attention_mask'].to(device="cuda")
+        # labels = batch['label'].to(device="cuda")
+
+        outputs = model(input_ids, attention_mask)
+
+        reshaped_output = reshaping_layers(outputs)
 
         logger.debug(f"output shape{reshaped_output.shape}")
         logger.debug(f"output shape{reshaped_output}")
