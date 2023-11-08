@@ -335,8 +335,8 @@ class TestDataLoader(unittest.TestCase):
         model = EfficientNetV2MultiClass(30)
         state_dict = torch.load("Unet_classification.pth")
 
-        state_dict['fc.weight'] = state_dict['fc.weight'][:30]
-        state_dict['fc.bias'] = state_dict['fc.bias'][:30]
+        # state_dict['fc.weight'] = state_dict['fc.weight'][:30]
+        # state_dict['fc.bias'] = state_dict['fc.bias'][:30]
 
         model.load_state_dict(state_dict)  # works
 

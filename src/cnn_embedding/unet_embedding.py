@@ -73,9 +73,14 @@ class EfficientNetV2MultiClass(nn.Module):
         self.num_classes = num_classes
         # Load a pretrained U-Net model (e.g., ResNet-UNet)
         weights = EfficientNet_V2_L_Weights.DEFAULT
-        weights = weights[:num_classes]
+        # weights = weights[:num_classes]
         self.pretrained_eff_v2 = efficientnet_v2_l(weights=weights)
-        # self.pretrained_eff_v2.classifier[1][] = efficientnet_v2_l(weights=weights)
+        # self.pretrained_eff_v2.classifier[1].weight = self.pretrained_eff_v2.classifier[1].weight[:30]
+        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(self.pretrained_eff_v2.classifier[1].weight[:30])
+        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(self.pretrained_eff_v2.classifier[1].bias[:30])
+        logger.debug(f" self.pretrained_eff_v2.classifier[1].weight {self.pretrained_eff_v2.classifier[1].bias}")
+        logger.debug(f" self.pretrained_eff_v2.classifier[1].weight {self.pretrained_eff_v2.classifier[1].bias.shape}")
+        logger.debug(f" self.pretrained_eff_v2.classifier[1].weight {self.pretrained_eff_v2.classifier[1].bias[:30].shape}")
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(1,
                                      out_channels=32,
