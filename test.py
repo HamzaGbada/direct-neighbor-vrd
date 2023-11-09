@@ -2,6 +2,7 @@ import os
 import random
 import unittest
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import numpy as np
 import torch
 from PIL import Image
@@ -19,10 +20,21 @@ from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2Mult
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
+from src.graph_builder.graph_utils import vrd_2_graph
 from src.utils.setup_logger import logger
-from src.utils.utils import convert_xmin_ymin, convert_format1, convert_format2, plot_cropped_image, get_area
+from src.utils.utils import (
+    convert_xmin_ymin,
+    convert_format1,
+    convert_format2,
+    plot_cropped_image,
+    get_area,
+)
 from src.word_embedding.BERT_embedding import BertForSentenceClassification
-from train_cnn_for_classification import image_dataloader, compute_f1_score, compute_accuracy
+from train_cnn_for_classification import (
+    image_dataloader,
+    compute_f1_score,
+    compute_accuracy,
+)
 
 
 class TestDataLoader(unittest.TestCase):
@@ -42,10 +54,10 @@ class TestDataLoader(unittest.TestCase):
         #       Here is a similar issue: https://github.com/huggingface/datasets/issues/4775
         train = True
         if train:
-            dataset = load_dataset("Theivaprakasham/wildreceipt")['train']
+            dataset = load_dataset("Theivaprakasham/wildreceipt")["train"]
             # dataset = load_dataset("jinhybr/WildReceipt")['train']
         else:
-            dataset = load_dataset("Theivaprakasham/wildreceipt")['test']
+            dataset = load_dataset("Theivaprakasham/wildreceipt")["test"]
             # dataset = load_dataset("jinhybr/WildReceipt")['test']
         train_set = WILDRECEIPT(train=train, download=True)
         doc_index = 1
@@ -67,17 +79,17 @@ class TestDataLoader(unittest.TestCase):
         plt.title("The Current Image, Doctr Implementation")
         plt.show()
 
-        image_hugging = Image.open(dataset[doc_index]['image_path'])
+        image_hugging = Image.open(dataset[doc_index]["image_path"])
         plt.imshow(image_hugging)
         plt.title("The Current Image, HuggingFace Implementation")
         plt.show()
 
-        bbox_doctr = train_set.data[doc_index][1]['boxes'][word_index]
-        text_unit_doctr = train_set.data[doc_index][1]['text_units'][word_index]
+        bbox_doctr = train_set.data[doc_index][1]["boxes"][word_index]
+        text_unit_doctr = train_set.data[doc_index][1]["text_units"][word_index]
         logger.debug(f"Doctr bounding boxes : {bbox_doctr}")
 
-        bbox_hugging_face = dataset[doc_index]['bboxes'][word_index]
-        text_unit_face = dataset[doc_index]['words'][word_index]
+        bbox_hugging_face = dataset[doc_index]["bboxes"][word_index]
+        text_unit_face = dataset[doc_index]["words"][word_index]
         logger.debug(f"HuggingFace bounding boxes : {bbox_hugging_face}")
 
         common_box_doctr = convert_xmin_ymin(bbox_doctr)
@@ -85,24 +97,44 @@ class TestDataLoader(unittest.TestCase):
         common_box_hugface_1 = convert_format1(bbox_hugging_face)
         common_box_hugface_2 = convert_format2(bbox_hugging_face)
 
-        plot_cropped_image(image_doctr, common_box_doctr,
-                           f'Bouding boxes (my implementation) \n its associated text unit: {text_unit_doctr}')
-        plot_cropped_image(image_hugging, common_box_hugface_1,
-                           f'Hugging Face Bouding boxes (x,y,w,h format) \n its associated text unit: {text_unit_face}')
-        plot_cropped_image(image_hugging, common_box_hugface_2,
-                           f'Hugging Face Bouding boxes (x1,y1,x2, y2 format) \n its associated text unit: {text_unit_face}')
+        plot_cropped_image(
+            image_doctr,
+            common_box_doctr,
+            f"Bouding boxes (my implementation) \n its associated text unit: {text_unit_doctr}",
+        )
+        plot_cropped_image(
+            image_hugging,
+            common_box_hugface_1,
+            f"Hugging Face Bouding boxes (x,y,w,h format) \n its associated text unit: {text_unit_face}",
+        )
+        plot_cropped_image(
+            image_hugging,
+            common_box_hugface_2,
+            f"Hugging Face Bouding boxes (x1,y1,x2, y2 format) \n its associated text unit: {text_unit_face}",
+        )
 
         # logger.debug(f"the cord dataset {train_set.data}")
-        self.assertEqual(os.path.basename(filename), os.path.basename(dataset[doc_index]['image_path']))
+        self.assertEqual(
+            os.path.basename(filename),
+            os.path.basename(dataset[doc_index]["image_path"]),
+        )
 
     def test_sentences_label(self):
         dataset = CORD(train=False)
 
-        sentences = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['text_units']]
-        labels = [x for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+        sentences = [
+            x
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["text_units"]
+        ]
+        labels = [
+            x
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        ]
 
-        self.assertEqual(sentences[2], dataset.data[0][1]['text_units'][2])
-        self.assertEqual(labels[2], dataset.data[0][1]['labels'][2])
+        self.assertEqual(sentences[2], dataset.data[0][1]["text_units"][2])
+        self.assertEqual(labels[2], dataset.data[0][1]["labels"][2])
 
     def test_sroie(self):
         train_set = SROIE(train=True)
@@ -129,8 +161,8 @@ class TestDataLoader(unittest.TestCase):
         image = Image.open(path).convert("L")
 
         # Define the bounding box coordinates (left, upper, right, lower)
-        bbox = train_set.data[0][1]['boxes'][0]
-        text_units = train_set.data[0][1]['text_units'][0]
+        bbox = train_set.data[0][1]["boxes"][0]
+        text_units = train_set.data[0][1]["text_units"][0]
         logger.debug(f"bbox {bbox}")
         logger.debug(f"text_units {text_units}")
 
@@ -140,12 +172,11 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"shape before remove channel{cropped_image.shape}")
 
         # Save or display the cropped image
-        plt.imshow(image, cmap='gray')
+        plt.imshow(image, cmap="gray")
         # plt.imshow(cropped_image, cmap='gray')
         plt.show()
 
     def test_image_dataloader(self):
-
         # Open the image using PIL
         train_set = CORD(train=False)
         cropped_images, boxes, labels, text_units = image_dataloader(train_set)
@@ -155,30 +186,28 @@ class TestDataLoader(unittest.TestCase):
 
         logger.debug(f"text_units {text_units[5]}")
 
-        plt.imshow(image, cmap='gray')
-        plt.imshow(cropped_images[5], cmap='gray')
+        plt.imshow(image, cmap="gray")
+        plt.imshow(cropped_images[5], cmap="gray")
         plt.show()
 
     def test_unet_test(self):
         # Open the image using PIL
         inputs = torch.rand(3, 63, 45).to(device="cuda")
-        model = UNet(3,5).to(device="cuda")
+        model = UNet(3, 5).to(device="cuda")
         #
         outputs = model(inputs)
         # logger.debug(f"outputs shape {outputs.shape}")
         loss_fn = nn.CrossEntropyLoss()
         labels = torch.tensor([0]).reshape(-1, 1)
-        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        X = torch.tensor([0, 1, 2, 3, 4]).view(-1, 1)
         enc = OneHotEncoder(sparse=False)
         enc.fit(X)
         logger.debug(f"Labels {labels}")
         labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
 
-
         loss = loss_fn(outputs, labels)
 
         logger.debug(f"Labels {labels}")
-
 
         logger.debug(f"loss_fn shape {loss.shape}")
         logger.debug(f"loss_fn {loss}")
@@ -188,46 +217,55 @@ class TestDataLoader(unittest.TestCase):
         outputs = model(inputs)
         logger.debug(f"loss_fn shape {outputs.shape}")
 
-
     def test_label(self):
         dataset = CORD(train=True, download=True)
         if type(dataset).__name__ == "CORD":
-            encoded_dic = {'menu.sub_cnt': 0,
-                           'sub_total.othersvc_price': 1,
-                           'total.total_price': 2,
-                           'menu.etc': 3,
-                           'sub_total.discount_price': 4,
-                           'menu.unitprice': 5,
-                           'menu.discountprice': 6,
-                           'void_menu.price': 7,
-                           'menu.nm': 8,
-                           'total.menutype_cnt': 9,
-                           'sub_total.subtotal_price': 10,
-                           'menu.sub_nm': 11,
-                           'void_menu.nm': 12,
-                           'menu.sub_unitprice': 13,
-                           'menu.sub_etc': 14,
-                           'menu.cnt': 15,
-                           'menu.vatyn': 16,
-                           'total.total_etc': 17,
-                           'total.menuqty_cnt': 18,
-                           'total.cashprice': 19,
-                           'menu.num': 20,
-                           'total.changeprice': 21,
-                           'sub_total.tax_price': 22,
-                           'sub_total.etc': 23,
-                           'menu.price': 24,
-                           'total.creditcardprice': 25,
-                           'total.emoneyprice': 26,
-                           'sub_total.service_price': 27,
-                           'menu.itemsubtotal': 28,
-                           'menu.sub_price': 29
-                           }
-        labels = [encoded_dic[x] for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['labels']]
+            encoded_dic = {
+                "menu.sub_cnt": 0,
+                "sub_total.othersvc_price": 1,
+                "total.total_price": 2,
+                "menu.etc": 3,
+                "sub_total.discount_price": 4,
+                "menu.unitprice": 5,
+                "menu.discountprice": 6,
+                "void_menu.price": 7,
+                "menu.nm": 8,
+                "total.menutype_cnt": 9,
+                "sub_total.subtotal_price": 10,
+                "menu.sub_nm": 11,
+                "void_menu.nm": 12,
+                "menu.sub_unitprice": 13,
+                "menu.sub_etc": 14,
+                "menu.cnt": 15,
+                "menu.vatyn": 16,
+                "total.total_etc": 17,
+                "total.menuqty_cnt": 18,
+                "total.cashprice": 19,
+                "menu.num": 20,
+                "total.changeprice": 21,
+                "sub_total.tax_price": 22,
+                "sub_total.etc": 23,
+                "menu.price": 24,
+                "total.creditcardprice": 25,
+                "total.emoneyprice": 26,
+                "sub_total.service_price": 27,
+                "menu.itemsubtotal": 28,
+                "menu.sub_price": 29,
+            }
+        labels = [
+            encoded_dic[x]
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        ]
         logger.debug(f"label {labels}")
+
     def test_bbox_area(self):
         dataset = CORD(train=True, download=True)
-        bbox = [get_area(x) for doc_index in range(len(dataset)) for x in dataset.data[doc_index][1]['boxes']]
+        bbox = [
+            get_area(x)
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["boxes"]
+        ]
         bbox.sort()
         logger.debug(f"Sorted area bbox area : {bbox}")
 
@@ -237,13 +275,13 @@ class TestDataLoader(unittest.TestCase):
         inputs = inputs.unsqueeze(0)
         logger.debug(f"inputs shape {inputs.shape}")
         logger.debug(inputs.device)
-        model = EfficientNetV2MultiClass(5).to(torch.device('cuda'))
+        model = EfficientNetV2MultiClass(5).to(torch.device("cuda"))
         #
         outputs = model(inputs)
         # logger.debug(f"outputs shape {outputs.shape}")
         loss_fn = nn.CrossEntropyLoss()
         labels = torch.tensor([0]).reshape(-1, 1)
-        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        X = torch.tensor([0, 1, 2, 3, 4]).view(-1, 1)
         enc = OneHotEncoder(sparse=False)
         enc.fit(X)
         logger.debug(f"Labels {labels.shape}")
@@ -253,11 +291,9 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"Labels {labels.shape}")
         labels = torch.from_numpy(enc.transform(labels)).to(device="cuda")
 
-
         loss = loss_fn(outputs, labels)
 
         logger.debug(f"Labels {labels}")
-
 
         logger.debug(f"loss_fn shape {loss.shape}")
         logger.debug(f"loss_fn {loss}")
@@ -268,8 +304,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"loss_fn shape {outputs.shape}")
 
     def test_efficient_train_test(self):
-
-        X = torch.tensor([0,1,2,3,4]).view(-1,1)
+        X = torch.tensor([0, 1, 2, 3, 4]).view(-1, 1)
         enc = OneHotEncoder(sparse=False)
         enc.fit(X)
 
@@ -277,13 +312,12 @@ class TestDataLoader(unittest.TestCase):
         num_epochs = 2
         data_size = 2
 
-        model = EfficientNetV2MultiClass(num_classes).to(torch.device('cuda'))
+        model = EfficientNetV2MultiClass(num_classes).to(torch.device("cuda"))
         optimizer = optim.Adam(model.parameters(), lr=0.001)
         loss_fn = nn.CrossEntropyLoss()
 
         train_losses = []  # To store training loss for each epoch
         train_f1 = []  # To store validation loss for each epoch
-
 
         for epoch in range(num_epochs):
             logger.debug(f"epoch {epoch+1} | {num_epochs} processing")
@@ -294,7 +328,9 @@ class TestDataLoader(unittest.TestCase):
 
             for image_index in range(data_size):
                 logger.debug(f"image {image_index + 1} | {data_size} processing")
-                inputs, labels = torch.rand(1, 1, random.randint(70,100), random.randint(70,100)).to(device="cuda"), torch.randint(0,4,[1, 1]).to(device="cuda")
+                inputs, labels = torch.rand(
+                    1, 1, random.randint(70, 100), random.randint(70, 100)
+                ).to(device="cuda"), torch.randint(0, 4, [1, 1]).to(device="cuda")
 
                 optimizer.zero_grad()
 
@@ -326,9 +362,11 @@ class TestDataLoader(unittest.TestCase):
 
     def test_accuracy_pytorch(self):
         # TODO: use this accuracy implementation and check this link for more: https://torchmetrics.readthedocs.io/en/stable/classification/accuracy.html#multilabel-accuracy
-        target = torch.tensor([[0., 0., 1., 0., 0.], [0., 0., 1., 0., 0.]])
-        preds = torch.tensor([[0.12, 0.15, 0.3, 0.22, 0.21], [0.12, 0.05, 0.8, 0.02, 0.01]])
-        accuracy = multilabel_accuracy(preds, target, num_labels=5, average='macro')
+        target = torch.tensor([[0.0, 0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0, 0.0]])
+        preds = torch.tensor(
+            [[0.12, 0.15, 0.3, 0.22, 0.21], [0.12, 0.05, 0.8, 0.02, 0.01]]
+        )
+        accuracy = multilabel_accuracy(preds, target, num_labels=5, average="macro")
         accuracy1 = compute_accuracy(target, preds)
         logger.debug(f" the accuracy is {accuracy}")
         logger.debug(f" the accuracy is {accuracy1}")
@@ -339,12 +377,11 @@ class TestDataLoader(unittest.TestCase):
 
         model.load_state_dict(state_dict)  # works
 
-
         # x =
         # model.to(device="cuda")
         reshaping_layers = nn.Sequential(
             nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
-            nn.Tanh()  # You can add activation functions as needed
+            nn.Tanh(),  # You can add activation functions as needed
         )
 
         # Transfer the model and reshaping layers to the GPU
@@ -376,7 +413,7 @@ class TestDataLoader(unittest.TestCase):
         # model.to(device="cuda")
         reshaping_layers = nn.Sequential(
             nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
-            nn.Tanh()  # You can add activation functions as needed
+            nn.Tanh(),  # You can add activation functions as needed
         )
 
         # Transfer the model and reshaping layers to the GPU
@@ -386,25 +423,25 @@ class TestDataLoader(unittest.TestCase):
         model.eval()
         sentence = "18.167$"
         label = 2
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         max_len = 128
 
         encoding = tokenizer.encode_plus(
             sentence,
             add_special_tokens=True,
             max_length=max_len,
-            return_tensors='pt',
+            return_tensors="pt",
             pad_to_max_length=True,
-            truncation=True
+            truncation=True,
         )
 
-        batch =  {
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
-            'label': torch.tensor(label, dtype=torch.float)
+        batch = {
+            "input_ids": encoding["input_ids"].flatten(),
+            "attention_mask": encoding["attention_mask"].flatten(),
+            "label": torch.tensor(label, dtype=torch.float),
         }
-        input_ids = batch['input_ids'].to(device="cuda")
-        attention_mask = batch['attention_mask'].to(device="cuda")
+        input_ids = batch["input_ids"].to(device="cuda")
+        attention_mask = batch["attention_mask"].to(device="cuda")
         input_ids = input_ids.unsqueeze(0)
         attention_mask = attention_mask.unsqueeze(0)
         # labels = batch['label'].to(device="cuda")
@@ -417,5 +454,48 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output}")
 
 
+    def test_connect_bbox(self):
+        bounding_boxes = [(6, 1, 10, 10), (11, 15, 20, 10), (21, 1, 17, 10), (35, 5, 17, 10), (50, 14, 17, 10), (21, 32, 17, 10)]
 
+        white_array = np.ones((50, 50), dtype=np.uint8) * 255
+
+        connected_bbox_indices = vrd_2_graph(bounding_boxes)
+        logger.debug(connected_bbox_indices)
+
+        fig, ax = plt.subplots()
+        
+        # Display the image
+        ax.imshow(white_array)
+        # Draw bounding boxes on the white array
+        for bbox in bounding_boxes:
+            rect = patches.Rectangle(
+                (bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=1, edgecolor="r", facecolor="none"
+            )
+            
+            # Add the patch to the Axes
+            ax.add_patch(rect)
+            # draw_bounding_box(white_array, bbox)
+
+        for i in range(len(connected_bbox_indices)):
+            for j in connected_bbox_indices[i]:
+                print(i)
+                print(j)
+                draw_line_between_bounding_boxes(white_array, bounding_boxes[i], bounding_boxes[j])
+        # Draw lines from the center of the bounding boxes to the other center
+        for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
+            draw_line_between_bounding_boxes(white_array, bbox1, bbox2)
+
+        # Display the white array with the bounding boxes and lines
+        plt.imshow(white_array)
+        plt.axis('off')
+        plt.show()
+
+def draw_line_between_bounding_boxes(array, bbox1, bbox2):
+    x1, y1, w1, h1 = bbox1
+    x2, y2, w2, h2 = bbox2
+
+    center1 = (x1 + w1 // 2, y1 + h1 // 2)
+    center2 = (x2 + w2 // 2, y2 + h2 // 2)
+
+    plt.plot([center1[0], center2[0]], [center1[1], center2[1]], color='blue', linewidth=2)
 
