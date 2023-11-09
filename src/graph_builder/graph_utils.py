@@ -7,6 +7,9 @@ def vrd_2_graph(bbox):
     create graph from one VRD
 
     Here we define le notion de direct node, where two bbox are connected iff there is no bbox between them
+
+    if between the X of inital and the x of test there is an x so does not appartient,
+    if x
     Args:
       bbox: A list of bounding boxes, where each bounding box is a tuple of four floats representing the coordinates of the bounding box.
 
