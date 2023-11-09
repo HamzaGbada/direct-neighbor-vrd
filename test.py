@@ -4,6 +4,7 @@ import unittest
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+from shapely.geometry import Polygon
 import torch
 from PIL import Image
 from datasets import load_dataset
@@ -453,9 +454,15 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output.shape}")
         logger.debug(f"output shape{reshaped_output}")
 
-
     def test_connect_bbox(self):
-        bounding_boxes = [(6, 1, 10, 10), (11, 15, 20, 10), (21, 1, 17, 10), (35, 5, 17, 10), (50, 14, 17, 10), (21, 32, 17, 10)]
+        bounding_boxes = [
+            (6, 1, 10, 10),
+            (11, 15, 20, 10),
+            (21, 1, 17, 10),
+            (35, 5, 17, 10),
+            (50, 14, 17, 10),
+            (21, 32, 17, 10),
+        ]
 
         white_array = np.ones((50, 50), dtype=np.uint8) * 255
 
@@ -463,15 +470,20 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(connected_bbox_indices)
 
         fig, ax = plt.subplots()
-        
+
         # Display the image
         ax.imshow(white_array)
         # Draw bounding boxes on the white array
         for bbox in bounding_boxes:
             rect = patches.Rectangle(
-                (bbox[0], bbox[1]), bbox[2], bbox[3], linewidth=1, edgecolor="r", facecolor="none"
+                (bbox[0], bbox[1]),
+                bbox[2],
+                bbox[3],
+                linewidth=1,
+                edgecolor="r",
+                facecolor="none",
             )
-            
+
             # Add the patch to the Axes
             ax.add_patch(rect)
             # draw_bounding_box(white_array, bbox)
@@ -480,22 +492,38 @@ class TestDataLoader(unittest.TestCase):
             for j in connected_bbox_indices[i]:
                 print(i)
                 print(j)
-                draw_line_between_bounding_boxes(white_array, bounding_boxes[i], bounding_boxes[j])
+                draw_line_between_bounding_boxes(
+                    white_array, bounding_boxes[i], bounding_boxes[j]
+                )
         # Draw lines from the center of the bounding boxes to the other center
         for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
-            draw_line_between_bounding_boxes(white_array, bbox1, bbox2)
+            draw_line_between_bounding_boxes(bbox1, bbox2)
 
         # Display the white array with the bounding boxes and lines
         plt.imshow(white_array)
-        plt.axis('off')
+        plt.axis("off")
         plt.show()
 
-def draw_line_between_bounding_boxes(array, bbox1, bbox2):
+    def test_shaply(self):
+        # TODO: Check if a point is inside the polygone (check the difference between this implementation and the
+        #  point implementation in term of RAM)
+        rectangle = Polygon([(3, 5), (3, 8), (4, 8), (4, 5)])
+        polygon = Polygon([(0, 0), (0, 2), (6, 8), (7, 8), (7,4), (1,0)])
+        intersection = rectangle.intersection(polygon)
+        if intersection.is_empty:
+            print("No part of the rectangle is inside the polygon")
+        else:
+            print("A part of the rectangle is inside the polygon")
+
+
+
+def draw_line_between_bounding_boxes(bbox1, bbox2):
     x1, y1, w1, h1 = bbox1
     x2, y2, w2, h2 = bbox2
 
     center1 = (x1 + w1 // 2, y1 + h1 // 2)
     center2 = (x2 + w2 // 2, y2 + h2 // 2)
 
-    plt.plot([center1[0], center2[0]], [center1[1], center2[1]], color='blue', linewidth=2)
-
+    plt.plot(
+        [center1[0], center2[0]], [center1[1], center2[1]], color="blue", linewidth=2
+    )
