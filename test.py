@@ -520,6 +520,18 @@ class TestDataLoader(unittest.TestCase):
         u, v = tensor([0, 1, 2]), tensor([2, 3, 4])
         logger.debug(torch.cuda.is_available())
         logger.debug(torch.cuda.get_device_name(0))
+        g = dgl.graph((u, v))
+        g.ndata['x'] = torch.randn(5, 3)
+        logger.debug(g.device)
+        cuda_g = g.to('cuda:0')
+        logger.debug(cuda_g.device)
+        logger.debug(cuda_g.ndata['x'].device)
+        u, v = u.to('cuda:0'), v.to('cuda:0')
+        g = dgl.graph((u, v))
+        logger.debug(g.device)
+        k = torch.randn(10000, 50000)
+        k_g = k.to('cuda:0')
+        logger.debug(k_g)
 
 
 
