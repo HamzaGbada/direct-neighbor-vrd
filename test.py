@@ -9,7 +9,7 @@ import torch
 from PIL import Image
 from datasets import load_dataset
 from torchvision import transforms
-from torch import nn
+from torch import nn, tensor
 import torch.optim as optim
 from transformers import BertTokenizer
 import dgl
@@ -515,6 +515,11 @@ class TestDataLoader(unittest.TestCase):
             print("No part of the rectangle is inside the polygon")
         else:
             print("A part of the rectangle is inside the polygon")
+
+    def test_dgl(self):
+        u, v = tensor([0, 1, 2]), tensor([2, 3, 4])
+        logger.debug(torch.cuda.is_available())
+        logger.debug(torch.cuda.get_device_name(0))
 
 
 
