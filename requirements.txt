@@ -10,3 +10,4 @@ pytube
 moviepy
 Unidecode
 scikit-learn
+shapely

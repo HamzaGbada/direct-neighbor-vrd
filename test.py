@@ -12,6 +12,7 @@ from torchvision import transforms
 from torch import nn
 import torch.optim as optim
 from transformers import BertTokenizer
+import dgl
 from torcheval.metrics.functional import multiclass_f1_score
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
