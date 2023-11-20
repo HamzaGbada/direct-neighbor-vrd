@@ -17,7 +17,7 @@ def is_connected(box1, box2, all_boxes):
     Returns:
     - True if connected, False otherwise.
     """
-    poly = Polygon(
+    polygon = Polygon(
         [
             (box1[0], box1[1]),
             (box1[0] + box1[2], box1[1]),
@@ -28,35 +28,18 @@ def is_connected(box1, box2, all_boxes):
     )
 
     for other_box in all_boxes:
+        if other_box != box1 and other_box != box2 and polygon.is_valid:
+            x, y, width, height = other_box
+            points = [(x, y), (x + width, y), (x + width, y + height), (x, y + height)]
 
-        if other_box != box1 and other_box != box2 and poly.is_valid:
+            intersections = [polygon.contains(Point(point)) for point in points]
 
-            point1 = Point(other_box[0], other_box[1])
-            point2 = Point(other_box[0] + other_box[2], other_box[1])
-            point3 = Point(other_box[0] + other_box[2], other_box[1] + other_box[3])
-            point4 = Point(other_box[0], other_box[1] + other_box[3])
-            intersection1 = poly.contains(point1)
-            intersection2 = poly.contains(point2)
-            intersection3 = poly.contains(point3)
-            intersection4 = poly.contains(point4)
-
-            # Check if the other box is not box1 or box2
-            if (
-                not (intersection1)
-                and not (intersection2)
-                and not (intersection3)
-                and not (intersection4)
-            ):
-                logger.debug(
-                    f"No part of the rectangle is inside the polygon"
-                )
+            if all(not intersection for intersection in intersections):
+                logger.debug("No part of the rectangle is inside the polygon")
+                return True
             else:
-                logger.debug(
-                    f"A part of the rectangle is inside the polygon"
-                )
+                logger.debug("A part of the rectangle is inside the polygon")
                 return False
-
-    return True
 
 
 def connected_boxes(bounding_boxes):
@@ -71,11 +54,10 @@ def connected_boxes(bounding_boxes):
     """
     result = []
     for i, box1 in enumerate(bounding_boxes):
-
         connected_indices = [
             j
             for j, box2 in enumerate(bounding_boxes)
-            if i != j and is_connected(box1, box2, bounding_boxes)[0]
+            if i != j and is_connected(box1, box2, bounding_boxes)
         ]
 
         result.append(connected_indices)

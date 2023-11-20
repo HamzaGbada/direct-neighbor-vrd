@@ -478,7 +478,7 @@ class TestDataLoader(unittest.TestCase):
         # logger.debug(f" debug second {bounding_boxes}")
         white_array = np.ones((150, 150), dtype=np.uint8) * 255
 
-        connected_indices, pol = connected_boxes(bounding_boxes)
+        connected_indices = connected_boxes(bounding_boxes)
         logger.debug(connected_indices)
 
         fig, ax = plt.subplots()
@@ -510,9 +510,7 @@ class TestDataLoader(unittest.TestCase):
         #     draw_line_between_bounding_boxes(bbox1, bbox2)
 
         # Display the white array with the bounding boxes and lines
-        for _ in pol:
-            for i in _:
-                plt.plot(*i.exterior.xy)
+
         plt.imshow(white_array)
         plt.axis("off")
         plt.show()
