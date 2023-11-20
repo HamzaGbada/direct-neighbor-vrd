@@ -459,9 +459,9 @@ class TestDataLoader(unittest.TestCase):
         # FIXME: This ERROR is due to on a résonné du gauche vers le droite pas inversoment
         bounding_boxes = [
             # (6, 1, 10, 10),
-            (11, 15, 20, 10), # mid
-            (21, 1, 17, 10), # Upper
-            # (30, 12, 25, 10),
+            (11, 15, 20, 10),  # mid
+            (21, 1, 17, 10),  # Upper
+            (10, 70, 25, 10),  # super low
             # (25, 16, 17, 10),
             # (35, 5, 17, 10),
             # (20, 32, 5, 5),
@@ -471,14 +471,14 @@ class TestDataLoader(unittest.TestCase):
             # (77, 54, 17, 10),
             # (87, 66, 17, 10),
             # (90, 74, 17, 10),
-            (21, 32, 17, 10), # low
+            (21, 32, 17, 10),  # low
         ]
-        logger.debug(f" debug first {bounding_boxes}")
-        bounding_boxes.sort()
-        logger.debug(f" debug second {bounding_boxes}")
+        # logger.debug(f" debug first {bounding_boxes}")
+        # bounding_boxes.sort()
+        # logger.debug(f" debug second {bounding_boxes}")
         white_array = np.ones((150, 150), dtype=np.uint8) * 255
 
-        connected_indices = connected_boxes(bounding_boxes)
+        connected_indices, pol = connected_boxes(bounding_boxes)
         logger.debug(connected_indices)
 
         fig, ax = plt.subplots()
@@ -510,6 +510,9 @@ class TestDataLoader(unittest.TestCase):
             draw_line_between_bounding_boxes(bbox1, bbox2)
 
         # Display the white array with the bounding boxes and lines
+        for _ in pol:
+            for i in _:
+                plt.plot(*i.exterior.xy)
         plt.imshow(white_array)
         plt.axis("off")
         plt.show()
