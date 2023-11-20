@@ -19,9 +19,9 @@ def is_connected(box1, box2, all_boxes):
     """
     bounding_boxes_json = {
         # (6, 1, 10, 10),
-        (11, 15, 20, 10): "mid",  # mid
+        (11, 15, 15, 10): "mid",  # mid
         (21, 1, 17, 10): "upper",  # Upper
-        (10, 70, 25, 10): "super low",  # super low
+        # (10, 70, 25, 10): "super low",  # super low
         # (30, 12, 25, 10),
         # (25, 16, 17, 10),
         # (35, 5, 17, 10),
@@ -39,9 +39,7 @@ def is_connected(box1, box2, all_boxes):
             (box1[0], box1[1]),
             (box1[0] + box1[2], box1[1]),
             (box2[0] + box2[2], box2[1]),
-            (box2[0] + box2[2], box2[1] + box2[3]),
-            (box2[0], box2[1] + box2[3]),
-            (box1[0], box1[1] + box1[3]),
+            (box2[0], box2[1]),
             (box1[0], box1[1]),
         ]
     )
@@ -75,7 +73,6 @@ def is_connected(box1, box2, all_boxes):
             logger.debug(
                 f"intersction between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]} throw {bounding_boxes_json[other_box]} is {intersection}"
             )
-            # logger.debug(f" intersection of {box1}")
             if not intersection:
                 logger.debug(
                     f"No part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
@@ -86,11 +83,15 @@ def is_connected(box1, box2, all_boxes):
                 )
                 return False, poly
             # Check if the other box is not box1 or box2
-            # if intersection1 and intersection2 and intersection3 and intersection4:
-            #     print("No part of the rectangle is inside the polygon")
+            # if not(intersection1 and intersection2 and intersection3 and intersection4):
+            #     logger.debug(
+            #         f"No part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
+            #     )
             # else:
-            #     print("A part of the rectangle is inside the polygon")
-            #     return False
+            #     logger.debug(
+            #         f"A part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
+            #     )
+            #     return False, poly
 
     return True, poly
 
@@ -113,7 +114,10 @@ def connected_boxes(bounding_boxes):
             for j, box2 in enumerate(bounding_boxes)
             if i != j and is_connected(box1, box2, bounding_boxes)[0]
         ]
-        pols = [is_connected(box1, box2, bounding_boxes)[1] for j, box2 in enumerate(bounding_boxes)]
+        pols = [
+            is_connected(box1, box2, bounding_boxes)[1]
+            for j, box2 in enumerate(bounding_boxes)
+        ]
         result.append(connected_indices)
         pol.append(pols)
     return result, pol
