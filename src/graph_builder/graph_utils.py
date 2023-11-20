@@ -70,20 +70,10 @@ def is_connected(box1, box2, all_boxes):
             intersection4 = poly.contains(point4)
 
             intersection = rectangle.intersection(poly)
-            logger.debug(
-                f"intersction between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]} throw {bounding_boxes_json[other_box]} is {intersection}"
-            )
-            if not intersection:
-                logger.debug(
-                    f"No part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
-                )
-            else:
-                logger.debug(
-                    f"A part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
-                )
-                return False, poly
-            # Check if the other box is not box1 or box2
-            # if not(intersection1 and intersection2 and intersection3 and intersection4):
+            # logger.debug(
+            #     f"intersction between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]} throw {bounding_boxes_json[other_box]} is {intersection}"
+            # )
+            # if not intersection:
             #     logger.debug(
             #         f"No part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
             #     )
@@ -92,6 +82,16 @@ def is_connected(box1, box2, all_boxes):
             #         f"A part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
             #     )
             #     return False, poly
+            # Check if the other box is not box1 or box2
+            if not(intersection1) and not(intersection2) and not(intersection3) and not(intersection4):
+                logger.debug(
+                    f"No part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
+                )
+            else:
+                logger.debug(
+                    f"A part of the rectangle {bounding_boxes_json[other_box]} is inside the polygon between {bounding_boxes_json[box1]} and {bounding_boxes_json[box2]}"
+                )
+                return False, poly
 
     return True, poly
 
