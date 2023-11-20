@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from shapely import Point
 from shapely.geometry import Polygon
 
 def vrd_2_graph(bbox):
@@ -55,6 +56,10 @@ def is_connected(box1, box2, all_boxes):
         rectangle = Polygon([(other_box[0], other_box[1]), (other_box[0] + other_box[2], other_box[1]),
                                   (other_box[0] + other_box[2], other_box[1] + other_box[3]),
                                   (other_box[0], other_box[1] + other_box[3])])
+        point = Point(other_box[0], other_box[1])
+        point = Point(other_box[0] + other_box[2], other_box[1])
+        point = Point(other_box[0] + other_box[2], other_box[1] + other_box[3])
+        point = Point(other_box[0], other_box[1] + other_box[3])
         intersection = rectangle.intersection(poly)
         # Check if the other box is not box1 or box2
         if intersection.is_empty:
