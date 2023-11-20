@@ -461,12 +461,22 @@ class TestDataLoader(unittest.TestCase):
             # (6, 1, 10, 10),
             (11, 15, 20, 10),
             (21, 1, 17, 10),
+            # (30, 12, 25, 10),
+            # (25, 16, 17, 10),
             # (35, 5, 17, 10),
-            # (50, 14, 17, 10),
+            # (20, 32, 5, 5),
+            # (30, 24, 17, 10),
+            # (40, 14, 5, 10),
+            # (60, 34, 17, 10),
+            # (77, 54, 17, 10),
+            # (87, 66, 17, 10),
+            # (90, 74, 17, 10),
             (21, 32, 17, 10),
         ]
-
-        white_array = np.ones((100, 100), dtype=np.uint8) * 255
+        logger.debug(f" debug first {bounding_boxes}")
+        bounding_boxes.sort()
+        logger.debug(f" debug second {bounding_boxes}")
+        white_array = np.ones((150, 150), dtype=np.uint8) * 255
 
         connected_indices = connected_boxes(bounding_boxes)
         logger.debug(connected_indices)
@@ -494,9 +504,7 @@ class TestDataLoader(unittest.TestCase):
             for j in connected_indices[i]:
                 print(i)
                 print(j)
-                draw_line_between_bounding_boxes(
-                    bounding_boxes[i], bounding_boxes[j]
-                )
+                draw_line_between_bounding_boxes(bounding_boxes[i], bounding_boxes[j])
         # Draw lines from the center of the bounding boxes to the other center
         for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
             draw_line_between_bounding_boxes(bbox1, bbox2)
@@ -510,7 +518,7 @@ class TestDataLoader(unittest.TestCase):
         # TODO: Check if a point is inside the polygone (check the difference between this implementation and the
         #  point implementation in term of RAM)
         rectangle = Polygon([(3, 5), (3, 8), (4, 8), (4, 5)])
-        polygon = Polygon([(0, 0), (0, 2), (6, 8), (7, 8), (7,4), (1,0)])
+        polygon = Polygon([(0, 0), (0, 2), (6, 8), (7, 8), (7, 4), (1, 0)])
         intersection = rectangle.intersection(polygon)
         if intersection.is_empty:
             print("No part of the rectangle is inside the polygon")
@@ -522,18 +530,17 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(torch.cuda.is_available())
         logger.debug(torch.cuda.get_device_name(0))
         g = dgl.graph((u, v))
-        g.ndata['x'] = torch.randn(5, 3)
+        g.ndata["x"] = torch.randn(5, 3)
         logger.debug(g.device)
-        cuda_g = g.to('cuda:0')
+        cuda_g = g.to("cuda:0")
         logger.debug(cuda_g.device)
-        logger.debug(cuda_g.ndata['x'].device)
-        u, v = u.to('cuda:0'), v.to('cuda:0')
+        logger.debug(cuda_g.ndata["x"].device)
+        u, v = u.to("cuda:0"), v.to("cuda:0")
         g = dgl.graph((u, v))
         logger.debug(g.device)
         k = torch.randn(10000, 50000)
-        k_g = k.to('cuda:0')
+        k_g = k.to("cuda:0")
         logger.debug(k_g)
-
 
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):

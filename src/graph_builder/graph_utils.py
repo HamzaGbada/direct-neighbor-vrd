@@ -56,6 +56,7 @@ def is_connected(box1, box2, all_boxes):
 
             intersection = rectangle.intersection(poly)
 
+            logger.debug(f" intersection of {box1}")
             if intersection:
                 print("No part of the rectangle is inside the polygon")
             else:
