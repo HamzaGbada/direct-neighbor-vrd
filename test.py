@@ -506,8 +506,8 @@ class TestDataLoader(unittest.TestCase):
                 print(j)
                 draw_line_between_bounding_boxes(bounding_boxes[i], bounding_boxes[j])
         # Draw lines from the center of the bounding boxes to the other center
-        for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
-            draw_line_between_bounding_boxes(bbox1, bbox2)
+        # for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
+        #     draw_line_between_bounding_boxes(bbox1, bbox2)
 
         # Display the white array with the bounding boxes and lines
         for _ in pol:
