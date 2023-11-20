@@ -22,7 +22,7 @@ from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2Mult
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
-from src.graph_builder.graph_utils import vrd_2_graph, connected_boxes
+from src.graph_builder.graph_utils import connected_boxes
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
