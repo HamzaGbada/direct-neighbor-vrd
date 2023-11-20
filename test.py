@@ -22,7 +22,7 @@ from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2Mult
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
-from src.graph_builder.graph_utils import vrd_2_graph
+from src.graph_builder.graph_utils import vrd_2_graph, connected_boxes
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
@@ -467,8 +467,8 @@ class TestDataLoader(unittest.TestCase):
 
         white_array = np.ones((50, 50), dtype=np.uint8) * 255
 
-        connected_bbox_indices = vrd_2_graph(bounding_boxes)
-        logger.debug(connected_bbox_indices)
+        connected_indices = connected_boxes(bounding_boxes)
+        logger.debug(connected_indices)
 
         fig, ax = plt.subplots()
 
@@ -489,12 +489,12 @@ class TestDataLoader(unittest.TestCase):
             ax.add_patch(rect)
             # draw_bounding_box(white_array, bbox)
 
-        for i in range(len(connected_bbox_indices)):
-            for j in connected_bbox_indices[i]:
+        for i in range(len(connected_indices)):
+            for j in connected_indices[i]:
                 print(i)
                 print(j)
                 draw_line_between_bounding_boxes(
-                    white_array, bounding_boxes[i], bounding_boxes[j]
+                    bounding_boxes[i], bounding_boxes[j]
                 )
         # Draw lines from the center of the bounding boxes to the other center
         for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
