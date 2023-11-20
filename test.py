@@ -459,8 +459,8 @@ class TestDataLoader(unittest.TestCase):
         # FIXME: This ERROR is due to on a résonné du gauche vers le droite pas inversoment
         bounding_boxes = [
             # (6, 1, 10, 10),
-            (11, 15, 20, 10),
-            (21, 1, 17, 10),
+            (11, 15, 20, 10), # mid
+            (21, 1, 17, 10), # Upper
             # (30, 12, 25, 10),
             # (25, 16, 17, 10),
             # (35, 5, 17, 10),
@@ -471,7 +471,7 @@ class TestDataLoader(unittest.TestCase):
             # (77, 54, 17, 10),
             # (87, 66, 17, 10),
             # (90, 74, 17, 10),
-            (21, 32, 17, 10),
+            (21, 32, 17, 10), # low
         ]
         logger.debug(f" debug first {bounding_boxes}")
         bounding_boxes.sort()

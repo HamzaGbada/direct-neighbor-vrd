@@ -17,7 +17,22 @@ def is_connected(box1, box2, all_boxes):
     Returns:
     - True if connected, False otherwise.
     """
-
+    bounding_boxes_json = {
+        # (6, 1, 10, 10),
+        (11, 15, 20, 10): "mid",  # mid
+        (21, 1, 17, 10): "upper",  # Upper
+        # (30, 12, 25, 10),
+        # (25, 16, 17, 10),
+        # (35, 5, 17, 10),
+        # (20, 32, 5, 5),
+        # (30, 24, 17, 10),
+        # (40, 14, 5, 10),
+        # (60, 34, 17, 10),
+        # (77, 54, 17, 10),
+        # (87, 66, 17, 10),
+        # (90, 74, 17, 10),
+        (21, 32, 17, 10): "low",  # low
+    }
     poly = Polygon(
         [
             (box1[0], box1[1]),
@@ -30,12 +45,11 @@ def is_connected(box1, box2, all_boxes):
         ]
     )
 
-    logger.debug(f" bounding box one {box1}")
-    logger.debug(f" bounding box two {box2}")
+    logger.debug(f" bounding box one and {bounding_boxes_json[box1]} its coord {box1}")
+    logger.debug(f" bounding box two and {bounding_boxes_json[box2]} its coord {box2}")
     for other_box in all_boxes:
-        logger.debug(f"current box ############ {other_box}")
-        logger.debug(f" bounding box one {box1}")
-        logger.debug(f" bounding box two {box2}")
+        logger.debug(f"current box is and ***** {bounding_boxes_json[other_box]} ***** its coord ############ {other_box}")
+
         if other_box != box1 and other_box != box2 and poly.is_valid:
             rectangle = Polygon(
                 [
@@ -56,11 +70,11 @@ def is_connected(box1, box2, all_boxes):
 
             intersection = rectangle.intersection(poly)
 
-            logger.debug(f" intersection of {box1}")
+            # logger.debug(f" intersection of {box1}")
             if intersection:
-                print("No part of the rectangle is inside the polygon")
+                logger.debug("No part of the rectangle is inside the polygon")
             else:
-                print("A part of the rectangle is inside the polygon")
+                logger.debug("A part of the rectangle is inside the polygon")
                 return False
             # Check if the other box is not box1 or box2
             # if intersection1 and intersection2 and intersection3 and intersection4:
