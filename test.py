@@ -465,7 +465,7 @@ class TestDataLoader(unittest.TestCase):
             (21, 32, 17, 10),
         ]
 
-        white_array = np.ones((50, 50), dtype=np.uint8) * 255
+        white_array = np.ones((100, 100), dtype=np.uint8) * 255
 
         connected_indices = connected_boxes(bounding_boxes)
         logger.debug(connected_indices)
