@@ -1,24 +1,24 @@
 import os
 import random
 import unittest
-import matplotlib.pyplot as plt
+import warnings
+
+import dgl
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 import numpy as np
-from shapely.geometry import Polygon
 import torch
+import torch.optim as optim
 from PIL import Image
 from datasets import load_dataset
-from torchvision import transforms
+from shapely.geometry import Polygon
+from sklearn.preprocessing import OneHotEncoder
 from torch import nn, tensor
-import torch.optim as optim
-from transformers import BertTokenizer
-import dgl
-from torcheval.metrics.functional import multiclass_f1_score
-
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer
 from torchmetrics.functional.classification import multilabel_accuracy
+from torchvision import transforms
+from transformers import BertTokenizer
 
-from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2MultiClass
+from src.cnn_embedding.unet_embedding import UNet, EfficientNetV2MultiClass
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
@@ -37,6 +37,9 @@ from train_cnn_for_classification import (
     compute_f1_score,
     compute_accuracy,
 )
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
 
 class TestDataLoader(unittest.TestCase):

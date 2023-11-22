@@ -4,11 +4,14 @@ import dgl
 import matplotlib.pyplot as plt
 import networkx as nx
 import torch
-from dgl import graph
 from shapely import Point
 from shapely.geometry import Polygon
 
 from src.utils.setup_logger import logger
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
 
 class VRD2Graph:
@@ -125,7 +128,7 @@ class VRD2Graph:
 
         # Set node features in the graph
         self.graph.ndata["features"] = node_features
-        self.graph.ndata['label'] = torch.tensor(self.node_label)
+        self.graph.ndata["label"] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
 
     def plot_dgl_graph(self):

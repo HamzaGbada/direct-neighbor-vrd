@@ -16,3 +16,4 @@ torcheval~=0.0.7
 torchmetrics~=1.2.0
 tqdm~=4.66.1
 python-doctr[torch]
+networkx~=3.2.1
