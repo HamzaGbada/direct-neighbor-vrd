@@ -168,3 +168,13 @@ class VRD2Graph:
         # Save the graph to the specified path
         file_path = path / f"{name}.bin"
         dgl.save_graphs(str(file_path), self.graph)
+
+    def load_graph(self, graph_name, path=None):
+        if path is None:
+            path = self.default_path
+        else:
+            path = Path(path)
+
+        file_path = path / f"{graph_name}.bin"
+        loaded_graphs, _ = dgl.load_graphs(str(file_path))
+        self.graph = loaded_graphs[0]
