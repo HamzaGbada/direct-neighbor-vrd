@@ -1,7 +1,6 @@
 import dgl
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy as np
 import torch
 from shapely import Point
 from shapely.geometry import Polygon
@@ -19,7 +18,7 @@ class VRD2Graph:
         return len(self.bounding_boxes)
 
     @classmethod
-    def is_connected(self, box1, box2, all_boxes):
+    def is_connected(cls, box1, box2, all_boxes):
         """
         Check if two bounding boxes are connected without any other boxes in between.
 
@@ -83,10 +82,6 @@ class VRD2Graph:
         """
         Create a DGL graph from a list of bounding boxes and a list of connection indices.
 
-        Parameters:
-        - bounding_boxes: List of bounding boxes.
-        - connections: List of indices defining connections between bounding boxes.
-
         Returns:
         - DGL Graph object.
         """
@@ -96,7 +91,11 @@ class VRD2Graph:
         # Add nodes to the graph
         self.graph.add_nodes(num_nodes)
 
-        edge_list = [(node, neighbor) for node, neighbors in enumerate(self.connection_index) for neighbor in neighbors]
+        edge_list = [
+            (node, neighbor)
+            for node, neighbors in enumerate(self.connection_index)
+            for neighbor in neighbors
+        ]
 
         # Add edges based on the connection indices
         src, dst = tuple(zip(*edge_list))
@@ -111,10 +110,8 @@ class VRD2Graph:
 
     def plot_dgl_graph(self):
         """
-        Plot a DGL graph using NetworkX and Matplotlib.
+        Plot the DGL graph using NetworkX and Matplotlib.
 
-        Parameters:
-        - graph: DGL Graph object.
         """
         # Convert DGL graph to NetworkX graph
         nx_graph = self.graph.to_networkx()
