@@ -156,7 +156,7 @@ class VRD2Graph:
         )
         plt.show()
 
-    def save_graph(self, name="graph", path=None):
+    def save_graph(self, graph_name="graph", path=None):
         if path is None:
             path = self.default_path
         else:
@@ -166,7 +166,7 @@ class VRD2Graph:
         path.mkdir(parents=True, exist_ok=True)
 
         # Save the graph to the specified path
-        file_path = path / f"{name}.bin"
+        file_path = path / f"{graph_name}.bin"
         dgl.save_graphs(str(file_path), self.graph)
 
     def load_graph(self, graph_name, path=None):
