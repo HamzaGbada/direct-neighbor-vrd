@@ -96,20 +96,10 @@ class VRD2Graph:
         # Add nodes to the graph
         self.graph.add_nodes(num_nodes)
 
-        logger.debug(
-            f" connection index {[(i, j) for i, j in enumerate(self.connection_index)]}"
-        )
-        original_list = [(i, j) for i, j in enumerate(self.connection_index)]
-        edge_list = [
-            (node, neighbor)
-            for node, neighbors in [(i, j) for i, j in enumerate(self.connection_index)]
-            for neighbor in neighbors
-        ]
-        logger.debug(
-            f" edge_list {edge_list}"
-        )
+        edge_list = [(node, neighbor) for node, neighbors in enumerate(self.connection_index) for neighbor in neighbors]
+
         # Add edges based on the connection indices
-        src, dst = zip(*[(i, j) for i, j in enumerate(self.connection_index)])
+        src, dst = tuple(zip(*edge_list))
         logger.debug(f"the src {src}")
         logger.debug(f"the dst {dst}")
         self.graph.add_edges(src, dst)
