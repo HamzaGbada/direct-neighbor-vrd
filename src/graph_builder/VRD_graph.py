@@ -114,14 +114,14 @@ class VRD2Graph:
 
         # Add edges based on the connection indices
         src, dst, feat = tuple(zip(*self.edges))
-        logger.debug(f"the feature {feat}")
-        self.graph.add_edges(src, dst, data=torch.tensor(feat))
+        self.graph.add_edges(src, dst)
 
         # Node features (initially all zeros)
         node_features = torch.zeros(num_nodes, dtype=torch.float32)
 
         # Set node features in the graph
         self.graph.ndata["features"] = node_features
+        self.graph.edata["weight"] = torch.tensor(feat)
 
     def plot_dgl_graph(self):
         """

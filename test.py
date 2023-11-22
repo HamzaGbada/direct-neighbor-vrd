@@ -563,7 +563,7 @@ class TestDataLoader(unittest.TestCase):
         graph = VRD2Graph(bounding_boxes)
         graph.connect_boxes()
         graph.create_graph()
-        logger.debug(graph.phi)
+        logger.debug(graph.edges)
         graph.plot_dgl_graph()
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):
