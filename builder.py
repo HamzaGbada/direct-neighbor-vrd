@@ -10,3 +10,5 @@ if __name__ == "__main__":
     args = main_parser.parse_args()
 
     logger.debug(args.dataset)
+
+    # TODO: create the building process
