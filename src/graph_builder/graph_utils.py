@@ -1,5 +1,6 @@
 import dgl
 import matplotlib.pyplot as plt
+import networkx as nx
 import numpy as np
 import torch
 from shapely import Point
@@ -16,6 +17,7 @@ class VRD2Graph:
 
     def __len__(self):
         return len(self.bounding_boxes)
+
     @classmethod
     def is_connected(self, box1, box2, all_boxes):
         """
@@ -57,7 +59,7 @@ class VRD2Graph:
                     logger.debug("A part of the rectangle is inside the polygon")
                     return False
 
-    def connected_boxes(self):
+    def connect_boxes(self):
         """
         Given a list of bounding boxes, return a list of indices of connected bounding boxes per bounding box.
 
@@ -103,3 +105,28 @@ class VRD2Graph:
 
         # Set node features in the graph
         self.graph.ndata["features"] = node_features
+
+    def plot_dgl_graph(self):
+        """
+        Plot a DGL graph using NetworkX and Matplotlib.
+
+        Parameters:
+        - graph: DGL Graph object.
+        """
+        # Convert DGL graph to NetworkX graph
+        nx_graph = self.graph.to_networkx()
+
+        # Extract node features from DGL graph
+        node_features = self.graph.ndata["features"].numpy()
+
+        # Plot the graph
+        pos = nx.spring_layout(nx_graph)  # You can choose a different layout algorithm
+        nx.draw(
+            nx_graph,
+            pos,
+            with_labels=True,
+            node_size=700,
+            node_color=node_features,
+            cmap="viridis",
+        )
+        plt.show()
