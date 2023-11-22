@@ -463,10 +463,10 @@ class TestDataLoader(unittest.TestCase):
             # (10, 70, 25, 10),  # super low
             # (25, 16, 17, 10),
             (35, 5, 42, 10),
-            # (20, 32, 5, 5),
-            # (30, 24, 17, 10),
-            # (40, 14, 5, 10),
-            # (60, 34, 17, 10),
+            (20, 32, 5, 5),
+            (30, 24, 17, 10),
+            (40, 14, 5, 10),
+            (60, 34, 17, 10),
             (77, 54, 17, 10),
             (87, 66, 17, 10),
             # (90, 74, 17, 10),
@@ -477,7 +477,8 @@ class TestDataLoader(unittest.TestCase):
         # logger.debug(f" debug second {bounding_boxes}")
         white_array = np.ones((150, 150), dtype=np.uint8) * 255
         graph = VRD2Graph(bounding_boxes)
-        connected_indices = graph.connected_boxes()
+        graph.connected_boxes()
+        connected_indices = graph.connection_index
         logger.debug(connected_indices)
 
         fig, ax = plt.subplots()
