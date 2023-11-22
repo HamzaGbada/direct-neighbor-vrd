@@ -29,59 +29,6 @@ class VRD2Graph:
     def __len__(self):
         return len(self.bounding_boxes)
 
-    @classmethod
-    def is_connected(cls, box1, box2, all_boxes):
-        """
-        Check if two bounding boxes are connected without any other boxes in between.
-
-        Parameters:
-        - box1, box2: Tuple representing the (x, y, width, height) of the bounding boxes.
-        - all_boxes: List of bounding boxes.
-
-        Returns:
-        - True if connected, False otherwise.
-        """
-        polygon = Polygon(
-            [
-                (box1[0], box1[1]),
-                (box1[0] + box1[2], box1[1]),
-                (box2[0] + box2[2], box2[1]),
-                (box2[0], box2[1]),
-                (box1[0], box1[1]),
-            ]
-        )
-
-        for other_box in all_boxes:
-            if other_box != box1 and other_box != box2 and polygon.is_valid:
-                x, y, width, height = other_box
-                points = [
-                    (x, y),
-                    (x + width, y),
-                    (x + width, y + height),
-                    (x, y + height),
-                ]
-
-                intersections = [polygon.contains(Point(point)) for point in points]
-
-                if all(not intersection for intersection in intersections):
-                    logger.debug("No part of the rectangle is inside the polygon")
-                    return True
-                else:
-                    logger.debug("A part of the rectangle is inside the polygon")
-                    return False
-
-    @classmethod
-    def compute_phi(cls, box1, box2):
-        # Assume bounding boxes are represented as (x_min, y_min, x_max, y_max)
-        center1 = ((box1[0] + box1[2]) / 2, (box1[1] + box1[3]) / 2)
-        center2 = ((box2[0] + box2[2]) / 2, (box2[1] + box2[3]) / 2)
-
-        # Compute relative polar coordinates
-        dx = center2[0] - center1[0]
-        dy = center2[1] - center1[1]
-
-        return math.atan2(dy, dx)
-
     def connect_boxes(self):
         """
         Given a list of bounding boxes, return a list of indices of connected bounding boxes per bounding box.
@@ -178,3 +125,56 @@ class VRD2Graph:
         file_path = path / f"{graph_name}.bin"
         loaded_graphs, _ = dgl.load_graphs(str(file_path))
         self.graph = loaded_graphs[0]
+
+    @classmethod
+    def is_connected(cls, box1, box2, all_boxes):
+        """
+        Check if two bounding boxes are connected without any other boxes in between.
+
+        Parameters:
+        - box1, box2: Tuple representing the (x, y, width, height) of the bounding boxes.
+        - all_boxes: List of bounding boxes.
+
+        Returns:
+        - True if connected, False otherwise.
+        """
+        polygon = Polygon(
+            [
+                (box1[0], box1[1]),
+                (box1[0] + box1[2], box1[1]),
+                (box2[0] + box2[2], box2[1]),
+                (box2[0], box2[1]),
+                (box1[0], box1[1]),
+            ]
+        )
+
+        for other_box in all_boxes:
+            if other_box != box1 and other_box != box2 and polygon.is_valid:
+                x, y, width, height = other_box
+                points = [
+                    (x, y),
+                    (x + width, y),
+                    (x + width, y + height),
+                    (x, y + height),
+                ]
+
+                intersections = [polygon.contains(Point(point)) for point in points]
+
+                if all(not intersection for intersection in intersections):
+                    logger.debug("No part of the rectangle is inside the polygon")
+                    return True
+                else:
+                    logger.debug("A part of the rectangle is inside the polygon")
+                    return False
+
+    @classmethod
+    def compute_phi(cls, box1, box2):
+        # Assume bounding boxes are represented as (x_min, y_min, x_max, y_max)
+        center1 = ((box1[0] + box1[2]) / 2, (box1[1] + box1[3]) / 2)
+        center2 = ((box2[0] + box2[2]) / 2, (box2[1] + box2[3]) / 2)
+
+        # Compute relative polar coordinates
+        dx = center2[0] - center1[0]
+        dy = center2[1] - center1[1]
+
+        return math.atan2(dy, dx)
