@@ -4,6 +4,7 @@ import dgl
 import matplotlib.pyplot as plt
 import networkx as nx
 import torch
+from dgl import graph
 from shapely import Point
 from shapely.geometry import Polygon
 
@@ -15,8 +16,6 @@ class VRD2Graph:
         self.bounding_boxes, self.node_label = zip(
             *sorted(zip(bounding_boxes, labels), key=lambda x: (x[0][1], x[0][0]))
         )
-        logger.debug(f" the bounding box {self.bounding_boxes} ")
-        logger.debug(f" tand its label {self.node_label}")
         self.connection_index = []
         self.edges = []
         self.graph = dgl.DGLGraph()
@@ -122,8 +121,11 @@ class VRD2Graph:
         node_features = torch.zeros(num_nodes, dtype=torch.float32)
 
         self.graph.add_edges(src, dst)
+        # self.graph = graph((src, dst), num_nodes=len(self.node_label))
+
         # Set node features in the graph
         self.graph.ndata["features"] = node_features
+        self.graph.ndata['label'] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
 
     def plot_dgl_graph(self):
