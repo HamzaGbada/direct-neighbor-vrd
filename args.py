@@ -1,6 +1,3 @@
-
-
-
 def build_subparser(subparsers):
     parser_building = subparsers.add_parser("build")
     parser_building.add_argument(
@@ -55,4 +52,3 @@ def train_subparser(subparsers):
         "-e", "--epochs", type=int, default=200, help="The number of epochs."
     )
     return subparsers  # Return the subparsers object for further use
-
