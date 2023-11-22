@@ -1,3 +1,5 @@
+import math
+
 import dgl
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -58,6 +60,18 @@ class VRD2Graph:
                 else:
                     logger.debug("A part of the rectangle is inside the polygon")
                     return False
+
+    @classmethod
+    def compute_phi(cls, box1, box2):
+        # Assume bounding boxes are represented as (x_min, y_min, x_max, y_max)
+        center1 = ((box1[0] + box1[2]) / 2, (box1[1] + box1[3]) / 2)
+        center2 = ((box2[0] + box2[2]) / 2, (box2[1] + box2[3]) / 2)
+
+        # Compute relative polar coordinates
+        dx = center2[0] - center1[0]
+        dy = center2[1] - center1[1]
+
+        return math.atan2(dy, dx)
 
     def connect_boxes(self):
         """
