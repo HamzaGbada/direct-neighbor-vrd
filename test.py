@@ -560,11 +560,28 @@ class TestDataLoader(unittest.TestCase):
             # (90, 74, 17, 10),
             # (21, 32, 17, 10),  # low
         ]
-        graph = VRD2Graph(bounding_boxes)
+        labels = [
+            # (6, 1, 10, 10),
+            # (11, 15, 15, 10),  # mid
+            # (21, 1, 17, 10),  # Upper
+            # (10, 70, 25, 10),  # super low
+            # (25, 16, 17, 10),
+            35,
+            20,
+            30,
+            40,
+            60,
+            77,
+            87
+            # (90, 74, 17, 10),
+            # (21, 32, 17, 10),  # low
+        ]
+        graph = VRD2Graph(bounding_boxes, labels)
         graph.connect_boxes()
         graph.create_graph()
         logger.debug(graph.edges)
         graph.plot_dgl_graph()
+
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):
     x1, y1, w1, h1 = bbox1

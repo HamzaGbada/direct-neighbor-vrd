@@ -11,9 +11,11 @@ from src.utils.setup_logger import logger
 
 
 class VRD2Graph:
-    def __init__(self, bounding_boxes):
-        self.bounding_boxes = sorted(bounding_boxes, key=lambda box: (box[1], box[0]))
-
+    def __init__(self, bounding_boxes, labels):
+        self.bounding_boxes, self.node_label = zip(
+            *sorted(zip(bounding_boxes, labels), key=lambda x: (x[0][1], x[0][0]))
+        )
+        logger.debug(f" the bounding box {self.bounding_boxes} and its label {self.node_label}")
         self.connection_index = []
         self.edges = []
         self.graph = dgl.DGLGraph()
@@ -114,11 +116,11 @@ class VRD2Graph:
 
         # Add edges based on the connection indices
         src, dst, feat = tuple(zip(*self.edges))
-        self.graph.add_edges(src, dst)
 
         # Node features (initially all zeros)
         node_features = torch.zeros(num_nodes, dtype=torch.float32)
 
+        self.graph.add_edges(src, dst)
         # Set node features in the graph
         self.graph.ndata["features"] = node_features
         self.graph.edata["weight"] = torch.tensor(feat)
