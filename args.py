@@ -1,4 +1,5 @@
 def build_subparser(subparsers):
+    subparsers
     parser_building = subparsers.add_parser("build")
     parser_building.add_argument(
         "-d",
