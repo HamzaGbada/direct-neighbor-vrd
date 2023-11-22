@@ -1,8 +1,9 @@
 import logging
+from logging import Logger
 from pathlib import Path
 
 # Logger
-logger = logging.getLogger('Logger')
+logger: Logger = logging.getLogger('Logger')
 logger.setLevel(logging.DEBUG)
 home = str(Path.home())
 handler = logging.FileHandler("./file.log", mode='w')
