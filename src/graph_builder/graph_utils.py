@@ -9,6 +9,7 @@ from src.utils.setup_logger import logger
 class VRD2Graph:
     def __init__(self, bounding_boxes):
         self.bounding_boxes = bounding_boxes
+        self.connection_index = []
 
     @classmethod
     def is_connected(self, box1, box2, all_boxes):
@@ -61,7 +62,7 @@ class VRD2Graph:
         Returns:
         - List of indices of connected bounding boxes for each bounding box.
         """
-        result = []
+
         for i, box1 in enumerate(self.bounding_boxes):
             connected_indices = [
                 j
@@ -69,5 +70,4 @@ class VRD2Graph:
                 if i != j and self.is_connected(box1, box2, self.bounding_boxes)
             ]
 
-            result.append(connected_indices)
-        return result
+            self.connection_index.append(connected_indices)
