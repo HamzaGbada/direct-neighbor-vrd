@@ -153,3 +153,6 @@ class VRD2Graph:
             cmap="viridis",
         )
         plt.show()
+
+    def save_graph(self, path, name = "graph"):
+        dgl.save_graphs(name+".bin", self.graph)
