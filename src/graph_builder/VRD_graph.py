@@ -15,6 +15,7 @@ class VRD2Graph:
         self.bounding_boxes = sorted(bounding_boxes, key=lambda box: (box[1], box[0]))
 
         self.connection_index = []
+        self.edges = []
         self.graph = dgl.DGLGraph()
 
     def __len__(self):
@@ -101,21 +102,20 @@ class VRD2Graph:
         - DGL Graph object.
         """
         num_nodes = self.__len__()
-        logger.debug(f"the size of graph {num_nodes}")
+
+        self.edges = [
+            (i, j, self.compute_phi(self.bounding_boxes[i], self.bounding_boxes[j]))
+            for i, connected_indices in enumerate(self.connection_index)
+            for j in connected_indices
+        ]
 
         # Add nodes to the graph
         self.graph.add_nodes(num_nodes)
 
-        edge_list = [
-            (node, neighbor)
-            for node, neighbors in enumerate(self.connection_index)
-            for neighbor in neighbors
-        ]
-
         # Add edges based on the connection indices
-        src, dst = tuple(zip(*edge_list))
+        src, dst, feat = tuple(zip(*self.edges))
 
-        self.graph.add_edges(src, dst)
+        self.graph.add_edges(src, dst, feat=feat)
 
         # Node features (initially all zeros)
         node_features = torch.zeros(num_nodes, dtype=torch.float32)
