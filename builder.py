@@ -1,6 +1,6 @@
 import argparse
 
-from args import default_parser, build_subparser
+from args import build_subparser
 from src.utils.setup_logger import logger
 
 if __name__ == "__main__":

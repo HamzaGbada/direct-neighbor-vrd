@@ -9,7 +9,7 @@
 #       - Create multiple model for GNN
 import argparse
 
-from args import train_subparser, default_parser
+from args import train_subparser
 from src.utils.setup_logger import logger
 
 if __name__ == "__main__":

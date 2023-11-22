@@ -6,8 +6,10 @@ def build_subparser(subparsers):
     parser_building.add_argument(
         "-d",
         "--dataset",
-        help='Choose the dataset to use. It can be "FUNSD", "CORD", "SROIE" or "WILDRECEIPT" ',
-        default="FUNSD",
+        type=str,
+        default="WILDRECEIPT",
+        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
+        help="Selecting the dataset for your model's training.",
     )
     parser_building.add_argument(
         "-n",
