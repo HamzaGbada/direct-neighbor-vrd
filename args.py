@@ -1,7 +1,7 @@
 import argparse
 
 
-def build_parser():
+def default_parser():
     parser = argparse.ArgumentParser(description='This command creates a graph-based dataset for node classification for '
                                                  'a specific dataset in order to extract entities from Visually Rich '
                                                  'Documents. The default is: "./data/<DATASET_NAME>/<Train||Test>/"')
@@ -38,7 +38,7 @@ def train_subparser(subparsers):
 
 
 def main():
-    parser = build_parser()
+    parser = default_parser()
     subparsers = parser.add_subparsers(dest='subcommand', help='Choose subcommand')
 
     # Create subparsers

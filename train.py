@@ -9,13 +9,14 @@
 #       - Create multiple model for GNN
 
 
-from args import train_subparser, build_parser
+from args import train_subparser, default_parser
 from src.utils.setup_logger import logger
 
-if "__main__" == __name__:
-    main_parser = build_parser()
-    parser = train_subparser(main_parser)
-    args = parser.parse_args()
+if __name__ == "__main__":
+    main_parser = default_parser()
+    subparsers = main_parser.add_subparsers(dest='subcommand', help='Choose subcommand')
+    train_subparser(subparsers)
+    args = main_parser.parse_args()
 
     logger.debug(args.dataset)
     logger.debug(args.hidden_size)
