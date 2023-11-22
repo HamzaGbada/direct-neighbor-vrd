@@ -11,6 +11,8 @@ class VRD2Graph:
         self.bounding_boxes = bounding_boxes
         self.connection_index = []
 
+    def __len__(self):
+        return len(self.bounding_boxes)
     @classmethod
     def is_connected(self, box1, box2, all_boxes):
         """
@@ -71,3 +73,34 @@ class VRD2Graph:
             ]
 
             self.connection_index.append(connected_indices)
+
+    def create_graph(self):
+        """
+        Create a DGL graph from a list of bounding boxes and a list of connection indices.
+
+        Parameters:
+        - bounding_boxes: List of bounding boxes.
+        - connections: List of indices defining connections between bounding boxes.
+
+        Returns:
+        - DGL Graph object.
+        """
+        # num_nodes = len(VRD2Graph)
+        #
+        # # Create a DGL graph
+        # graph = dgl.DGLGraph()
+        #
+        # # Add nodes to the graph
+        # graph.add_nodes(num_nodes)
+        #
+        # # Add edges based on the connection indices
+        # src, dst = zip(*[(i, j) for i, j in enumerate(connections)])
+        # graph.add_edges(src, dst)
+        #
+        # # Node features (initially all zeros)
+        # node_features = torch.zeros(num_nodes, dtype=torch.float32)
+        #
+        # # Set node features in the graph
+        # graph.ndata["features"] = node_features
+
+        return None
