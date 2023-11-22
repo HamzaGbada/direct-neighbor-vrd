@@ -74,7 +74,7 @@ class VRD2Graph:
             connected_indices = [
                 j
                 for j, box2 in enumerate(self.bounding_boxes)
-                if i != j and self.is_connected(box1, box2, self.bounding_boxes)
+                if i < j and self.is_connected(box1, box2, self.bounding_boxes)
             ]
 
             self.connection_index.append(connected_indices)
