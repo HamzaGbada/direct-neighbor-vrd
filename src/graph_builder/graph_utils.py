@@ -10,7 +10,8 @@ from src.utils.setup_logger import logger
 
 class VRD2Graph:
     def __init__(self, bounding_boxes):
-        self.bounding_boxes = bounding_boxes
+        self.bounding_boxes = sorted(bounding_boxes, key=lambda box: (box[1], box[0]))
+
         self.connection_index = []
         self.graph = dgl.DGLGraph()
 
