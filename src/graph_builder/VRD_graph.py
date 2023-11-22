@@ -15,7 +15,8 @@ class VRD2Graph:
         self.bounding_boxes, self.node_label = zip(
             *sorted(zip(bounding_boxes, labels), key=lambda x: (x[0][1], x[0][0]))
         )
-        logger.debug(f" the bounding box {self.bounding_boxes} and its label {self.node_label}")
+        logger.debug(f" the bounding box {self.bounding_boxes} ")
+        logger.debug(f" tand its label {self.node_label}")
         self.connection_index = []
         self.edges = []
         self.graph = dgl.DGLGraph()
