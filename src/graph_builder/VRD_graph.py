@@ -114,8 +114,8 @@ class VRD2Graph:
 
         # Add edges based on the connection indices
         src, dst, feat = tuple(zip(*self.edges))
-
-        self.graph.add_edges(src, dst, data=feat)
+        logger.debug(f"the feature {feat}")
+        self.graph.add_edges(src, dst, data=torch.tensor(feat))
 
         # Node features (initially all zeros)
         node_features = torch.zeros(num_nodes, dtype=torch.float32)
