@@ -583,7 +583,7 @@ class TestDataLoader(unittest.TestCase):
         graph.connect_boxes()
         graph.create_graph()
         logger.debug(graph.edges)
-        graph.save_graph(path = None, name = "bob")
+        graph.save_graph(path = "data/samir", name = "bob")
         loaded_graphs, _ = dgl.load_graphs("bob.bin")
         loaded_graph = loaded_graphs[0]
         graph.graph = loaded_graph

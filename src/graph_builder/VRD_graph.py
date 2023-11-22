@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 
 import dgl
 import matplotlib.pyplot as plt
@@ -22,6 +23,7 @@ class VRD2Graph:
         self.connection_index = []
         self.edges = []
         self.graph = dgl.DGLGraph()
+        self.default_path = Path("data/graphs")
 
     def __len__(self):
         return len(self.bounding_boxes)
@@ -154,5 +156,15 @@ class VRD2Graph:
         )
         plt.show()
 
-    def save_graph(self, path, name = "graph"):
-        dgl.save_graphs(name+".bin", self.graph)
+    def save_graph(self, name="graph", path=None):
+        if path is None:
+            path = self.default_path
+        else:
+            path = Path(path)
+
+        # Create the directory if it doesn't exist
+        path.mkdir(parents=True, exist_ok=True)
+
+        # Save the graph to the specified path
+        file_path = path / f"{name}.bin"
+        dgl.save_graphs(str(file_path), self.graph)
