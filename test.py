@@ -579,12 +579,13 @@ class TestDataLoader(unittest.TestCase):
             # (90, 74, 17, 10),
             # (21, 32, 17, 10),  # low
         ]
-        graph = VRD2Graph(bounding_boxes, labels)
+        feat = torch.zeros(len(bounding_boxes), dtype=torch.float32)
+        graph = VRD2Graph(bounding_boxes, labels, feat)
         graph.connect_boxes()
         graph.create_graph()
         logger.debug(graph.edges)
-        graph.save_graph(path = "data/samir", graph_name = "bob")
-        graph.load_graph(path = "data/samir", graph_name = "bob")
+        graph.save_graph(path="data/samir", graph_name="bob")
+        graph.load_graph(path="data/samir", graph_name="bob")
         graph.plot_dgl_graph()
 
 
