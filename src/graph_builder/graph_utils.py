@@ -100,8 +100,7 @@ class VRD2Graph:
 
         # Add edges based on the connection indices
         src, dst = tuple(zip(*edge_list))
-        logger.debug(f"the src {src}")
-        logger.debug(f"the dst {dst}")
+
         self.graph.add_edges(src, dst)
 
         # Node features (initially all zeros)
