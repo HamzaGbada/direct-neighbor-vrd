@@ -85,8 +85,8 @@ class VRD2Graph:
         Returns:
         - DGL Graph object.
         """
-        # num_nodes = len(VRD2Graph)
-        #
+        num_nodes = self.__len__()
+        logger.debug(f"the size of graph {num_nodes}")
         # # Create a DGL graph
         # graph = dgl.DGLGraph()
         #
