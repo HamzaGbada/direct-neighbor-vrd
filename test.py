@@ -22,7 +22,7 @@ from src.cnn_embedding.unet_embedding import UNet, SimpleCNN, EfficientNetV2Mult
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
-from src.graph_builder.graph_utils import connected_boxes
+from src.graph_builder.graph_utils import VRD2Graph
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
@@ -456,29 +456,28 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output}")
 
     def test_connect_bbox(self):
-        # FIXME: This ERROR is due to on a résonné du gauche vers le droite pas inversoment
         bounding_boxes = [
             # (6, 1, 10, 10),
-            (11, 15, 15, 10),  # mid
-            (21, 1, 17, 10),  # Upper
+            # (11, 15, 15, 10),  # mid
+            # (21, 1, 17, 10),  # Upper
             # (10, 70, 25, 10),  # super low
             # (25, 16, 17, 10),
-            # (35, 5, 17, 10),
+            (35, 5, 42, 10),
             # (20, 32, 5, 5),
             # (30, 24, 17, 10),
             # (40, 14, 5, 10),
             # (60, 34, 17, 10),
-            # (77, 54, 17, 10),
-            # (87, 66, 17, 10),
+            (77, 54, 17, 10),
+            (87, 66, 17, 10),
             # (90, 74, 17, 10),
-            (21, 32, 17, 10),  # low
+            # (21, 32, 17, 10),  # low
         ]
         # logger.debug(f" debug first {bounding_boxes}")
         # bounding_boxes.sort()
         # logger.debug(f" debug second {bounding_boxes}")
         white_array = np.ones((150, 150), dtype=np.uint8) * 255
-
-        connected_indices = connected_boxes(bounding_boxes)
+        graph = VRD2Graph(bounding_boxes)
+        connected_indices = graph.connected_boxes()
         logger.debug(connected_indices)
 
         fig, ax = plt.subplots()

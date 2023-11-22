@@ -6,7 +6,7 @@ from shapely.geometry import Polygon
 from src.utils.setup_logger import logger
 
 
-class VRD2Ggraph:
+class VRD2Graph:
     def __init__(self, bounding_boxes):
         self.bounding_boxes = bounding_boxes
 
