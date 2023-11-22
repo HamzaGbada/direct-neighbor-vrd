@@ -96,8 +96,14 @@ class VRD2Graph:
         # Add nodes to the graph
         self.graph.add_nodes(num_nodes)
 
+        logger.debug(f" connection index {self.connection_index}")
+        for i, j in enumerate(self.connection_index):
+            logger.debug(f" the i of enumerate {i}")
+            logger.debug(f" the j of enumerate {j}")
         # Add edges based on the connection indices
         src, dst = zip(*[(i, j) for i, j in enumerate(self.connection_index)])
+        logger.debug(f"the src {src}")
+        logger.debug(f"the dst {dst}")
         self.graph.add_edges(src, dst)
 
         # Node features (initially all zeros)
