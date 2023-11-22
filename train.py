@@ -7,13 +7,17 @@
 #           * Assign Feature vector to each node (use Unet CNN model for embedding)
 #           * Assign edge angle
 #       - Create multiple model for GNN
-
+import argparse
 
 from args import train_subparser, default_parser
 from src.utils.setup_logger import logger
 
 if __name__ == "__main__":
-    main_parser = default_parser()
+    main_parser = parser = argparse.ArgumentParser(
+        description="This command train a node classification model for "
+        "a specific dataset in order to extract entities from Visually Rich "
+        'Documents. The default is: "./data/<DATASET_NAME>/<Train||Test>/"'
+    )
     subparsers = main_parser.add_subparsers(dest='subcommand', help='Choose subcommand')
     train_subparser(subparsers)
     args = main_parser.parse_args()
