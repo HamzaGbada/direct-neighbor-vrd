@@ -31,10 +31,12 @@ if __name__ == "__main__":
     else:
         logger.debug("Dataset not recognized")
 
+    logger.debug("################# START ##################")
     text_model = TextEmbeddingModel(
         model_path=args.dataset + "_word_classification.pth"
     )
 
+    i = 0
     for doc_index in range(len(train_set)):
         bbox = train_set.data[doc_index][1]["boxes"]
         text_units = train_set.data[doc_index][1]["text_units"]
@@ -47,6 +49,10 @@ if __name__ == "__main__":
         graph.create_graph()
 
         graph.save_graph(path="data/"+args.dataset, graph_name=args.dataset+"_train_graph"+str(doc_index))
+        i+=1
+
+        if i > 5:
+            break
 
     # Embedding a sentence
     logger.debug(args.dataset)
