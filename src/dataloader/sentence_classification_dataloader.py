@@ -34,3 +34,5 @@ class SentenceDataset(Dataset):
             "attention_mask": encoding["attention_mask"].flatten(),
             "label": torch.tensor(label, dtype=torch.float),
         }
+
+
