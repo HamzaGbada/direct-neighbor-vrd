@@ -1,4 +1,5 @@
 import warnings
+from pathlib import Path
 
 import torch
 from torch import nn
@@ -75,8 +76,12 @@ class EfficientNetV2MultiClass(nn.Module):
         weights = EfficientNet_V2_L_Weights.DEFAULT
         self.pretrained_eff_v2 = efficientnet_v2_l(weights=weights)
 
-        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(self.pretrained_eff_v2.classifier[1].weight[:self.num_classes])
-        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(self.pretrained_eff_v2.classifier[1].bias[:self.num_classes])
+        self.pretrained_eff_v2.classifier[1].weight = nn.Parameter(
+            self.pretrained_eff_v2.classifier[1].weight[: self.num_classes]
+        )
+        self.pretrained_eff_v2.classifier[1].bias = nn.Parameter(
+            self.pretrained_eff_v2.classifier[1].bias[: self.num_classes]
+        )
 
         self.pretrained_eff_v2.features[0] = nn.Sequential(
             ops.Conv2dNormActivation(
@@ -108,22 +113,30 @@ class EfficientNetV2MultiClass(nn.Module):
 
 
 class EmbeddingModel:
-
     def __init__(self, num_classes, feat_size, model_path, device="cuda"):
+        # Initialize the model and load the state_dict
         self.model = EfficientNetV2MultiClass(num_classes)
-        state_dict = torch.load(model_path)
+        self.load_model(Path(model_path))
 
-        self.model.load_state_dict(state_dict)  # works
-
-        # x =
-        # model.to(device="cuda")
+        # Define the reshaping layers
         self.reshaping_layers = nn.Sequential(
-            nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
+            nn.Linear(
+                num_classes, feat_size
+            ),  # Linear layer to reshape from feat_size to 500 features
             nn.Tanh(),  # You can add activation functions as needed
         )
 
         # Transfer the model and reshaping layers to the GPU
+        self.to_device(device)
+
+    def load_model(self, model_path):
+        # Load the model state_dict
+        state_dict = torch.load(model_path, map_location=torch.device("cpu"))
+
+        # Load the state_dict to the model
+        self.model.load_state_dict(state_dict)
+
+    def to_device(self, device):
+        # Transfer the model and reshaping layers to the specified device
         self.model.to(device=device)
         self.reshaping_layers.to(device=device)
-
-
