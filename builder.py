@@ -37,7 +37,8 @@ if __name__ == "__main__":
 
     logger.debug("################# START ##################")
     text_model = TextEmbeddingModel(
-        model_path=args.dataset + "_word_classification.pth"
+        model_path=args.dataset + "_word_classification.pth",
+        device="cpu"
     )
 
     i = 0
