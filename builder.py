@@ -9,6 +9,10 @@ from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
 if __name__ == "__main__":
     main_parser = argparse.ArgumentParser()
