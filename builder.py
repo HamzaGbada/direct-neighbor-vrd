@@ -6,6 +6,7 @@ from args import build_subparser
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
+from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
 
@@ -40,6 +41,12 @@ if __name__ == "__main__":
         labels = train_set.data[doc_index][1]["labels"]
 
         features = [text_model.embed_text("18.167$") for text in text_units]
+
+        graph = VRD2Graph(bbox, labels, features)
+        graph.connect_boxes()
+        graph.create_graph()
+
+        graph.save_graph(path="data/"+args.dataset, graph_name=args.dataset+"_train_graph"+str(doc_index))
 
     # Embedding a sentence
     logger.debug(args.dataset)
