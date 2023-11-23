@@ -76,7 +76,7 @@ class VRD2Graph:
         # self.graph = graph((src, dst), num_nodes=len(self.node_label))
 
         # Set node features in the graph
-        self.graph.ndata["features"] = torch.tensor(self.node_features)
+        self.graph.ndata["features"] = torch.stack(self.node_features)
         self.graph.ndata["label"] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
 

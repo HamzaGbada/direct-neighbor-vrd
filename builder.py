@@ -43,11 +43,12 @@ if __name__ == "__main__":
     i = 0
     for doc_index in range(len(train_set)):
         bbox = train_set.data[doc_index][1]["boxes"]
-        logger.debug(f"bbox {bbox}")
         text_units = train_set.data[doc_index][1]["text_units"]
         labels = train_set.data[doc_index][1]["labels"]
 
-        features = [text_model.embed_text("18.167$") for text in text_units]
+        features = [text_model.embed_text(text) for text in text_units]
+        logger.debug(f"features {features}")
+        logger.debug(f"features {type(features[0])}")
 
         graph = VRD2Graph(bbox, labels, features)
         graph.connect_boxes()
