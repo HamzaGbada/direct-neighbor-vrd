@@ -3,16 +3,18 @@ import torch.nn as nn
 from transformers import BertForSequenceClassification, BertTokenizer
 from pathlib import Path
 
-class TextEmbeddingModel:
 
-    def __init__(self, model_path, feat_size=30, device="cuda"):
+class TextEmbeddingModel:
+    def __init__(self, model_path, num_classes=30, feat_size=500, device="cuda"):
         # Initialize the model and load the state_dict
-        self.model = BertForSequenceClassification(feat_size)
+        self.model = BertForSequenceClassification(num_classes)
         self.load_model(Path(model_path))
 
         # Define the reshaping layers
         self.reshaping_layers = nn.Sequential(
-            nn.Linear(feat_size, 500),  # Linear layer to reshape from feat_size to 500 features
+            nn.Linear(
+                num_classes, feat_size
+            ),  # Linear layer to reshape from feat_size to 500 features
             nn.Tanh(),  # You can add activation functions as needed
         )
 
@@ -24,7 +26,7 @@ class TextEmbeddingModel:
 
     def load_model(self, model_path):
         # Load the model state_dict
-        state_dict = torch.load(model_path, map_location=torch.device('cpu'))
+        state_dict = torch.load(model_path, map_location=torch.device("cpu"))
 
         # Load the state_dict to the model
         self.model.load_state_dict(state_dict)
