@@ -36,7 +36,10 @@ from src.utils.utils import (
     plot_cropped_image,
     get_area,
 )
-from src.word_embedding.BERT_embedding import BertSentenceClassification
+from src.word_embedding.BERT_embedding import (
+    BertSentenceClassification,
+    TextEmbeddingModel,
+)
 from train_cnn_for_classification import (
     image_dataloader,
     compute_f1_score,
@@ -463,7 +466,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output.shape}")
         logger.debug(f"output shape{reshaped_output}")
 
-    def test_model_cnn(self):
+    def test_model_word(self):
         text_model = TextEmbeddingModel(model_path="CORD_word_classification.pth")
 
         # Embedding a sentence
@@ -471,7 +474,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{sentence_embedding.shape}")
         logger.debug(f"output shape{sentence_embedding}")
 
-    def test_model_word(self):
+    def test_model_cnn(self):
         model = EmbeddingModel(
             num_classes=30, feat_size=500, model_path=Path("Unet_classification.pth")
         )
