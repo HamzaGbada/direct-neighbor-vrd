@@ -43,6 +43,7 @@ if __name__ == "__main__":
     i = 0
     for doc_index in range(len(train_set)):
         bbox = train_set.data[doc_index][1]["boxes"]
+        logger.debug(f"bbox {bbox}")
         text_units = train_set.data[doc_index][1]["text_units"]
         labels = train_set.data[doc_index][1]["labels"]
 

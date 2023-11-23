@@ -4,6 +4,7 @@ from pathlib import Path
 import dgl
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
 import torch
 from shapely import Point
 from shapely.geometry import Polygon
@@ -132,7 +133,7 @@ class VRD2Graph:
         Check if two bounding boxes are connected without any other boxes in between.
 
         Parameters:
-        - box1, box2: Tuple representing the (x, y, width, height) of the bounding boxes.
+        - box1, box2: NumPy arrays representing the (x, y, width, height) of the bounding boxes.
         - all_boxes: List of bounding boxes.
 
         Returns:
@@ -149,8 +150,13 @@ class VRD2Graph:
         )
 
         for other_box in all_boxes:
-            if other_box != box1 and other_box != box2 and polygon.is_valid:
-                x, y, width, height = other_box
+            other_box_np = np.array(other_box)
+            if (
+                not np.array_equal(other_box_np, box1)
+                and not np.array_equal(other_box_np, box2)
+                and polygon.is_valid
+            ):
+                x, y, width, height = other_box_np
                 points = [
                     (x, y),
                     (x + width, y),

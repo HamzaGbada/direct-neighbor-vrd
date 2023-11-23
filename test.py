@@ -589,14 +589,14 @@ class TestDataLoader(unittest.TestCase):
             # (21, 1, 17, 10),  # Upper
             # (10, 70, 25, 10),  # super low
             # (25, 16, 17, 10),
-            (77, 54, 17, 10),
-            (35, 5, 42, 10),
-            (20, 32, 5, 5),
-            (30, 24, 17, 10),
-            (40, 14, 5, 10),
-            (60, 34, 17, 10),
-            (87, 66, 17, 10),
-            # (90, 74, 17, 10),
+            [77, 54, 17, 10],
+            [35, 5, 42, 10],
+            [20, 32, 5, 5],
+            [30, 24, 17, 10],
+            [40, 14, 5, 10],
+            [60, 34, 17, 10],
+            [87, 66, 17, 10],
+            # [90, 74, 17, 10],
             # (21, 32, 17, 10),  # low
         ]
         labels = [
@@ -616,7 +616,7 @@ class TestDataLoader(unittest.TestCase):
             # (21, 32, 17, 10),  # low
         ]
         feat = torch.zeros(len(bounding_boxes), dtype=torch.float32)
-        graph = VRD2Graph(bounding_boxes, labels, feat)
+        graph = VRD2Graph(np.array(bounding_boxes), labels, feat)
         graph.connect_boxes()
         graph.create_graph()
         logger.debug(graph.edges)
