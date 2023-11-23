@@ -18,14 +18,13 @@ with warnings.catch_warnings():
 
 class VRD2Graph:
     def __init__(self, bounding_boxes, labels, node_features):
-        self.bounding_boxes, self.node_label = zip(
-            *sorted(zip(bounding_boxes, labels), key=lambda x: (x[0][1], x[0][0]))
+        self.bounding_boxes, self.node_label, self.node_features = zip(
+            *sorted(zip(bounding_boxes, labels, node_features), key=lambda x: (x[0][1], x[0][0]))
         )
         self.connection_index = []
         self.edges = []
         self.graph = dgl.DGLGraph()
         self.default_path = Path("data/graphs")
-        self.node_features = node_features
 
     def __len__(self):
         return len(self.bounding_boxes)
@@ -77,7 +76,7 @@ class VRD2Graph:
         # self.graph = graph((src, dst), num_nodes=len(self.node_label))
 
         # Set node features in the graph
-        self.graph.ndata["features"] = self.node_features
+        self.graph.ndata["features"] = torch.tensor(self.node_features)
         self.graph.ndata["label"] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
 
