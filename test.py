@@ -588,6 +588,13 @@ class TestDataLoader(unittest.TestCase):
         graph.load_graph(path="data/samir", graph_name="bob")
         graph.plot_dgl_graph()
 
+    def test_dataset_graph(self):
+        train_data = CORD(train=True, download=True)
+        test_data = CORD(train=False, download=True)
+
+
+        pass
+
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):
     x1, y1, w1, h1 = bbox1

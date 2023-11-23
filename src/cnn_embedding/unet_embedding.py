@@ -1,5 +1,6 @@
 import warnings
 
+import torch
 from torch import nn
 from torchvision import ops
 from torchvision.models import efficientnet_v2_l, EfficientNet_V2_L_Weights
@@ -104,3 +105,25 @@ class EfficientNetV2MultiClass(nn.Module):
         # logger.debug(f"x shape after {output.shape}")
 
         return self.softmax(output)
+
+
+class EmbeddingModel:
+
+    def __init__(self, num_classes, feat_size, model_path, device="cuda"):
+        self.model = EfficientNetV2MultiClass(num_classes)
+        state_dict = torch.load(model_path)
+
+        self.model.load_state_dict(state_dict)  # works
+
+        # x =
+        # model.to(device="cuda")
+        self.reshaping_layers = nn.Sequential(
+            nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
+            nn.Tanh(),  # You can add activation functions as needed
+        )
+
+        # Transfer the model and reshaping layers to the GPU
+        self.model.to(device=device)
+        self.reshaping_layers.to(device=device)
+
+
