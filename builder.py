@@ -37,8 +37,7 @@ if __name__ == "__main__":
 
     logger.debug("################# START ##################")
     text_model = TextEmbeddingModel(
-        model_path=args.dataset + "_word_classification.pth",
-        device="cpu"
+        model_path=args.dataset + "_word_classification.pth"
     )
 
     i = 0
@@ -50,7 +49,7 @@ if __name__ == "__main__":
         features = [text_model.embed_text(text) for text in text_units]
         logger.debug(f"features {features}")
         logger.debug(f"features {type(features[0])}")
-
+        # TODO: Convert graph to device GPU and check the error
         graph = VRD2Graph(bbox, labels, features)
         graph.connect_boxes()
         graph.create_graph()
