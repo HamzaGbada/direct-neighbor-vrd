@@ -2,6 +2,7 @@ import os
 import random
 import unittest
 import warnings
+from pathlib import Path
 
 import dgl
 import matplotlib.patches as patches
@@ -18,7 +19,11 @@ from torchmetrics.functional.classification import multilabel_accuracy
 from torchvision import transforms
 from transformers import BertTokenizer
 
-from src.cnn_embedding.unet_embedding import UNet, EfficientNetV2MultiClass
+from src.cnn_embedding.unet_embedding import (
+    UNet,
+    EfficientNetV2MultiClass,
+    EmbeddingModel,
+)
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
@@ -458,6 +463,26 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output.shape}")
         logger.debug(f"output shape{reshaped_output}")
 
+    def test__model_cnn(self):
+        model = EmbeddingModel(
+            num_classes=30, feat_size=500, model_path=Path("Unet_classification.pth")
+        )
+        model.to_device("cuda")
+        model.eval()
+        # model.eval()
+        # model = torch.load("Unet_classification.pth")
+        # checkpoint = torch.load('Unet_classification.pth')
+        # model = checkpoint['model']
+        # model.load_state_dict(checkpoint['state_dict'])
+        # model.eval()
+        inputs = torch.rand(1, 1, 63, 45).to(device="cuda")
+        output = model(inputs)
+
+        # reshaped_output = reshaping_layers(output)
+
+        logger.debug(f"output shape{output.shape}")
+        logger.debug(f"output shape{output}")
+
     def test_connect_bbox(self):
         bounding_boxes = [
             # (6, 1, 10, 10),
@@ -591,7 +616,6 @@ class TestDataLoader(unittest.TestCase):
     def test_dataset_graph(self):
         train_data = CORD(train=True, download=True)
         test_data = CORD(train=False, download=True)
-
 
         pass
 
