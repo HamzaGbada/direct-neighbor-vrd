@@ -1,6 +1,11 @@
 import argparse
 
+from doctr.datasets import FUNSD
+
 from args import build_subparser
+from src.dataloader.SROIE_dataloader import SROIE
+from src.dataloader.cord_dataloader import CORD
+from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
 
@@ -10,10 +15,33 @@ if __name__ == "__main__":
     build_subparser(subparsers)
     args = main_parser.parse_args()
 
-    text_model = TextEmbeddingModel(model_path="CORD_word_classification.pth")
+    if args.dataset == "CORD":
+        train_set = CORD(train=True, download=True)
+        test_set = CORD(train=False, download=True)
+    elif args.dataset == "SROIE":
+        train_set = SROIE(train=True, download=True)
+        test_set = SROIE(train=False, download=True)
+    elif args.dataset == "FUNSD":
+        train_set = FUNSD(train=True, download=True)
+        test_set = FUNSD(train=False, download=True)
+    elif args.dataset == "WILDRECEIPT":
+        train_set = WILDRECEIPT(train=True, download=True)
+        test_set = WILDRECEIPT(train=False, download=True)
+    else:
+        logger.debug("Dataset not recognized")
+
+    text_model = TextEmbeddingModel(
+        model_path=args.dataset + "_word_classification.pth"
+    )
+
+    for doc_index in range(len(train_set)):
+        bbox = train_set.data[doc_index][1]["boxes"]
+        text_units = train_set.data[doc_index][1]["text_units"]
+        labels = train_set.data[doc_index][1]["labels"]
+
+        features = [text_model.embed_text("18.167$") for text in text_units]
 
     # Embedding a sentence
-    sentence_embedding = text_model.embed_text("18.167$")
     logger.debug(args.dataset)
 
     # TODO: create the building process
