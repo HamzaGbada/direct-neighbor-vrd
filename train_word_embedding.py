@@ -11,7 +11,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.utils.setup_logger import logger
 from src.utils.utils import plots
-from src.word_embedding.BERT_embedding import BertForSentenceClassification
+from src.word_embedding.BERT_embedding import BertSentenceClassification
 from train_cnn_for_classification import compute_f1_score
 
 
@@ -234,7 +234,7 @@ def main(
     num_epochs=10,
     device=torch.device("cpu"),
 ):
-    model = BertForSentenceClassification(num_classes)
+    model = BertSentenceClassification(num_classes)
     optimizer = AdamW(model.parameters(), lr=2e-5)
     loss_fn = nn.CrossEntropyLoss()
 

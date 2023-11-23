@@ -36,7 +36,7 @@ from src.utils.utils import (
     plot_cropped_image,
     get_area,
 )
-from src.word_embedding.BERT_embedding import BertForSentenceClassification
+from src.word_embedding.BERT_embedding import BertSentenceClassification
 from train_cnn_for_classification import (
     image_dataloader,
     compute_f1_score,
@@ -414,7 +414,7 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output}")
 
     def test_pretrained_model_word(self):
-        model = BertForSentenceClassification(30)
+        model = BertSentenceClassification(30)
         state_dict = torch.load("CORD_word_classification.pth")
 
         model.load_state_dict(state_dict)  # works
@@ -463,7 +463,15 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"output shape{reshaped_output.shape}")
         logger.debug(f"output shape{reshaped_output}")
 
-    def test__model_cnn(self):
+    def test_model_cnn(self):
+        text_model = TextEmbeddingModel(model_path="CORD_word_classification.pth")
+
+        # Embedding a sentence
+        sentence_embedding = text_model.embed_text("18.167$")
+        logger.debug(f"output shape{sentence_embedding.shape}")
+        logger.debug(f"output shape{sentence_embedding}")
+
+    def test_model_word(self):
         model = EmbeddingModel(
             num_classes=30, feat_size=500, model_path=Path("Unet_classification.pth")
         )
