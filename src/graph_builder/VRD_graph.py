@@ -80,7 +80,7 @@ class VRD2Graph:
 
         # Set node features in the graph
         self.graph.ndata["features"] = torch.stack(self.node_features)
-        self.graph.ndata["label"] = torch.tensor(self.node_label)
+        self.graph.ndata["label"] = torch.stack(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
 
     def plot_dgl_graph(self):

@@ -8,6 +8,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
+from src.utils.utils import process_labels
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
 import warnings
 
@@ -41,15 +42,12 @@ if __name__ == "__main__":
         model_path=args.dataset + "_word_classification.pth", device=device
     )
 
-    i = 0
-
     for doc_index in range(len(train_set)):
         bbox = train_set.data[doc_index][1]["boxes"]
         text_units = train_set.data[doc_index][1]["text_units"]
-        labels = train_set.data[doc_index][1]["labels"]
+        labels, name = process_labels(train_set)
 
         features = [text_model.embed_text(text) for text in text_units]
-        logger.debug(f"labels {labels}")
         graph = VRD2Graph(bbox, labels, features, device=device)
         graph.connect_boxes()
         graph.create_graph()
@@ -58,12 +56,6 @@ if __name__ == "__main__":
             path="data/" + args.dataset,
             graph_name=args.dataset + "_train_graph" + str(doc_index),
         )
-        i += 1
-
-        if i > 5:
-            break
 
     # Embedding a sentence
     logger.debug(args.dataset)
-
-    # TODO: create the building process
