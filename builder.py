@@ -52,10 +52,14 @@ if __name__ == "__main__":
         # TODO: Convert graph to device GPU and check the error
         graph = VRD2Graph(bbox, labels, features)
         graph.connect_boxes()
+        graph.to_device("cuda")
         graph.create_graph()
 
-        graph.save_graph(path="data/"+args.dataset, graph_name=args.dataset+"_train_graph"+str(doc_index))
-        i+=1
+        graph.save_graph(
+            path="data/" + args.dataset,
+            graph_name=args.dataset + "_train_graph" + str(doc_index),
+        )
+        i += 1
 
         if i > 5:
             break
