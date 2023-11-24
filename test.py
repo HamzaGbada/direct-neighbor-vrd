@@ -63,8 +63,6 @@ class TestDataLoader(unittest.TestCase):
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_wildreceipt(self):
-        # TODO: try with the other vairent of wildreceipt dataset of Huggingface
-        #       Here is a similar issue: https://github.com/huggingface/datasets/issues/4775
         train = True
         if train:
             dataset = load_dataset("Theivaprakasham/wildreceipt")["train"]
@@ -555,8 +553,6 @@ class TestDataLoader(unittest.TestCase):
         plt.show()
 
     def test_shaply(self):
-        # TODO: Check if a point is inside the polygone (check the difference between this implementation and the
-        #  point implementation in term of RAM)
         rectangle = Polygon([(3, 5), (3, 8), (4, 8), (4, 5)])
         polygon = Polygon([(0, 0), (0, 2), (6, 8), (7, 8), (7, 4), (1, 0)])
         intersection = rectangle.intersection(polygon)
