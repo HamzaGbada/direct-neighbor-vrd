@@ -37,6 +37,7 @@ class TextEmbeddingModel:
         )
 
         # Transfer the model and reshaping layers to the GPU
+        self.device = device
         self.to_device(device)
 
         # Set the model to evaluation mode
@@ -44,7 +45,7 @@ class TextEmbeddingModel:
 
     def load_model(self, model_path):
         # Load the model state_dict
-        state_dict = torch.load(model_path, map_location=torch.device("cpu"))
+        state_dict = torch.load(model_path, map_location=torch.device(self.device))
 
         # Load the state_dict to the model
         self.model.load_state_dict(state_dict)
@@ -71,8 +72,8 @@ class TextEmbeddingModel:
             "input_ids": encoding["input_ids"].flatten(),
             "attention_mask": encoding["attention_mask"].flatten(),
         }
-        input_ids = batch["input_ids"].to(device="cuda")
-        attention_mask = batch["attention_mask"].to(device="cuda")
+        input_ids = batch["input_ids"].to(device=self.device)
+        attention_mask = batch["attention_mask"].to(device=self.device)
         input_ids = input_ids.unsqueeze(0)
         attention_mask = attention_mask.unsqueeze(0)
 

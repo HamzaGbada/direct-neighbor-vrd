@@ -17,7 +17,7 @@ with warnings.catch_warnings():
 
 
 class VRD2Graph:
-    def __init__(self, bounding_boxes, labels, node_features, device="cpu"):
+    def __init__(self, bounding_boxes, labels, node_features, device="cuda"):
         self.bounding_boxes, self.node_label, self.node_features = zip(
             *sorted(
                 zip(bounding_boxes, labels, node_features),
