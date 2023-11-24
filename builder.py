@@ -52,7 +52,8 @@ if __name__ == "__main__":
         # TODO: Convert graph to device GPU and check the error
         graph = VRD2Graph(bbox, labels, features)
         graph.connect_boxes()
-        graph.to_device("cuda")
+        graph.to_device("cuda:0")
+        logger.debug(f" graph device  in builder {graph.graph.device}")
         graph.create_graph()
 
         graph.save_graph(

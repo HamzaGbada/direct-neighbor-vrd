@@ -17,7 +17,7 @@ with warnings.catch_warnings():
 
 
 class VRD2Graph:
-    def __init__(self, bounding_boxes, labels, node_features):
+    def __init__(self, bounding_boxes, labels, node_features, device="cpu"):
         self.bounding_boxes, self.node_label, self.node_features = zip(
             *sorted(
                 zip(bounding_boxes, labels, node_features),
@@ -79,6 +79,7 @@ class VRD2Graph:
         # self.graph = graph((src, dst), num_nodes=len(self.node_label))
 
         # Set node features in the graph
+        logger.debug(f"graph device {self.graph.device}")
         self.graph.ndata["features"] = torch.stack(self.node_features)
         self.graph.ndata["label"] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
@@ -130,7 +131,8 @@ class VRD2Graph:
         self.graph = loaded_graphs[0]
 
     def to_device(self, device="cpu"):
-        self.graph.to(device)
+        self.graph = self.graph.to(device)
+        logger.debug(f" graph device  in builder in todevice {self.graph.device}")
 
     @classmethod
     def is_connected(cls, box1, box2, all_boxes):
