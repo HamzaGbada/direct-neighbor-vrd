@@ -19,7 +19,10 @@ with warnings.catch_warnings():
 class VRD2Graph:
     def __init__(self, bounding_boxes, labels, node_features):
         self.bounding_boxes, self.node_label, self.node_features = zip(
-            *sorted(zip(bounding_boxes, labels, node_features), key=lambda x: (x[0][1], x[0][0]))
+            *sorted(
+                zip(bounding_boxes, labels, node_features),
+                key=lambda x: (x[0][1], x[0][0]),
+            )
         )
         self.connection_index = []
         self.edges = []
@@ -125,6 +128,9 @@ class VRD2Graph:
         file_path = path / f"{graph_name}.bin"
         loaded_graphs, _ = dgl.load_graphs(str(file_path))
         self.graph = loaded_graphs[0]
+
+    def to_device(self, device="cpu"):
+        self.graph.to(device)
 
     @classmethod
     def is_connected(cls, box1, box2, all_boxes):
