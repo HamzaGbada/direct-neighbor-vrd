@@ -22,10 +22,13 @@ class BertSentenceClassification(nn.Module):
 
 
 class TextEmbeddingModel:
+    device: str
+
     def __init__(self, model_path, num_classes=30, feat_size=500, device="cuda"):
         # Initialize the model and load the state_dict
 
         self.model = BertSentenceClassification(num_classes)
+        self.device = device
         self.load_model(Path(model_path))
 
         # Define the reshaping layers
@@ -37,8 +40,8 @@ class TextEmbeddingModel:
         )
 
         # Transfer the model and reshaping layers to the GPU
-        self.device = device
-        self.to_device(device)
+        self.model.to(device=self.device)
+        self.reshaping_layers.to(device=self.device)
 
         # Set the model to evaluation mode
         self.model.eval()
