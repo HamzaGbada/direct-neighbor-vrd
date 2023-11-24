@@ -26,7 +26,7 @@ class VRD2Graph:
         )
         self.connection_index = []
         self.edges = []
-        self.graph = dgl.DGLGraph()
+        self.graph = dgl.DGLGraph().to(device)
         self.default_path = Path("data/graphs")
 
     def __len__(self):
@@ -79,7 +79,6 @@ class VRD2Graph:
         # self.graph = graph((src, dst), num_nodes=len(self.node_label))
 
         # Set node features in the graph
-        logger.debug(f"graph device {self.graph.device}")
         self.graph.ndata["features"] = torch.stack(self.node_features)
         self.graph.ndata["label"] = torch.tensor(self.node_label)
         self.graph.edata["weight"] = torch.tensor(feat)
@@ -132,7 +131,6 @@ class VRD2Graph:
 
     def to_device(self, device="cpu"):
         self.graph = self.graph.to(device)
-        logger.debug(f" graph device  in builder in todevice {self.graph.device}")
 
     @classmethod
     def is_connected(cls, box1, box2, all_boxes):

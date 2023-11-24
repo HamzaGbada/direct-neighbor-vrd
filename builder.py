@@ -35,12 +35,14 @@ if __name__ == "__main__":
     else:
         logger.debug("Dataset not recognized")
 
+    device = "cpu"
     logger.debug("################# START ##################")
     text_model = TextEmbeddingModel(
-        model_path=args.dataset + "_word_classification.pth"
+        model_path=args.dataset + "_word_classification.pth", device=device
     )
 
     i = 0
+
     for doc_index in range(len(train_set)):
         bbox = train_set.data[doc_index][1]["boxes"]
         text_units = train_set.data[doc_index][1]["text_units"]
@@ -50,10 +52,8 @@ if __name__ == "__main__":
         logger.debug(f"features {features}")
         logger.debug(f"features {type(features[0])}")
         # TODO: Convert graph to device GPU and check the error
-        graph = VRD2Graph(bbox, labels, features)
+        graph = VRD2Graph(bbox, labels, features, device=device)
         graph.connect_boxes()
-        graph.to_device("cuda:0")
-        logger.debug(f" graph device  in builder {graph.graph.device}")
         graph.create_graph()
 
         graph.save_graph(

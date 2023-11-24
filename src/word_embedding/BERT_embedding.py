@@ -51,8 +51,8 @@ class TextEmbeddingModel:
 
     def to_device(self, device):
         # Transfer the model and reshaping layers to the specified device
-        self.model.to(device=device)
-        self.reshaping_layers.to(device=device)
+        self.model = self.model.to(device=device)
+        self.reshaping_layers = self.reshaping_layers.to(device=device)
 
     def embed_text(self, sentence):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
