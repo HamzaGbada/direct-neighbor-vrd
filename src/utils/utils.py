@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from sklearn.preprocessing import OneHotEncoder
 
 
 # Define functions to convert bounding box formats
@@ -40,7 +41,10 @@ def plot_cropped_image(image, box, title):
     plt.show()
 
 
-def process_dataset_labels(dataset):
+def process_labels(dataset):
+    num_labels = 30 if type(dataset).__name__ == "CORD" else 5
+    X = torch.arange(0, num_labels).view(-1, 1)
+
     if type(dataset).__name__ == "CORD":
         encoded_dic = {
             "menu.sub_cnt": 0,
@@ -74,23 +78,27 @@ def process_dataset_labels(dataset):
             "menu.itemsubtotal": 28,
             "menu.sub_price": 29,
         }
-        X = torch.arange(0, 30).view(-1, 1)
-        labels = [
-            encoded_dic[x]
-            for doc_index in range(len(dataset))
-            for x in dataset.data[doc_index][1]["labels"]
-        ]
-        name = "CORD"
-    elif type(dataset).__name__ == "SROIE":
-        labels = [
-            x
-            for doc_index in range(len(dataset))
-            for x in dataset.data[doc_index][1]["labels"]
-        ]
-        X = torch.arange(0, 5).view(-1, 1)
-        name = "SROIE"
+    else:
+        encoded_dic = {}  # Define your encoded_dic for SROIE here
 
-    return X, labels, name
+    labels = (
+        encoded_dic[x]
+        for doc_index in range(len(dataset))
+        for x in dataset.data[doc_index][1]["labels"]
+    )
+
+    if type(dataset).__name__ == "SROIE":
+        num_labels = 5
+
+    labels = torch.from_numpy(
+        OneHotEncoder(sparse=False)
+        .fit(X)
+        .transform(torch.tensor(list(labels)).reshape(-1, 1))
+    )
+
+    name = "CORD" if num_labels == 30 else "SROIE"
+
+    return labels, name
 
 
 def plots(epochs, train_losses, val_losses, type="Loss", name="CORD"):
