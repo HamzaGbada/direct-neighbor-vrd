@@ -49,9 +49,7 @@ if __name__ == "__main__":
         labels = train_set.data[doc_index][1]["labels"]
 
         features = [text_model.embed_text(text) for text in text_units]
-        logger.debug(f"features {features}")
-        logger.debug(f"features {type(features[0])}")
-        # TODO: Convert graph to device GPU and check the error
+        logger.debug(f"labels {labels}")
         graph = VRD2Graph(bbox, labels, features, device=device)
         graph.connect_boxes()
         graph.create_graph()
