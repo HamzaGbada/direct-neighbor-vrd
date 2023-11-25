@@ -4,34 +4,20 @@ import warnings
 import numpy as np
 import torch
 import torch.optim as optim
-from tqdm import tqdm
 from PIL import Image
-from sklearn.metrics import f1_score
-from sklearn.preprocessing import OneHotEncoder
 from torch import nn
 from torch.utils.data import DataLoader
-from torchvision import transforms
 from torchmetrics.functional.classification import multilabel_accuracy
+from torchvision import transforms
+from tqdm import tqdm
 
 from src.cnn_embedding.unet_embedding import EfficientNetV2MultiClass
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.image_classification_dataloader import ImageDataset
 from src.utils.setup_logger import logger
-from src.utils.utils import plots, process_labels
+from src.utils.utils import plots, process_labels, compute_f1_score
 
 warnings.filterwarnings("ignore")
-
-
-def compute_f1_score(label, pred):
-    threshold = 0.5
-    predicted_labels = (pred > threshold).float()
-
-    # Convert tensors to numpy arrays for compatibility with scikit-learn
-    predicted_labels = predicted_labels.cpu().numpy()
-    true_labels = label.cpu().numpy()
-
-    # Compute the F1 score
-    return f1_score(true_labels, predicted_labels, average="micro")
 
 
 def compute_accuracy(label, pred):

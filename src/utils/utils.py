@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
+from sklearn.metrics import f1_score
 from sklearn.preprocessing import OneHotEncoder
 
 from src.graph_builder.VRD_graph import VRD2Graph
@@ -118,6 +119,18 @@ def process_and_save_dataset(dataset, text_model, args, split="train", device="c
             path=f"data/{args.dataset}/{split}",
             graph_name=f"{args.dataset}_{split}_graph{doc_index}",
         )
+
+
+def compute_f1_score(label, pred):
+    threshold = 0.5
+    predicted_labels = (pred > threshold).float()
+
+    # Convert tensors to numpy arrays for compatibility with scikit-learn
+    predicted_labels = predicted_labels.cpu().numpy()
+    true_labels = label.cpu().numpy()
+
+    # Compute the F1 score
+    return f1_score(true_labels, predicted_labels, average="micro")
 
 
 def plots(epochs, train_losses, val_losses, type="Loss", name="CORD"):
