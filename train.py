@@ -52,7 +52,7 @@ def train(
 
         f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
         accuracy_train = multilabel_accuracy(
-            logits, labels, num_labels=num_class, average="macro"
+            logits.squeeze(dim=1), labels.squeeze(dim=1), num_labels=num_class, average="macro"
         )
         # Compute prediction
         pred = logits.argmax(1)
