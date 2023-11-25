@@ -3,6 +3,8 @@ import torch
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 
+from src.graph_builder.VRD_graph import VRD2Graph
+
 
 # Define functions to convert bounding box formats
 def convert_format1(box):
@@ -99,6 +101,25 @@ def process_labels(dataset):
     name = "CORD" if num_labels == 30 else "SROIE"
 
     return labels, name
+
+
+def process_and_save_dataset(dataset, text_model, args, split="train", device="cuda"):
+    for doc_index in range(len(dataset)):
+        bbox = dataset.data[doc_index][1]["boxes"]
+        text_units = dataset.data[doc_index][1]["text_units"]
+        labels, name = process_labels(dataset)
+
+        features = [text_model.embed_text(text) for text in text_units]
+        graph = VRD2Graph(bbox, labels, features, device=device)
+        graph.connect_boxes()
+        graph.create_graph()
+
+        graph.save_graph(
+            path=f"data/{args.dataset}/{split}",
+            graph_name=f"{args.dataset}_{split}_graph{doc_index}",
+        )
+
+
 
 
 def plots(epochs, train_losses, val_losses, type="Loss", name="CORD"):

@@ -8,7 +8,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
-from src.utils.utils import process_labels
+from src.utils.utils import process_labels, process_and_save_dataset
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
 import warnings
 
@@ -42,20 +42,7 @@ if __name__ == "__main__":
         model_path=args.dataset + "_word_classification.pth", device=device
     )
 
-    for doc_index in range(len(train_set)):
-        bbox = train_set.data[doc_index][1]["boxes"]
-        text_units = train_set.data[doc_index][1]["text_units"]
-        labels, name = process_labels(train_set)
-
-        features = [text_model.embed_text(text) for text in text_units]
-        graph = VRD2Graph(bbox, labels, features, device=device)
-        graph.connect_boxes()
-        graph.create_graph()
-
-        graph.save_graph(
-            path="data/" + args.dataset,
-            graph_name=args.dataset + "_train_graph" + str(doc_index),
-        )
-
+    process_and_save_dataset(train_set, text_model, args, split="train")
+    process_and_save_dataset(test_set, text_model, args, split="test")
     # Embedding a sentence
     logger.debug(args.dataset)
