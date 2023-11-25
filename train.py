@@ -3,6 +3,7 @@ import argparse
 
 import torch
 from dgl import add_self_loop
+from torch.nn import CrossEntropyLoss
 from torch.nn.functional import cross_entropy, relu
 from torch.optim import Adam
 from torchmetrics.functional.classification import (
@@ -52,7 +53,10 @@ def train(
 
         f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
         accuracy_train = multilabel_accuracy(
-            logits.squeeze(dim=1), labels.squeeze(dim=1), num_labels=num_class, average="macro"
+            logits.squeeze(dim=1),
+            labels.squeeze(dim=1),
+            num_labels=num_class,
+            average="macro",
         )
         # Compute prediction
         pred = logits.argmax(1)
@@ -63,7 +67,8 @@ def train(
         logger.debug(f"feature shape logits[train_mask]{logits[train_mask].shape}")
         # TODO: the error of shape (check the output of the below) is due to the multiclass classification (change
         #  the label)
-        loss = cross_entropy(logits[train_mask], labels[train_mask])
+        # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
+        loss = CrossEntropyLoss(logits[train_mask], labels[train_mask])
         loss_train.append(loss.to("cpu").detach().numpy())
         loss_val.append(
             cross_entropy(logits[val_mask], labels[val_mask]).to("cpu").detach().numpy()
