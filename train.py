@@ -106,10 +106,15 @@ def train(
         loss.backward()
         optimizer.step()
         logger.debug(f"Best Test f1-score {best_test_f1}")
-        if e % 10 == 0:
+        # FIXME: make e%10
+        if e % 1 == 0:
             logger.debug(
                 f"Epochs: {e}/{epochs}, Train F1-score: {train_f1}, Val F1-score: {val_f1}, Train Accuracy: "
                 f"{train_acc}, Val Accuracy: {val_acc}, Best Accuracy: {best_val_acc}, Best F1-score: {best_val_f1}, Best Test F1-score: {best_test_f1}"
+            )
+            logger.debug(
+                f"Epochs: {e}/{epochs}, ############# Train F1-score: {f1_score_train}"
+                f"{accuracy_train}"
             )
     return train_list, val_list, test_list, loss_train, loss_val, loss_test
 
