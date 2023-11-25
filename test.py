@@ -12,6 +12,7 @@ import torch
 import torch.optim as optim
 from PIL import Image
 from datasets import load_dataset
+from dgl import load_graphs
 from shapely.geometry import Polygon
 from sklearn.preprocessing import OneHotEncoder
 from torch import nn, tensor
@@ -619,10 +620,10 @@ class TestDataLoader(unittest.TestCase):
         graph.plot_dgl_graph()
 
     def test_dataset_graph(self):
-        train_data = CORD(train=True, download=True)
-        test_data = CORD(train=False, download=True)
+        g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
+        logger.debug(g[0][0].num_edges())
+        logger.debug(g[0][0].edata["weight"].shape)
 
-        pass
 
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):

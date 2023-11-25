@@ -19,5 +19,6 @@ if __name__ == "__main__":
     epochs = args.epochs
 
     dataset = GraphDataset(data_name, path=path)
+
     graph_train = dataset[True]
     logger.debug(f"graph train {graph_train}")
