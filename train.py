@@ -149,6 +149,14 @@ if __name__ == "__main__":
     model.double()
     edge_weight = graph_train.edata["weight"].double().to("cuda")
 
-    train_list, val_list, test_list, loss, loss_val, loss_test = train(graph_train, model, edge_weight, train_mask,
-                                                                       val_mask, test_mask, dataset.num_classes, lr,
-                                                                       epochs)
+    train_list, val_list, test_list, loss, loss_val, loss_test = train(
+        graph_train,
+        model,
+        edge_weight,
+        train_mask,
+        val_mask,
+        test_mask,
+        dataset.num_classes,
+        lr,
+        epochs,
+    )
