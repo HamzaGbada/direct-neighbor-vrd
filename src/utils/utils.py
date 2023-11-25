@@ -120,8 +120,6 @@ def process_and_save_dataset(dataset, text_model, args, split="train", device="c
         )
 
 
-
-
 def plots(epochs, train_losses, val_losses, type="Loss", name="CORD"):
     plt.figure(figsize=(10, 5))
     plt.plot(np.arange(1, epochs + 1), train_losses, label="Train " + type)
