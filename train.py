@@ -139,7 +139,7 @@ if __name__ == "__main__":
     # logger.debug(f"data testing indexes {test_index}")
 
     model = WGCN(
-        graph_train.ndata["feat"].shape[2],
+        graph_train.ndata["features"].shape[2],
         hidden_size,
         dataset.num_classes,
         nbr_hidden_layer,
