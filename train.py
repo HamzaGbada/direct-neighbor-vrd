@@ -34,7 +34,7 @@ def train(
     best_test_f1 = 0
 
     # FIXME: Convert this in graph creattion to float32
-    features = g.ndata["features"].to(torch.float32)
+    features = g.ndata["features"].to(torch.float64)
     labels = g.ndata["label"]
     # label_binarizer = LabelBinarizer()
     # label_binarizer.fit(range(max(labels) + 1))
@@ -148,7 +148,7 @@ if __name__ == "__main__":
         relu,
     ).to("cuda")
     # TODO: here sometime float some time double
-    model.float()
+    model.double()
     edge_weight = graph_train.edata["weight"].double().to("cuda")
 
     train_list, val_list, test_list, loss, loss_val, loss_test = train(
