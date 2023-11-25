@@ -8,7 +8,6 @@ from src.utils.setup_logger import logger
 
 class GraphDataset(DGLDataset):
     def __init__(self, data_name: str, path: str = "data/"):
-        super().__init__(name="GraphDataset")
         dataset_paths = {
             "FUNSD": "FUNSD",
             "CORD": "CORD",
@@ -43,6 +42,7 @@ class GraphDataset(DGLDataset):
         self.graph_train = batch([self.graph_train, self.graph_test])
         logger.debug(self.graph_train.number_of_nodes())
         logger.debug(self.graph_test.number_of_nodes())
+        super().__init__(name="GraphDataset")
 
     def process(self):
         n_nodes = self.graph_train.number_of_nodes()

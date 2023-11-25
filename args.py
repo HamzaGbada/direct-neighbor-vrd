@@ -25,7 +25,7 @@ def train_subparser(subparsers):
         "-d",
         "--dataset",
         type=str,
-        default="WILDRECEIPT",
+        default="CORD",
         choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
         help="Selecting the dataset for your model's training.",
     )
