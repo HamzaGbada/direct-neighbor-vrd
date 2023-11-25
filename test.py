@@ -625,7 +625,6 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(g[0][0].edata["weight"].shape)
 
 
-
 def draw_line_between_bounding_boxes(bbox1, bbox2):
     x1, y1, w1, h1 = bbox1
     x2, y2, w2, h2 = bbox2
