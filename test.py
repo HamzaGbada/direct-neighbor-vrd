@@ -388,8 +388,6 @@ class TestDataLoader(unittest.TestCase):
 
         model.load_state_dict(state_dict)  # works
 
-        # x =
-        # model.to(device="cuda")
         reshaping_layers = nn.Sequential(
             nn.Linear(30, 500),  # Linear layer to reshape from 30 to 500 features
             nn.Tanh(),  # You can add activation functions as needed
