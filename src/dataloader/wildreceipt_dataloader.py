@@ -58,17 +58,19 @@ class WILDRECEIPT(VisionDataset):
             ]
             if _targets:
                 box_targets, text_units, labels = zip(*_targets)
-
-                self.data.append(
-                    (
-                        file_name,
-                        dict(
-                            boxes=np.asarray(box_targets, dtype=int),
-                            labels=list(labels),
-                            text_units=list(text_units),
-                        ),
+                if (
+                    len(box_targets) > 1
+                ):  # number of bounding boxes in document should be more than one
+                    self.data.append(
+                        (
+                            file_name,
+                            dict(
+                                boxes=np.asarray(box_targets, dtype=int),
+                                labels=list(labels),
+                                text_units=list(text_units),
+                            ),
+                        )
                     )
-                )
         self.root = tmp_root
 
     def extra_repr(self) -> str:

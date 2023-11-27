@@ -76,7 +76,7 @@ class SROIE(VisionDataset):
                             bbox_labeled["y2"],
                         ]
                     )
-                    < 1000
+                    < 200
                 ].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 if not os.path.isdir("data/SROIE_CSV/train/"):
@@ -103,7 +103,7 @@ class SROIE(VisionDataset):
                             bbox_labeled["y2"],
                         ]
                     )
-                    < 1000
+                    < 200
                 ].index
                 bbox_labeled.drop(index_bbox, inplace=True)
                 logger.debug(f'the condition {os.path.isdir("data/SROIE_CSV/test/")}')
@@ -127,8 +127,10 @@ class SROIE(VisionDataset):
             bbox_and_label["labels"] = [encoded_dic[x] for x in df["label"]]
             bbox_and_label["text_units"] = [x.lower() for x in df["line"]]
             t_data = (csv_file[:-4] + ".jpg", bbox_and_label)
-
-            self.data.append(t_data)
+            if (
+                len(bbox_and_label["text_units"]) > 1
+            ):  # number of bounding boxes in document should be more than one
+                self.data.append(t_data)
 
         self.root = img_path
 

@@ -120,23 +120,26 @@ class CORD(VisionDataset):
                             else:
                                 # Reduce 8 coords to 4 -> xmin, ymin, xmax, ymax
                                 box = [min(x), min(y), max(x), max(y)]
-                            if get_area(box) >= 1000:
+                            if get_area(box) >= 200 and len():
                                 _targets.append(
                                     (word["text"].lower(), line["category"], box)
                                 )
 
             if len(_targets) != 0:
                 text_targets, labels, box_targets = zip(*_targets)
-                self.data.append(
-                    (
-                        img_path,
-                        dict(
-                            boxes=np.asarray(box_targets, dtype=int).clip(min=0),
-                            text_units=list(text_targets),
-                            labels=list(labels),
-                        ),
+                if (
+                    len(box_targets) > 1
+                ):  # number of bounding boxes in document should be more than one
+                    self.data.append(
+                        (
+                            img_path,
+                            dict(
+                                boxes=np.asarray(box_targets, dtype=int).clip(min=0),
+                                text_units=list(text_targets),
+                                labels=list(labels),
+                            ),
+                        )
                     )
-                )
         self.root = tmp_root
 
     def extra_repr(self) -> str:
