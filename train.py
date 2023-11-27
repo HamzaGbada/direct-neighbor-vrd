@@ -71,8 +71,8 @@ def train(
         #  the label)
         # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
         loss = loss_fct(logits[train_mask], labels[train_mask])
-        loss_train.append(loss.to("cpu").detach().numpy())
-        loss_val.append(loss.to("cpu").detach().numpy())
+        loss_train.append(loss.numpy())
+        loss_val.append(loss.numpy())
         # loss_test.append(
         #     CrossEntropyLoss(logits[test_mask], class_indices[test_mask])
         #     .to("cpu")
