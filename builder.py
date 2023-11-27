@@ -1,4 +1,5 @@
 import argparse
+import warnings
 
 from doctr.datasets import FUNSD
 
@@ -6,11 +7,9 @@ from args import build_subparser
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
-from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
-from src.utils.utils import process_labels, process_and_save_dataset
+from src.utils.utils import process_and_save_dataset
 from src.word_embedding.BERT_embedding import TextEmbeddingModel
-import warnings
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")

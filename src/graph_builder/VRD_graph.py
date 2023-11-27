@@ -71,7 +71,7 @@ class VRD2Graph:
 
         # Add nodes to the graph
         self.graph.add_nodes(num_nodes)
-
+        logger.debug(f"edges {self.edges}")
         # Add edges based on the connection indices
         src, dst, feat = tuple(zip(*self.edges))
 
@@ -174,10 +174,10 @@ class VRD2Graph:
                 intersections = [polygon.contains(Point(point)) for point in points]
 
                 if all(not intersection for intersection in intersections):
-                    # logger.info("No part of the rectangle is inside the polygon")
+                    logger.info("No part of the rectangle is inside the polygon")
                     return True
                 else:
-                    # logger.info("A part of the rectangle is inside the polygon")
+                    logger.info("A part of the rectangle is inside the polygon")
                     return False
 
     @classmethod

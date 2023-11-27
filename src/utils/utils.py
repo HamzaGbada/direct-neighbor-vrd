@@ -51,6 +51,8 @@ def plot_cropped_image(image, box, title):
 
 
 def process_labels(dataset):
+    # FIXME: THIS is computing the label of all the dataset (if we got an error in metic computing may from this)
+    #  convert it to processing label of each doc_index
     num_labels = 30 if type(dataset).__name__ == "CORD" else 5
     X = torch.arange(0, num_labels).view(-1, 1)
 
@@ -112,20 +114,21 @@ def process_labels(dataset):
 
 def process_and_save_dataset(dataset, text_model, args, split="train", device="cuda"):
     logger.info(f" Building {type(dataset).__name__} {split} start ")
+    labels, name = process_labels(dataset)
     for doc_index in tqdm(range(len(dataset))):
-        bbox = dataset.data[doc_index][1]["boxes"]
-        text_units = dataset.data[doc_index][1]["text_units"]
-        labels, name = process_labels(dataset)
+        if doc_index == 257:
+            bbox = dataset.data[doc_index][1]["boxes"]
+            text_units = dataset.data[doc_index][1]["text_units"]
 
-        features = [text_model.embed_text(text) for text in text_units]
-        graph = VRD2Graph(bbox, labels, features, device=device)
-        graph.connect_boxes()
-        graph.create_graph()
+            features = [text_model.embed_text(text) for text in text_units]
+            graph = VRD2Graph(bbox, labels, features, device=device)
+            graph.connect_boxes()
+            graph.create_graph()
 
-        graph.save_graph(
-            path=f"data/{args.dataset}/{split}",
-            graph_name=f"{args.dataset}_{split}_graph{doc_index}",
-        )
+            graph.save_graph(
+                path=f"data/{args.dataset}/{split}",
+                graph_name=f"{args.dataset}_{split}_graph{doc_index}",
+            )
     logger.info(f" the graph data/{args.dataset}/{split} is saved successfully")
 
 
