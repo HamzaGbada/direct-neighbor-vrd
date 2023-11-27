@@ -28,7 +28,7 @@ def train(
     lr=0.01,
     epochs=50,
 ):
-    loss_fct = loss_fct()
+    loss_fct = CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=lr)
     best_val_acc = 0
     best_val_f1 = 0
@@ -36,7 +36,7 @@ def train(
 
     # FIXME: Convert this in graph creattion to float32
     features = g.ndata["features"].to(torch.float64)
-    labels = g.ndata["label"]
+    labels = g.ndata["label"].to(torch.long)
     # label_binarizer = LabelBinarizer()
     # label_binarizer.fit(range(max(labels) + 1))
     # labels = torch.from_numpy(label_binarizer.transform(labels.to('cpu'))).to('cuda')
