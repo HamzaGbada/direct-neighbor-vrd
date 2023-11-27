@@ -28,6 +28,7 @@ def train(
     lr=0.01,
     epochs=50,
 ):
+    loss_fct = loss_fct()
     optimizer = Adam(model.parameters(), lr=lr)
     best_val_acc = 0
     best_val_f1 = 0
@@ -69,7 +70,7 @@ def train(
         # TODO: the error of shape (check the output of the below) is due to the multiclass classification (change
         #  the label)
         # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
-        loss = CrossEntropyLoss(logits, labels)
+        loss = loss_fct(logits[train_mask], labels[train_mask])
         loss_train.append(loss.to("cpu").detach().numpy())
         loss_val.append(loss.to("cpu").detach().numpy())
         # loss_test.append(
