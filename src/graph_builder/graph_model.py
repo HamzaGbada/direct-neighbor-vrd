@@ -1,5 +1,5 @@
 # TODO: implement GCN, GAT and SAGE
-from dgl import nn
+from torch import nn
 from torch.nn import Module, ModuleList
 from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm
 
