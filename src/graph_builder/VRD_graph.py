@@ -8,12 +8,13 @@ import numpy as np
 import torch
 from shapely import Point
 from shapely.geometry import Polygon
+from dgl.base import DGLWarning
 
 from src.utils.setup_logger import logger
 import warnings
 
 with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
+    warnings.simplefilter("ignore", category= DGLWarning)
 
 
 class VRD2Graph:
@@ -26,7 +27,7 @@ class VRD2Graph:
         )
         self.connection_index = []
         self.edges = []
-        self.graph = dgl.DGLGraph().to(device)
+        self.graph = dgl.graph(self.connection_index).to(device)
         self.default_path = Path("data/graphs")
 
     def __len__(self):
