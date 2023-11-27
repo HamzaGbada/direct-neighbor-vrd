@@ -460,8 +460,9 @@ class TestDataLoader(unittest.TestCase):
 
         reshaped_output = reshaping_layers(outputs)
 
-        logger.debug(f"output shape{reshaped_output.shape}")
-        logger.debug(f"output shape{reshaped_output}")
+        logger.debug(f"reshaped_output shape{reshaped_output.shape}")
+        logger.debug(f"output shape{outputs.shape}")
+        # logger.debug(f"output shape{reshaped_output}")
 
     def test_model_word(self):
         text_model = TextEmbeddingModel(model_path="CORD_word_classification.pth")

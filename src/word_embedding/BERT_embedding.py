@@ -17,7 +17,7 @@ class BertSentenceClassification(nn.Module):
             pretrained_model_name, num_labels=num_classes
         )
 
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, input_ids, attention_mask):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
