@@ -43,5 +43,3 @@ if __name__ == "__main__":
 
     process_and_save_dataset(train_set, text_model, args, split="train", device=device)
     process_and_save_dataset(test_set, text_model, args, split="test", device=device)
-    # Embedding a sentence
-    logger.debug(args.dataset)

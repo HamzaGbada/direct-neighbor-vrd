@@ -116,19 +116,18 @@ def process_and_save_dataset(dataset, text_model, args, split="train", device="c
     logger.info(f" Building {type(dataset).__name__} {split} start ")
     labels, name = process_labels(dataset)
     for doc_index in tqdm(range(len(dataset))):
-        if doc_index == 257:
-            bbox = dataset.data[doc_index][1]["boxes"]
-            text_units = dataset.data[doc_index][1]["text_units"]
+        bbox = dataset.data[doc_index][1]["boxes"]
+        text_units = dataset.data[doc_index][1]["text_units"]
 
-            features = [text_model.embed_text(text) for text in text_units]
-            graph = VRD2Graph(bbox, labels, features, device=device)
-            graph.connect_boxes()
-            graph.create_graph()
+        features = [text_model.embed_text(text) for text in text_units]
+        graph = VRD2Graph(bbox, labels, features, device=device)
+        graph.connect_boxes()
+        graph.create_graph()
 
-            graph.save_graph(
-                path=f"data/{args.dataset}/{split}",
-                graph_name=f"{args.dataset}_{split}_graph{doc_index}",
-            )
+        graph.save_graph(
+            path=f"data/{args.dataset}/{split}",
+            graph_name=f"{args.dataset}_{split}_graph{doc_index}",
+        )
     logger.info(f" the graph data/{args.dataset}/{split} is saved successfully")
 
 
