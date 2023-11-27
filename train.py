@@ -30,6 +30,7 @@ def train(
 ):
     loss_fct = CrossEntropyLoss()
     optimizer = Adam(model.parameters(), lr=lr)
+
     best_val_acc = 0
     best_val_f1 = 0
     best_test_f1 = 0
@@ -37,6 +38,7 @@ def train(
     # FIXME: Convert this in graph creattion to float32
     features = g.ndata["features"].to(torch.float64)
     labels = g.ndata["label"].to(torch.long)
+
     # label_binarizer = LabelBinarizer()
     # label_binarizer.fit(range(max(labels) + 1))
     # labels = torch.from_numpy(label_binarizer.transform(labels.to('cpu'))).to('cuda')
@@ -50,7 +52,8 @@ def train(
         # Forward
 
         logits = model(g, features, edge_weight)
-
+        logger.debug(f"logits shape {logits[train_mask].squeeze(dim=1).shape}")
+        logger.debug(f"labels shape {labels[train_mask].shape}")
         f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
         accuracy_train = multilabel_accuracy(
             logits.squeeze(dim=1),
@@ -71,8 +74,8 @@ def train(
         #  the label)
         # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
         loss = loss_fct(logits[train_mask], labels[train_mask])
-        loss_train.append(loss.cpu().numpy())
-        loss_val.append(loss.cpu().numpy())
+        loss_train.append(loss)
+        loss_val.append(loss)
         # loss_test.append(
         #     CrossEntropyLoss(logits[test_mask], class_indices[test_mask])
         #     .to("cpu")

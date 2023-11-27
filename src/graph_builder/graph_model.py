@@ -1,4 +1,5 @@
 # TODO: implement GCN, GAT and SAGE
+from dgl import nn
 from torch.nn import Module, ModuleList
 from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm
 
@@ -23,6 +24,7 @@ class WGCN(Module):
         )
         # TODO: change it norm='right' in case of zero or non positive values else 'both'
         self.edge_norm = EdgeWeightNorm(norm="right")
+        self.softmax = nn.Softmax()
 
     def forward(self, g, features, edge_weight):
         h = features
@@ -31,4 +33,4 @@ class WGCN(Module):
         for i, layer in enumerate(self.layers):
             # handle api changes for differnt DGL version
             h = layer(g, h, edge_weight=norm_edge_weight)
-        return h
+        return self.softmax(h)
