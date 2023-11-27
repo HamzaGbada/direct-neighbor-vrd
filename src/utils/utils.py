@@ -7,6 +7,10 @@ from sklearn.preprocessing import OneHotEncoder
 
 from src.graph_builder.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
 
 # Define functions to convert bounding box formats

@@ -3,6 +3,10 @@ from pathlib import Path
 import torch
 from torch import nn
 from transformers import BertTokenizer, BertForSequenceClassification, AdamW
+import warnings
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
 
 
 class BertSentenceClassification(nn.Module):
