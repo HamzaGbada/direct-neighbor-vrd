@@ -16,6 +16,8 @@ from dgl import load_graphs
 from shapely.geometry import Polygon
 from sklearn.preprocessing import OneHotEncoder
 from torch import nn, tensor
+from torch.nn import CrossEntropyLoss
+from torch.optim import Adam
 from torchmetrics.functional.classification import multilabel_accuracy
 from torchvision import transforms
 from transformers import BertTokenizer
@@ -624,6 +626,51 @@ class TestDataLoader(unittest.TestCase):
         g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
         logger.debug(g[0][0].num_edges())
         logger.debug(g[0][0].edata["weight"].shape)
+
+    def test_train_model(self):
+        # Initialize dummy model
+        model = DummyModel()
+
+        # Specify the shape of your boolean tensor
+        tensor_shape = (100, 30)
+
+        # Generate random values between 0 and 1 for logits
+        logits = torch.rand(tensor_shape, requires_grad=True)
+
+        # Generate random labels (0 or 1) for one-hot encoded labels
+        labels_one_hot = torch.randint(0, 2, tensor_shape).to(torch.float32)
+
+        # Generate random values between 0 and 1 for train mask
+        random_values = torch.rand(100)
+
+        # Set a threshold for converting to boolean values
+        threshold = 0.5
+        train_mask = random_values > threshold
+
+        # Ensure that both logits and labels require gradients
+        logits.requires_grad_()
+        labels_one_hot.requires_grad_()
+
+        # Compute the CrossEntropyLoss only for the training samples
+        loss_function = CrossEntropyLoss()
+        loss = loss_function(
+            logits[train_mask], labels_one_hot.argmax(dim=1)[train_mask].long()
+        )
+
+        # Perform optimization
+        optimizer = Adam(model.parameters(), lr=0.01)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+
+class DummyModel(nn.Module):
+    def __init__(self):
+        super(DummyModel, self).__init__()
+        self.fc = nn.Linear(10, 30)  # Assuming input size is 10, output size is 30
+
+    def forward(self, x):
+        return self.fc(x)
 
 
 def draw_line_between_bounding_boxes(bbox1, bbox2):
