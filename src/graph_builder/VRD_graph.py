@@ -172,10 +172,10 @@ class VRD2Graph:
                 intersections = [polygon.contains(Point(point)) for point in points]
 
                 if all(not intersection for intersection in intersections):
-                    logger.debug("No part of the rectangle is inside the polygon")
+                    # logger.info("No part of the rectangle is inside the polygon")
                     return True
                 else:
-                    logger.debug("A part of the rectangle is inside the polygon")
+                    # logger.info("A part of the rectangle is inside the polygon")
                     return False
 
     @classmethod

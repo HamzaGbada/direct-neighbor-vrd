@@ -37,7 +37,7 @@ if __name__ == "__main__":
         logger.debug("Dataset not recognized")
 
     device = "cpu"
-    logger.debug("################# START ##################")
+    logger.info("################# BUILDING GRAPHS START ##################")
     text_model = TextEmbeddingModel(
         model_path=args.dataset + "_word_classification.pth", device=device
     )

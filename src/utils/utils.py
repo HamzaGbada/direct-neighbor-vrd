@@ -2,9 +2,11 @@ import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from sklearn.metrics import f1_score
+from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
 
 from src.graph_builder.VRD_graph import VRD2Graph
+from src.utils.setup_logger import logger
 
 
 # Define functions to convert bounding box formats
@@ -105,7 +107,8 @@ def process_labels(dataset):
 
 
 def process_and_save_dataset(dataset, text_model, args, split="train", device="cuda"):
-    for doc_index in range(len(dataset)):
+    logger.info(f" Building {type(dataset).__name__} {split} start ")
+    for doc_index in tqdm(range(len(dataset))):
         bbox = dataset.data[doc_index][1]["boxes"]
         text_units = dataset.data[doc_index][1]["text_units"]
         labels, name = process_labels(dataset)
@@ -119,6 +122,7 @@ def process_and_save_dataset(dataset, text_model, args, split="train", device="c
             path=f"data/{args.dataset}/{split}",
             graph_name=f"{args.dataset}_{split}_graph{doc_index}",
         )
+    logger.info(f" the graph data/{args.dataset}/{split} is saved successfully")
 
 
 def compute_f1_score(label, pred):
