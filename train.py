@@ -38,7 +38,7 @@ def train(
     # FIXME: Convert this in graph creattion to float32
     features = g.ndata["features"].to(torch.float64)
     labels = g.ndata["label"].to(torch.long)
-    class_indices = torch.argmax(labels, dim=1)
+
     # label_binarizer = LabelBinarizer()
     # label_binarizer.fit(range(max(labels) + 1))
     # labels = torch.from_numpy(label_binarizer.transform(labels.to('cpu'))).to('cuda')
@@ -66,14 +66,14 @@ def train(
 
         # Compute loss
         # Note that you should only compute the losses of the nodes in the training set.
-        logger.debug(f"feature shape labels[train_mask]{class_indices[train_mask]}")
+        logger.debug(f"feature shape labels[train_mask]{labels[train_mask]}")
         logger.debug(
             f"feature shape logits[train_mask]{logits[train_mask].squeeze(dim=1)}"
         )
         # TODO: the error of shape (check the output of the below) is due to the multiclass classification (change
         #  the label)
         # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
-        loss = loss_fct(logits[train_mask], class_indices[train_mask])
+        loss = loss_fct(logits[train_mask], labels[train_mask])
         loss_train.append(loss)
         loss_val.append(loss)
         # loss_test.append(
@@ -126,9 +126,9 @@ def train(
             )
     return train_list, val_list, test_list, loss_train, loss_val, loss_test
 
-
 device = "cpu"
 if __name__ == "__main__":
+    # FIXME: RERUN to Repreduce the ERROR
     main_parser = argparse.ArgumentParser()
     subparsers = main_parser.add_subparsers(dest="subcommand", help="Choose subcommand")
     train_subparser(subparsers)
