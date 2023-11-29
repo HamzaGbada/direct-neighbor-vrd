@@ -719,13 +719,14 @@ class TestDataLoader(unittest.TestCase):
         dataset = dgl.data.CoraGraphDataset()
         logger.debug(f"Number of categories: {dataset.num_classes}")
         g = dataset[0]
+        weight = torch.rand(g.num_edges(), dtype=torch.float, device="cuda").view(-1, 1)
         logger.debug("Node features")
         logger.debug(g.ndata)
         logger.debug("Edge features")
         logger.debug(g.edata)
         g = g.to("cuda")
-        model = GCN(g.ndata["feat"].shape[1], 16, dataset.num_classes).to("cuda")
-        train(g, model)
+        model = WGCN(g.ndata["feat"].shape[1], 16, dataset.num_classes, 1, relu).to("cuda")
+        train(g, model, weight)
 
 
 class DummyModel(nn.Module):
@@ -749,19 +750,20 @@ def draw_line_between_bounding_boxes(bbox1, bbox2):
     )
 
 
-def train(g, model):
+def train(g, model, weight):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     best_val_acc = 0
     best_test_acc = 0
 
     features = g.ndata["feat"]
     labels = g.ndata["label"]
+
     train_mask = g.ndata["train_mask"]
     val_mask = g.ndata["val_mask"]
     test_mask = g.ndata["test_mask"]
-    for e in range(50):
+    for e in range(100):
         # Forward
-        logits = model(g, features)
+        logits = model(g, features, weight)
 
         # Compute prediction
         pred = logits.argmax(1)
@@ -785,7 +787,7 @@ def train(g, model):
         loss.backward()
         optimizer.step()
 
-        if e % 5 == 0:
+        if e % 1 == 0:
             logger.debug(
                 f"In epoch {e}, loss: {loss:.3f}, val acc: {val_acc:.3f} (best {best_val_acc:.3f}), test acc: {test_acc:.3f} (best {best_test_acc:.3f})"
             )
