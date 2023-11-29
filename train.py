@@ -121,13 +121,13 @@ def train(
             #     f"{train_acc}, Val Accuracy: {val_acc}, Best Accuracy: {best_val_acc}, Best F1-score: {best_val_f1}, Best Test F1-score: {best_test_f1}"
             # )
             logger.debug(
-                f"Epochs: {e}/{epochs}, ############# Train F1-score: {f1_score_train}"
-                f"{accuracy_train}"
+                f"Epochs: {e+1}/{epochs}, ############# Train F1-score: {f1_score_train}"
+                f" The Train accuracy {accuracy_train}"
             )
     return train_list, val_list, test_list, loss_train, loss_val, loss_test
 
 
-device = "cpu"
+device = "cuda"
 if __name__ == "__main__":
     # FIXME: RERUN to Repreduce the ERROR
     main_parser = argparse.ArgumentParser()
