@@ -141,7 +141,6 @@ if __name__ == "__main__":
     nbr_hidden_layer = args.hidden_layers
     lr = args.learning_rate
     epochs = args.epochs
-    epochs = 2
 
     dataset = GraphDataset(data_name, path=path)
 
