@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 from torch.nn import Module, ModuleList
-from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm
+from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm, GINEConv, EGATConv
 from torch.nn.functional import relu, leaky_relu, softmax, elu
 
 
@@ -129,3 +129,84 @@ class GAT(nn.Module):
         h = elu(h)
         h = self.layer2(h)
         return h
+
+
+class GINE(Module):
+    """
+    Graph Isomorphism Network with Edge Features, introduced by Strategies for Pre-training Graph Neural Networks
+    check the implementation
+    https://docs.dgl.ai/en/0.8.x/generated/dgl.nn.pytorch.conv.GINEConv.html#dgl.nn.pytorch.conv.GINEConv
+
+    """
+
+    def __init__(self, n_infeat, n_hidden, n_classes, n_layers, activation):
+        super(GINE, self).__init__()
+        self.layers = ModuleList()
+        self.layers.append(
+            GINEConv(n_infeat, n_hidden, weight=True, activation=activation)
+        )
+        for i in range(n_layers - 1):
+            self.layers.append(
+                GINEConv(n_hidden, n_hidden, weight=True, activation=activation)
+            )
+        self.layers.append(
+            GINEConv(
+                n_hidden,
+                n_classes,
+                weight=True,
+            )
+        )
+        # TODO: change it norm='right' in case of zero or non positive values else 'both'
+        self.edge_norm = EdgeWeightNorm(norm="right")
+        self.softmax = nn.Softmax()
+
+    def forward(self, g, features, edge_weight):
+        h = features
+
+        # norm_edge_weight = self.edge_norm(g, abs(edge_weight))
+        norm_edge_weight = edge_weight
+        for i, layer in enumerate(self.layers):
+            # handle api changes for differnt DGL version
+            h = layer(g, h, edge_weight=norm_edge_weight)
+        return self.softmax(h)
+
+
+class EGAT(Module):
+    """
+    Graph attention layer that handles edge features from Rossmann-Toolbox (see supplementary data)
+
+    The difference lies in how unnormalized attention scores eij
+     are obtained:    check the implementation
+    https://docs.dgl.ai/en/0.8.x/generated/dgl.nn.pytorch.conv.EGATConv.html#dgl.nn.pytorch.conv.EGATConv
+    """
+
+    def __init__(self, n_infeat, n_hidden, n_classes, n_layers, activation):
+        super(EGAT, self).__init__()
+        self.layers = ModuleList()
+        self.layers.append(
+            EGATConv(n_infeat, n_hidden, weight=True, activation=activation)
+        )
+        for i in range(n_layers - 1):
+            self.layers.append(
+                EGATConv(n_hidden, n_hidden, weight=True, activation=activation)
+            )
+        self.layers.append(
+            EGATConv(
+                n_hidden,
+                n_classes,
+                weight=True,
+            )
+        )
+        # TODO: change it norm='right' in case of zero or non positive values else 'both'
+        self.edge_norm = EdgeWeightNorm(norm="right")
+        self.softmax = nn.Softmax()
+
+    def forward(self, g, features, edge_weight):
+        h = features
+
+        # norm_edge_weight = self.edge_norm(g, abs(edge_weight))
+        norm_edge_weight = edge_weight
+        for i, layer in enumerate(self.layers):
+            # handle api changes for differnt DGL version
+            h = layer(g, h, edge_weight=norm_edge_weight)
+        return self.softmax(h)
