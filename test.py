@@ -761,7 +761,7 @@ def train(g, model, weight):
     train_mask = g.ndata["train_mask"]
     val_mask = g.ndata["val_mask"]
     test_mask = g.ndata["test_mask"]
-    for e in range(100):
+    for e in range(500):
         # Forward
         logits = model(g, features, weight)
 
