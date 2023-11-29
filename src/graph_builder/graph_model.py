@@ -2,6 +2,7 @@
 from torch import nn
 from torch.nn import Module, ModuleList
 from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm
+from torch.nn.functional import relu
 
 
 class WGCN(Module):
@@ -45,6 +46,6 @@ class GCN(nn.Module):
 
     def forward(self, g, in_feat):
         h = self.conv1(g, in_feat)
-        h = F.relu(h)
+        h = relu(h)
         h = self.conv2(g, h)
         return h
