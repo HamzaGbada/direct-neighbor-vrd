@@ -13,11 +13,14 @@ import torch.optim as optim
 from PIL import Image
 from datasets import load_dataset
 from dgl import load_graphs
+from dgl.data import KarateClubDataset
+from dgl.dataloading import DataLoader, GraphDataLoader
 from shapely.geometry import Polygon
 from sklearn.preprocessing import OneHotEncoder
-from torch import nn, tensor
+from torch import nn, tensor, relu
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam
+from torch.utils.data import TensorDataset
 from torchmetrics.functional.classification import multilabel_accuracy
 from torchvision import transforms
 from transformers import BertTokenizer
@@ -31,6 +34,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
+from src.graph_builder.graph_model import WGCN
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
@@ -662,6 +666,53 @@ class TestDataLoader(unittest.TestCase):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+    def test_dgl_karate_club(self):
+        dataset = KarateClubDataset()
+        g = dataset[0]
+        g.ndata["feat"] = g.in_degrees().view(-1, 1).float()
+        g.edata["weight"] = torch.rand(g.num_edges(), dtype=torch.float).view(-1, 1)
+        logger.debug(f"number of nodes {g.num_nodes()}")
+        logger.debug(f"number of edge {g.num_edges()}")
+        logger.debug(f"feat shape of nodes {g.ndata['feat'].shape}")
+        logger.debug(f"feat of edge shape {g.edata['weight'].shape}")
+
+        # Split the dataset into training and testing sets
+        train_mask = torch.zeros(g.num_nodes(), dtype=torch.bool)
+        train_mask[:10] = True  # Let's use the first 10 nodes for training
+        test_mask = ~train_mask
+        train = TensorDataset(torch.tensor(range(g.num_nodes()))[train_mask])
+        # Define the data loader
+        # logger.debug(f'the feat {g.ndata["feat"]}')
+        logger.debug(f'the feat {g.ndata["feat"].shape}')
+        logger.debug(f'the feat {len(g.ndata["feat"])}')
+        logger.debug(f'the feat {type(g.ndata["feat"])}')
+        model = WGCN(g.ndata["feat"].shape[1], 16, 2, 1, relu)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.01)
+        for epoch in range(50):
+            model.train()
+            optimizer.zero_grad()
+            inputs = g.ndata["feat"]
+            edge_weight = g.edata["weight"]
+            # logger.debug(f"edge weight shape {edge_weight.shape}")
+            # logger.debug(f"g shape {g.num_edges()}")
+            labels = g.ndata["label"]  # Assuming labels are available in the graph
+            output = model(g, inputs, edge_weight)
+            pred = output.argmax(1)
+            acc = (pred == g.ndata["label"]).float().mean()
+            logger.debug(f"Train Accuracy: {acc.item()}")
+            loss = criterion(output, labels)
+            loss.backward()
+            optimizer.step()
+
+        # Evaluation
+        model.eval()
+        with torch.no_grad():
+            logits = model(g, g.ndata["feat"], g.edata["weight"])
+            pred = logits.argmax(1)
+            acc = (pred == g.ndata["label"]).float().mean()
+            logger.debug(f"Test Accuracy: {acc.item()}")
 
 
 class DummyModel(nn.Module):

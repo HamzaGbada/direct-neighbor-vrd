@@ -29,7 +29,8 @@ class WGCN(Module):
     def forward(self, g, features, edge_weight):
         h = features
 
-        norm_edge_weight = self.edge_norm(g, abs(edge_weight))
+        # norm_edge_weight = self.edge_norm(g, abs(edge_weight))
+        norm_edge_weight = edge_weight
         for i, layer in enumerate(self.layers):
             # handle api changes for differnt DGL version
             h = layer(g, h, edge_weight=norm_edge_weight)
