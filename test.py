@@ -35,7 +35,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
-from src.graph_builder.graph_model import WGCN, GCN
+from src.graph_builder.graph_model import WGCN, GCN, GAT
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
@@ -725,8 +725,26 @@ class TestDataLoader(unittest.TestCase):
         logger.debug("Edge features")
         logger.debug(g.edata)
         g = g.to("cuda")
-        model = WGCN(g.ndata["feat"].shape[1], 16, dataset.num_classes, 1, relu).to("cuda")
-        train(g, model, weight)
+        model = WGCN(g.ndata["feat"].shape[1], 16, dataset.num_classes, 1, relu).to(
+            "cuda"
+        )
+        train_weight(g, model, weight)
+
+    def test_GAT(self):
+        dataset = dgl.data.CoraGraphDataset()
+        g = dataset[0]
+        features = g.ndata["feat"]
+        label = g.ndata["label"]
+        mask = g.ndata["train_mask"]
+        g = g.to("cuda")
+        net = GAT(
+            g,
+            in_dim=features.size()[1],
+            hidden_dim=8,
+            out_dim=dataset.num_classes,
+            num_heads=2,
+        ).to("cuda")
+        train(g, model=net)
 
 
 class DummyModel(nn.Module):
@@ -750,7 +768,7 @@ def draw_line_between_bounding_boxes(bbox1, bbox2):
     )
 
 
-def train(g, model, weight):
+def train_weight(g, model, weight):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     best_val_acc = 0
     best_test_acc = 0
@@ -764,6 +782,49 @@ def train(g, model, weight):
     for e in range(500):
         # Forward
         logits = model(g, features, weight)
+
+        # Compute prediction
+        pred = logits.argmax(1)
+
+        # Compute loss
+        # Note that you should only compute the losses of the nodes in the training set.
+        loss = cross_entropy(logits[train_mask], labels[train_mask])
+
+        # Compute accuracy on training/validation/test
+        train_acc = (pred[train_mask] == labels[train_mask]).float().mean()
+        val_acc = (pred[val_mask] == labels[val_mask]).float().mean()
+        test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
+
+        # Save the best validation accuracy and the corresponding test accuracy.
+        if best_val_acc < val_acc:
+            best_val_acc = val_acc
+            best_test_acc = test_acc
+
+        # Backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if e % 1 == 0:
+            logger.debug(
+                f"In epoch {e}, loss: {loss:.3f}, val acc: {val_acc:.3f} (best {best_val_acc:.3f}), test acc: {test_acc:.3f} (best {best_test_acc:.3f})"
+            )
+
+
+def train(g, model):
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    best_val_acc = 0
+    best_test_acc = 0
+
+    features = g.ndata["feat"]
+    labels = g.ndata["label"]
+
+    train_mask = g.ndata["train_mask"]
+    val_mask = g.ndata["val_mask"]
+    test_mask = g.ndata["test_mask"]
+    for e in range(500):
+        # Forward
+        logits = model(features)
 
         # Compute prediction
         pred = logits.argmax(1)
