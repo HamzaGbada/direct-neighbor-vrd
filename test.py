@@ -13,11 +13,15 @@ import torch.optim as optim
 from PIL import Image
 from datasets import load_dataset
 from dgl import load_graphs
+from dgl.data import KarateClubDataset
+from dgl.dataloading import DataLoader, GraphDataLoader
 from shapely.geometry import Polygon
 from sklearn.preprocessing import OneHotEncoder
-from torch import nn, tensor
+from torch import nn, tensor, relu
 from torch.nn import CrossEntropyLoss
+from torch.nn.functional import cross_entropy
 from torch.optim import Adam
+from torch.utils.data import TensorDataset
 from torchmetrics.functional.classification import multilabel_accuracy
 from torchvision import transforms
 from transformers import BertTokenizer
@@ -31,6 +35,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
+from src.graph_builder.graph_model import WGCN, GCN, GAT
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
@@ -541,8 +546,8 @@ class TestDataLoader(unittest.TestCase):
 
         for i in range(len(connected_indices)):
             for j in connected_indices[i]:
-                print(i)
-                print(j)
+                logger.debug(i)
+                logger.debug(j)
                 draw_line_between_bounding_boxes(bounding_boxes[i], bounding_boxes[j])
         # Draw lines from the center of the bounding boxes to the other center
         # for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
@@ -559,9 +564,9 @@ class TestDataLoader(unittest.TestCase):
         polygon = Polygon([(0, 0), (0, 2), (6, 8), (7, 8), (7, 4), (1, 0)])
         intersection = rectangle.intersection(polygon)
         if intersection.is_empty:
-            print("No part of the rectangle is inside the polygon")
+            logger.debug("No part of the rectangle is inside the polygon")
         else:
-            print("A part of the rectangle is inside the polygon")
+            logger.debug("A part of the rectangle is inside the polygon")
 
     def test_dgl(self):
         u, v = tensor([0, 1, 2]), tensor([2, 3, 4])
@@ -663,6 +668,84 @@ class TestDataLoader(unittest.TestCase):
         loss.backward()
         optimizer.step()
 
+    def test_dgl_karate_club(self):
+        dataset = KarateClubDataset()
+        g = dataset[0]
+        g.ndata["feat"] = g.in_degrees().view(-1, 1).float()
+        g.edata["weight"] = torch.rand(g.num_edges(), dtype=torch.float).view(-1, 1)
+        logger.debug(f"number of nodes {g.num_nodes()}")
+        logger.debug(f"number of edge {g.num_edges()}")
+        logger.debug(f"feat shape of nodes {g.ndata['feat'].shape}")
+        logger.debug(f"feat of edge shape {g.edata['weight'].shape}")
+
+        # Split the dataset into training and testing sets
+        train_mask = torch.zeros(g.num_nodes(), dtype=torch.bool)
+        train_mask[:10] = True  # Let's use the first 10 nodes for training
+        test_mask = ~train_mask
+        train = TensorDataset(torch.tensor(range(g.num_nodes()))[train_mask])
+        # Define the data loader
+        # logger.debug(f'the feat {g.ndata["feat"]}')
+        logger.debug(f'the feat {g.ndata["feat"].shape}')
+        logger.debug(f'the feat {len(g.ndata["feat"])}')
+        logger.debug(f'the feat {type(g.ndata["feat"])}')
+        model = WGCN(g.ndata["feat"].shape[1], 16, 2, 1, relu)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.01)
+        for epoch in range(50):
+            model.train()
+            optimizer.zero_grad()
+            inputs = g.ndata["feat"]
+            edge_weight = g.edata["weight"]
+            # logger.debug(f"edge weight shape {edge_weight.shape}")
+            # logger.debug(f"g shape {g.num_edges()}")
+            labels = g.ndata["label"]  # Assuming labels are available in the graph
+            output = model(g, inputs, edge_weight)
+            pred = output.argmax(1)
+            acc = (pred == g.ndata["label"]).float().mean()
+            logger.debug(f"Train Accuracy: {acc.item()}")
+            loss = criterion(output, labels)
+            loss.backward()
+            optimizer.step()
+
+        # Evaluation
+        model.eval()
+        with torch.no_grad():
+            logits = model(g, g.ndata["feat"], g.edata["weight"])
+            pred = logits.argmax(1)
+            acc = (pred == g.ndata["label"]).float().mean()
+            logger.debug(f"Test Accuracy: {acc.item()}")
+
+    def test_Cora_dataset(self):
+        dataset = dgl.data.CoraGraphDataset()
+        logger.debug(f"Number of categories: {dataset.num_classes}")
+        g = dataset[0]
+        weight = torch.rand(g.num_edges(), dtype=torch.float, device="cuda").view(-1, 1)
+        logger.debug("Node features")
+        logger.debug(g.ndata)
+        logger.debug("Edge features")
+        logger.debug(g.edata)
+        g = g.to("cuda")
+        model = WGCN(g.ndata["feat"].shape[1], 16, dataset.num_classes, 1, relu).to(
+            "cuda"
+        )
+        train_weight(g, model, weight)
+
+    def test_GAT(self):
+        dataset = dgl.data.CoraGraphDataset()
+        g = dataset[0]
+        features = g.ndata["feat"]
+        label = g.ndata["label"]
+        mask = g.ndata["train_mask"]
+        g = g.to("cuda")
+        net = GAT(
+            g,
+            in_dim=features.size()[1],
+            hidden_dim=8,
+            out_dim=dataset.num_classes,
+            num_heads=2,
+        ).to("cuda")
+        train(g, model=net)
+
 
 class DummyModel(nn.Module):
     def __init__(self):
@@ -683,3 +766,89 @@ def draw_line_between_bounding_boxes(bbox1, bbox2):
     plt.plot(
         [center1[0], center2[0]], [center1[1], center2[1]], color="blue", linewidth=2
     )
+
+
+def train_weight(g, model, weight):
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    best_val_acc = 0
+    best_test_acc = 0
+
+    features = g.ndata["feat"]
+    labels = g.ndata["label"]
+
+    train_mask = g.ndata["train_mask"]
+    val_mask = g.ndata["val_mask"]
+    test_mask = g.ndata["test_mask"]
+    for e in range(500):
+        # Forward
+        logits = model(g, features, weight)
+
+        # Compute prediction
+        pred = logits.argmax(1)
+
+        # Compute loss
+        # Note that you should only compute the losses of the nodes in the training set.
+        loss = cross_entropy(logits[train_mask], labels[train_mask])
+
+        # Compute accuracy on training/validation/test
+        train_acc = (pred[train_mask] == labels[train_mask]).float().mean()
+        val_acc = (pred[val_mask] == labels[val_mask]).float().mean()
+        test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
+
+        # Save the best validation accuracy and the corresponding test accuracy.
+        if best_val_acc < val_acc:
+            best_val_acc = val_acc
+            best_test_acc = test_acc
+
+        # Backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if e % 1 == 0:
+            logger.debug(
+                f"In epoch {e}, loss: {loss:.3f}, val acc: {val_acc:.3f} (best {best_val_acc:.3f}), test acc: {test_acc:.3f} (best {best_test_acc:.3f})"
+            )
+
+
+def train(g, model):
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    best_val_acc = 0
+    best_test_acc = 0
+
+    features = g.ndata["feat"]
+    labels = g.ndata["label"]
+
+    train_mask = g.ndata["train_mask"]
+    val_mask = g.ndata["val_mask"]
+    test_mask = g.ndata["test_mask"]
+    for e in range(500):
+        # Forward
+        logits = model(features)
+
+        # Compute prediction
+        pred = logits.argmax(1)
+
+        # Compute loss
+        # Note that you should only compute the losses of the nodes in the training set.
+        loss = cross_entropy(logits[train_mask], labels[train_mask])
+
+        # Compute accuracy on training/validation/test
+        train_acc = (pred[train_mask] == labels[train_mask]).float().mean()
+        val_acc = (pred[val_mask] == labels[val_mask]).float().mean()
+        test_acc = (pred[test_mask] == labels[test_mask]).float().mean()
+
+        # Save the best validation accuracy and the corresponding test accuracy.
+        if best_val_acc < val_acc:
+            best_val_acc = val_acc
+            best_test_acc = test_acc
+
+        # Backward
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if e % 1 == 0:
+            logger.debug(
+                f"In epoch {e}, loss: {loss:.3f}, val acc: {val_acc:.3f} (best {best_val_acc:.3f}), test acc: {test_acc:.3f} (best {best_test_acc:.3f})"
+            )
