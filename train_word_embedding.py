@@ -9,6 +9,7 @@ from transformers import BertTokenizer, AdamW
 
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
+from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
 from src.utils.utils import plots, process_labels
 from src.word_embedding.BERT_embedding import BertSentenceClassification
@@ -218,8 +219,8 @@ def main(
 
 
 if __name__ == "__main__":
-    dataset_train = CORD(train=True)
-    dataset_test = CORD(train=False)
+    dataset_train = WILDRECEIPT(train=True, download=True)
+    dataset_test = WILDRECEIPT(train=False, download=True)
     train_dataloader = word_embedding_dataloader(dataset_train)
     test_dataloader = word_embedding_dataloader(dataset_test)
     # logger.debug(f"train dataset {train_dataloader.__str__()}")
