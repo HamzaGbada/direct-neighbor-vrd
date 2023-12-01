@@ -53,7 +53,7 @@ def plot_cropped_image(image, box, title):
 def process_labels(dataset):
     # FIXME: THIS is computing the label of all the dataset (if we got an error in metic computing may from this)
     #  convert it to processing label of each doc_index
-    num_labels = 30 if type(dataset).__name__ == "CORD" else 5
+    num_labels = 30 if type(dataset).__name__ == "CORD" else (25 if type(dataset).__name__ == "WILDRECEIPT" else 5)
     X = torch.arange(0, num_labels).view(-1, 1)
 
     if type(dataset).__name__ == "CORD":
@@ -89,17 +89,17 @@ def process_labels(dataset):
             "menu.itemsubtotal": 28,
             "menu.sub_price": 29,
         }
+        labels = (
+            encoded_dic[x]
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        )
     else:
-        encoded_dic = {}  # Define your encoded_dic for SROIE here
-
-    labels = (
-        encoded_dic[x]
-        for doc_index in range(len(dataset))
-        for x in dataset.data[doc_index][1]["labels"]
-    )
-
-    if type(dataset).__name__ == "SROIE":
-        num_labels = 5
+        labels = (
+            x
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        )
 
     labels = torch.from_numpy(
         OneHotEncoder(sparse=False)
@@ -107,7 +107,7 @@ def process_labels(dataset):
         .transform(torch.tensor(list(labels)).reshape(-1, 1))
     )
 
-    name = "CORD" if num_labels == 30 else "SROIE"
+    name = type(dataset).__name__
 
     return labels, name
 
