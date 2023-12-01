@@ -24,8 +24,8 @@ if __name__ == "__main__":
         train_set = CORD(train=True, download=True)
         test_set = CORD(train=False, download=True)
     elif args.dataset == "SROIE":
-        train_set = SROIE(train=True, download=True)
-        test_set = SROIE(train=False, download=True)
+        train_set = SROIE(train=True)
+        test_set = SROIE(train=False)
     elif args.dataset == "FUNSD":
         train_set = FUNSD(train=True, download=True)
         test_set = FUNSD(train=False, download=True)
