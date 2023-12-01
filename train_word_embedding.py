@@ -48,7 +48,6 @@ def train_and_evaluate(
 
             optimizer.zero_grad()
             outputs = model(input_ids, attention_mask)
-
             f1_score_train = compute_f1_score(labels.view(-1), outputs.view(-1))
             accuracy_train = multilabel_accuracy(
                 outputs, labels, num_labels=num_classes, average="macro"
@@ -226,6 +225,6 @@ if __name__ == "__main__":
     # logger.debug(f"train dataset {train_dataloader.__str__()}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = main(
-        train_dataloader, test_dataloader, num_epochs=1, num_classes=30, device=device
+        train_dataloader, test_dataloader, num_epochs=1, num_classes=26, device=device
     )
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")

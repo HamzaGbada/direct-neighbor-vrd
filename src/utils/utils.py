@@ -53,7 +53,11 @@ def plot_cropped_image(image, box, title):
 def process_labels(dataset):
     # FIXME: THIS is computing the label of all the dataset (if we got an error in metic computing may from this)
     #  convert it to processing label of each doc_index
-    num_labels = 30 if type(dataset).__name__ == "CORD" else (25 if type(dataset).__name__ == "WILDRECEIPT" else 5)
+    num_labels = (
+        30
+        if type(dataset).__name__ == "CORD"
+        else (26 if type(dataset).__name__ == "WILDRECEIPT" else 5)
+    )
     X = torch.arange(0, num_labels).view(-1, 1)
 
     if type(dataset).__name__ == "CORD":
