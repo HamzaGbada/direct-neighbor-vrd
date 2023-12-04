@@ -53,3 +53,19 @@ def train_subparser(subparsers):
         "-e", "--epochs", type=int, default=200, help="The number of epochs."
     )
     return subparsers  # Return the subparsers object for further use
+
+
+def train_embedding_subparser(subparsers):
+    parser_train = subparsers.add_parser("embed")
+    parser_train.add_argument(
+        "-d",
+        "--dataset",
+        type=str,
+        default="CORD",
+        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
+        help="Selecting the dataset for your model's training.",
+    )
+    parser_train.add_argument(
+        "-e", "--epochs", type=int, default=200, help="The number of epochs."
+    )
+    return subparsers

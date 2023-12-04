@@ -1,3 +1,5 @@
+import argparse
+
 import numpy as np
 import torch
 from sklearn.preprocessing import OneHotEncoder
@@ -7,6 +9,8 @@ from torchmetrics.functional.classification import multilabel_accuracy
 from tqdm import tqdm
 from transformers import BertTokenizer, AdamW
 
+from args import train_embedding_subparser
+from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
@@ -217,14 +221,41 @@ def main(
     return model
 
 
+def FUNSD(train, download):
+    pass
+
+
 if __name__ == "__main__":
-    dataset_train = WILDRECEIPT(train=True, download=True)
-    dataset_test = WILDRECEIPT(train=False, download=True)
-    train_dataloader = word_embedding_dataloader(dataset_train)
-    test_dataloader = word_embedding_dataloader(dataset_test)
+    main_parser = argparse.ArgumentParser()
+    subparsers = main_parser.add_subparsers(dest="subcommand", help="Choose subcommand")
+    train_embedding_subparser(subparsers)
+    args = main_parser.parse_args()
+
+    if args.dataset == "CORD":
+        train_set = CORD(train=True, download=True)
+        test_set = CORD(train=False, download=True)
+        num_classes = 30
+    elif args.dataset == "SROIE":
+        train_set = SROIE(train=True)
+        test_set = SROIE(train=False)
+        num_classes = 5
+    elif args.dataset == "FUNSD":
+        train_set = FUNSD(train=True, download=True)
+        test_set = FUNSD(train=False, download=True)
+        num_classes = 26
+    elif args.dataset == "WILDRECEIPT":
+        train_set = WILDRECEIPT(train=True, download=True)
+        test_set = WILDRECEIPT(train=False, download=True)
+        num_classes = 26
+    else:
+        logger.debug("Dataset not recognized")
+
+    train_dataloader = word_embedding_dataloader(train_set)
+    test_dataloader = word_embedding_dataloader(test_set)
     # logger.debug(f"train dataset {train_dataloader.__str__()}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = main(
-        train_dataloader, test_dataloader, num_epochs=1, num_classes=26, device=device
+        train_dataloader, test_dataloader, num_epochs=args.epochs, num_classes=num_classes, device=device
     )
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
+
