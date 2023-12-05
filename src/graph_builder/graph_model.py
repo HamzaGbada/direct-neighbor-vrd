@@ -11,22 +11,23 @@ class WGCN(Module):
         super(WGCN, self).__init__()
         self.layers = ModuleList()
         self.layers.append(
-            GraphConv(n_infeat, n_hidden, weight=True, activation=activation) + nn.Parameter(torch.FloatTensor(n_hidden))
+            GraphConv(n_infeat, n_hidden, weight=True, activation=activation)
         )
         for i in range(n_layers - 1):
             self.layers.append(
-                GraphConv(n_hidden, n_hidden, weight=True, activation=activation) + nn.Parameter(torch.FloatTensor(n_hidden))
+                GraphConv(n_hidden, n_hidden, weight=True, activation=activation)
             )
         self.layers.append(
             GraphConv(
                 n_hidden,
                 n_classes,
                 weight=True,
-            ) + nn.Parameter(torch.FloatTensor(n_classes))
+            )
         )
         # TODO: change it norm='right' in case of zero or non positive values else 'both'
         self.edge_norm = EdgeWeightNorm(norm="right")
         self.dropout = nn.Dropout(p=0.5)
+        
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, g, features, edge_weight):
