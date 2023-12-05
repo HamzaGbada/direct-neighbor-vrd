@@ -49,10 +49,10 @@ def train(
         # Forward
 
         logits = model(g, features, edge_weight)
-        f1_score_train = compute_f1_score(labels[train_mask].view(-1), logits[train_mask].view(-1))
+        f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
         accuracy_train = multilabel_accuracy(
-            logits[train_mask].squeeze(dim=1),
-            labels[train_mask].squeeze(dim=1),
+            logits.squeeze(dim=1),
+            labels.squeeze(dim=1),
             num_labels=num_class,
             average="macro",
         )
@@ -108,6 +108,7 @@ def train(
 
 device = "cuda"
 if __name__ == "__main__":
+    torch.manual_seed(0)
     main_parser = argparse.ArgumentParser()
     subparsers = main_parser.add_subparsers(dest="subcommand", help="Choose subcommand")
     train_subparser(subparsers)

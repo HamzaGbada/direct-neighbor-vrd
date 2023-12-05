@@ -39,11 +39,11 @@ class GraphDataset(DGLDataset):
         self.graph_train = batch(graph_list_train)
         self.graph_test = batch(graph_list_test)
 
-        self.graph_train = batch([self.graph_train, self.graph_test])
+        self.graph = batch([self.graph_train, self.graph_test])
         super().__init__(name="GraphDataset")
 
     def process(self):
-        n_nodes = self.graph_train.number_of_nodes()
+        n_nodes = self.graph.number_of_nodes()
         n_train = int(n_nodes * 0.6)
         n_val = int(n_nodes * 0.2)
 
@@ -60,7 +60,7 @@ class GraphDataset(DGLDataset):
         self.test_mask = test_mask
 
     def __getitem__(self, train: bool):
-        return self.graph_train if train else self.graph_test
+        return self.graph if train else self.graph_test
 
     def __len__(self):
         return 1
