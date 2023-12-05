@@ -6,6 +6,7 @@ from dgl import add_self_loop
 from torch.nn import CrossEntropyLoss
 from torch.nn.functional import relu
 from torch.optim import Adam
+from tqdm import tqdm
 from torchmetrics.functional.classification import (
     multilabel_accuracy,
 )
@@ -39,90 +40,69 @@ def train(
     features = g.ndata["features"].to(torch.float64)
     labels = g.ndata["label"]
 
-    # label_binarizer = LabelBinarizer()
-    # label_binarizer.fit(range(max(labels) + 1))
-    # labels = torch.from_numpy(label_binarizer.transform(labels.to('cpu'))).to('cuda')
-
     train_mask = train_mask
     val_mask = val_mask
     test_mask = test_mask
     train_list, val_list, test_list = [], [], []
     loss_train, loss_val, loss_test = [], [], []
-    for e in range(epochs):
+    for e in tqdm(range(epochs)):
         # Forward
 
         logits = model(g, features, edge_weight)
-        logger.debug(f"logits shape {logits[train_mask].squeeze(dim=1).shape}")
-        logger.debug(f"labels shape {labels[train_mask].shape}")
-        f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
+        f1_score_train = compute_f1_score(labels[train_mask].view(-1), logits[train_mask].view(-1))
         accuracy_train = multilabel_accuracy(
-            logits.squeeze(dim=1),
-            labels.squeeze(dim=1),
+            logits[train_mask].squeeze(dim=1),
+            labels[train_mask].squeeze(dim=1),
             num_labels=num_class,
             average="macro",
         )
-        # Compute prediction
-        pred = logits.argmax(1)
 
-        # Compute loss
-        # Note that you should only compute the losses of the nodes in the training set.
-        logger.debug(f"feature shape labels[train_mask]{labels[train_mask]}")
-        logger.debug(
-            f"feature shape logits[train_mask]{logits[train_mask].squeeze(dim=1)}"
-        )
-        # TODO: the error of shape (check the output of the below) is due to the multiclass classification (change
-        #  the label)
-        # FIXME: RuntimeError: Boolean value of Tensor with more than one value is ambiguous
         loss = loss_fct(labels[train_mask], logits[train_mask].squeeze(dim=1))
+        loss_v = loss_fct(labels[val_mask], logits[val_mask].squeeze(dim=1))
+        loss_t = loss_fct(labels[test_mask], logits[test_mask].squeeze(dim=1))
         loss_train.append(loss)
-        loss_val.append(loss)
-        # loss_test.append(
-        #     CrossEntropyLoss(logits[test_mask], class_indices[test_mask])
-        #     .to("cpu")
-        #     .detach()
-        #     .numpy()
-        # )
-        #
-        # # Compute accuracy on training/validation/test
-        # train_f1 = multiclass_f1_score(
-        #     pred[train_mask], class_indices[train_mask], num_classes=num_class, average="micro"
-        # )
-        # val_f1 = multiclass_f1_score(
-        #     pred[val_mask], class_indices[val_mask], num_classes=num_class, average="micro"
-        # )
-        # test_f1 = multiclass_f1_score(
-        #     pred[test_mask], class_indices[test_mask], num_classes=num_class, average="micro"
-        # )
-        # train_acc = (pred[train_mask] == class_indices[train_mask]).float().mean()
-        # val_acc = (pred[val_mask] == class_indices[val_mask]).float().mean()
-        # # test_acc = (pred[test_mask] == class_indices[test_mask]).float().mean()
-        # train_list.append(train_f1.to("cpu"))
-        # val_list.append(val_f1.to("cpu"))
-        # test_list.append(test_f1.to("cpu"))
-        # # Save the best validation accuracy and the corresponding test accuracy.
-        # if best_val_acc < val_acc:
-        #     best_val_acc = val_acc
-        #     # best_test_acc = test_acc
-        # if best_val_f1 < val_f1:
-        #     best_val_f1 = val_f1
-        #
-        # if best_test_f1 < test_f1:
-        #     best_test_f1 = test_f1
+        loss_val.append(loss_v)
+        loss_test.append(loss_t)
+
+        f1_score_val = compute_f1_score(labels[val_mask].view(-1), logits[val_mask].view(-1))
+        accuracy_val = multilabel_accuracy(
+            logits[val_mask].squeeze(dim=1),
+            labels[val_mask].squeeze(dim=1),
+            num_labels=num_class,
+            average="macro",
+        )
+
+        f1_score_test = compute_f1_score(labels[test_mask].view(-1), logits[test_mask].view(-1))
+        accuracy_test = multilabel_accuracy(
+            logits[test_mask].squeeze(dim=1),
+            labels[test_mask].squeeze(dim=1),
+            num_labels=num_class,
+            average="macro",
+        )
+        train_list.append(f1_score_train)
+        val_list.append(f1_score_val)
+        test_list.append(f1_score_test)
+        # Save the best validation accuracy and the corresponding test accuracy.
+        if best_val_acc < accuracy_val:
+            best_val_acc = accuracy_val
+            # best_test_acc = test_acc
+        if best_val_f1 < f1_score_val:
+            best_val_f1 = f1_score_val
+
+        if best_test_f1 < f1_score_test:
+            best_test_f1 = f1_score_test
+        if best_val_acc < accuracy_test:
+            best_val_acc = accuracy_test
 
         # Backward
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         logger.debug(f"Best Test f1-score {best_test_f1}")
-        # FIXME: make e%10
-        if e % 1 == 0:
-            # logger.debug(
-            #     f"Epochs: {e}/{epochs}, Train F1-score: {train_f1}, Val F1-score: {val_f1}, Train Accuracy: "
-            #     f"{train_acc}, Val Accuracy: {val_acc}, Best Accuracy: {best_val_acc}, Best F1-score: {best_val_f1}, Best Test F1-score: {best_test_f1}"
-            # )
+        if e % 10 == 0:
             logger.debug(
-                f"Epochs: {e+1}/{epochs}, ############# Train F1-score: {f1_score_train}"
-                f" The Train accuracy {accuracy_train}"
+                f"Epochs: {e}/{epochs}, Train F1-score: {f1_score_train}, Val F1-score: {f1_score_val}, Train Accuracy: "
+                f"{accuracy_train}, Val Accuracy: {accuracy_val}, Best Accuracy: {best_val_acc}, Best F1-score: {best_val_f1}, Best Test F1-score: {best_test_f1}"
             )
     return train_list, val_list, test_list, loss_train, loss_val, loss_test
 
