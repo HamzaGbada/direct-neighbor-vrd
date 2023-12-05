@@ -128,10 +128,6 @@ if __name__ == "__main__":
     train_mask = dataset.train_mask
     val_mask = dataset.val_mask
     test_mask = dataset.test_mask
-    # test_index = torch.arange(graph_test.number_of_nodes())
-    # logger.debug(f"data training indexes {train_mask}")
-    # logger.debug(f"data validiation indexes {val_mask}")
-    # logger.debug(f"data testing indexes {test_index}")
 
     model = WGCN(
         graph_train.ndata["features"].shape[2],
