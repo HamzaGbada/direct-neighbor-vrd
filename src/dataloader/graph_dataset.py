@@ -40,8 +40,6 @@ class GraphDataset(DGLDataset):
         self.graph_test = batch(graph_list_test)
 
         self.graph_train = batch([self.graph_train, self.graph_test])
-        logger.debug(self.graph_train.number_of_nodes())
-        logger.debug(self.graph_test.number_of_nodes())
         super().__init__(name="GraphDataset")
 
     def process(self):
