@@ -98,7 +98,6 @@ def train(
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        logger.debug(f"Best Test f1-score {best_test_f1}")
         if e % 10 == 0:
             logger.debug(
                 f"Epochs: {e}/{epochs}, Train F1-score: {f1_score_train}, Val F1-score: {f1_score_val}, Train Accuracy: "
