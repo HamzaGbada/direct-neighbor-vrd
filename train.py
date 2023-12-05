@@ -129,7 +129,6 @@ def train(
 
 device = "cuda"
 if __name__ == "__main__":
-    # FIXME: RERUN to Repreduce the ERROR
     main_parser = argparse.ArgumentParser()
     subparsers = main_parser.add_subparsers(dest="subcommand", help="Choose subcommand")
     train_subparser(subparsers)

@@ -23,22 +23,26 @@ if __name__ == "__main__":
     if args.dataset == "CORD":
         train_set = CORD(train=True, download=True)
         test_set = CORD(train=False, download=True)
+        num_classes = 30
     elif args.dataset == "SROIE":
         train_set = SROIE(train=True)
         test_set = SROIE(train=False)
+        num_classes = 5
     elif args.dataset == "FUNSD":
         train_set = FUNSD(train=True, download=True)
         test_set = FUNSD(train=False, download=True)
+        num_classes = 26
     elif args.dataset == "WILDRECEIPT":
         train_set = WILDRECEIPT(train=True, download=True)
         test_set = WILDRECEIPT(train=False, download=True)
+        num_classes = 26
     else:
         logger.debug("Dataset not recognized")
 
     device = "cpu"
     logger.info("################# BUILDING GRAPHS START ##################")
     text_model = TextEmbeddingModel(
-        model_path=args.dataset + "_word_classification.pth", device=device
+        model_path=args.dataset + "_word_classification.pth", num_classes=num_classes, device=device
     )
 
     process_and_save_dataset(train_set, text_model, args, split="train", device=device)
