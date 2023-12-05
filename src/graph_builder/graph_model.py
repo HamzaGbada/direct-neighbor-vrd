@@ -3,7 +3,7 @@ import torch
 from torch import nn
 from torch.nn import Module, ModuleList
 from dgl.nn.pytorch import GraphConv, SAGEConv, EdgeWeightNorm, GINEConv, EGATConv
-from torch.nn.functional import relu, leaky_relu, softmax, elu
+from torch.nn.functional import relu, leaky_relu, softmax, elu, log_softmax
 
 
 class WGCN(Module):
@@ -11,21 +11,22 @@ class WGCN(Module):
         super(WGCN, self).__init__()
         self.layers = ModuleList()
         self.layers.append(
-            GraphConv(n_infeat, n_hidden, weight=True, activation=activation)
+            GraphConv(n_infeat, n_hidden, weight=True, activation=activation) + nn.Parameter(torch.FloatTensor(n_hidden))
         )
         for i in range(n_layers - 1):
             self.layers.append(
-                GraphConv(n_hidden, n_hidden, weight=True, activation=activation)
+                GraphConv(n_hidden, n_hidden, weight=True, activation=activation) + nn.Parameter(torch.FloatTensor(n_hidden))
             )
         self.layers.append(
             GraphConv(
                 n_hidden,
                 n_classes,
                 weight=True,
-            )
+            ) + nn.Parameter(torch.FloatTensor(n_classes))
         )
         # TODO: change it norm='right' in case of zero or non positive values else 'both'
         self.edge_norm = EdgeWeightNorm(norm="right")
+        self.dropout = nn.Dropout(p=0.5)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, g, features, edge_weight):
@@ -35,8 +36,9 @@ class WGCN(Module):
         norm_edge_weight = edge_weight
         for i, layer in enumerate(self.layers):
             # handle api changes for differnt DGL version
+            h = self.dropout(h)
             h = layer(g, h, edge_weight=norm_edge_weight)
-        return self.softmax(h)
+        return log_softmax(h, dim=1)
 
 
 class GCN(nn.Module):
