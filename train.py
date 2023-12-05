@@ -40,19 +40,16 @@ def train(
     features = g.ndata["features"].to(torch.float64)
     labels = g.ndata["label"]
 
-    train_mask = train_mask
-    val_mask = val_mask
-    test_mask = test_mask
     train_list, val_list, test_list = [], [], []
     loss_train, loss_val, loss_test = [], [], []
     for e in tqdm(range(epochs)):
         # Forward
 
         logits = model(g, features, edge_weight)
-        f1_score_train = compute_f1_score(labels.view(-1), logits.view(-1))
+        f1_score_train = compute_f1_score(labels[train_mask].view(-1), logits[train_mask].view(-1))
         accuracy_train = multilabel_accuracy(
-            logits.squeeze(dim=1),
-            labels.squeeze(dim=1),
+            logits[train_mask].squeeze(dim=1),
+            labels[train_mask].squeeze(dim=1),
             num_labels=num_class,
             average="macro",
         )
