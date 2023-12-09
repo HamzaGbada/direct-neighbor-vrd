@@ -140,7 +140,7 @@ class TestDataLoader(unittest.TestCase):
         )
 
     def test_sentences_label(self):
-        dataset = FUNSD(train=False)
+        dataset = FUNSD(train=True, download=True)
 
         sentences = [
             x
