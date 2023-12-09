@@ -27,7 +27,7 @@ class WGCN(Module):
         # TODO: change it norm='right' in case of zero or non positive values else 'both'
         self.edge_norm = EdgeWeightNorm(norm="right")
         self.dropout = nn.Dropout(p=0.5)
-        
+
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, g, features, edge_weight):

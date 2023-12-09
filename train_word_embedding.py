@@ -12,6 +12,7 @@ from transformers import BertTokenizer, AdamW
 from args import train_embedding_subparser
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
+from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.utils.setup_logger import logger
@@ -221,10 +222,6 @@ def main(
     return model
 
 
-def FUNSD(train, download):
-    pass
-
-
 if __name__ == "__main__":
     main_parser = argparse.ArgumentParser()
     subparsers = main_parser.add_subparsers(dest="subcommand", help="Choose subcommand")
@@ -255,7 +252,10 @@ if __name__ == "__main__":
     # logger.debug(f"train dataset {train_dataloader.__str__()}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = main(
-        train_dataloader, test_dataloader, num_epochs=args.epochs, num_classes=num_classes, device=device
+        train_dataloader,
+        test_dataloader,
+        num_epochs=args.epochs,
+        num_classes=num_classes,
+        device=device,
     )
     logger.debug(f"Test evalution report{evaluate(model, test_dataloader, device)}")
-

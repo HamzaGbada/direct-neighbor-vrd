@@ -46,7 +46,9 @@ def train(
         # Forward
 
         logits = model(g, features, edge_weight)
-        f1_score_train = compute_f1_score(labels[train_mask].view(-1), logits[train_mask].view(-1))
+        f1_score_train = compute_f1_score(
+            labels[train_mask].view(-1), logits[train_mask].view(-1)
+        )
         accuracy_train = multilabel_accuracy(
             logits[train_mask].squeeze(dim=1),
             labels[train_mask].squeeze(dim=1),
@@ -61,7 +63,9 @@ def train(
         loss_val.append(loss_v)
         loss_test.append(loss_t)
 
-        f1_score_val = compute_f1_score(labels[val_mask].view(-1), logits[val_mask].view(-1))
+        f1_score_val = compute_f1_score(
+            labels[val_mask].view(-1), logits[val_mask].view(-1)
+        )
         accuracy_val = multilabel_accuracy(
             logits[val_mask].squeeze(dim=1),
             labels[val_mask].squeeze(dim=1),
@@ -69,7 +73,9 @@ def train(
             average="macro",
         )
 
-        f1_score_test = compute_f1_score(labels[test_mask].view(-1), logits[test_mask].view(-1))
+        f1_score_test = compute_f1_score(
+            labels[test_mask].view(-1), logits[test_mask].view(-1)
+        )
         accuracy_test = multilabel_accuracy(
             logits[test_mask].squeeze(dim=1),
             labels[test_mask].squeeze(dim=1),

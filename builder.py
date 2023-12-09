@@ -42,7 +42,9 @@ if __name__ == "__main__":
     device = "cpu"
     logger.info("################# BUILDING GRAPHS START ##################")
     text_model = TextEmbeddingModel(
-        model_path=args.dataset + "_word_classification.pth", num_classes=num_classes, device=device
+        model_path=args.dataset + "_word_classification.pth",
+        num_classes=num_classes,
+        device=device,
     )
 
     process_and_save_dataset(train_set, text_model, args, split="train", device=device)

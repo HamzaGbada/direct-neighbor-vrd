@@ -33,6 +33,7 @@ from src.cnn_embedding.unet_embedding import (
 )
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
+from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.graph_builder.VRD_graph import VRD2Graph
 from src.graph_builder.graph_model import WGCN, GCN, GAT
@@ -139,7 +140,7 @@ class TestDataLoader(unittest.TestCase):
         )
 
     def test_sentences_label(self):
-        dataset = CORD(train=False)
+        dataset = FUNSD(train=False)
 
         sentences = [
             x

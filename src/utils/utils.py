@@ -156,4 +156,3 @@ def plots(epochs, train_losses, val_losses, type="Loss", name="CORD"):
     plt.legend()
     plt.title("Training and Validation " + type)
     plt.savefig(name + "_" + type + "_plot.png")
-
