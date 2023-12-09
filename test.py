@@ -157,7 +157,7 @@ class TestDataLoader(unittest.TestCase):
         self.assertEqual(labels[2], dataset.data[0][1]["labels"][2])
 
     def test_sroie(self):
-        train_set = SROIE(train=True)
+        train_set = FUNSD(train=True)
         # nbr_of_node = train_set.data[0][1]['boxes'].shape
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{nbr_of_node}")
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{len(train_set.data[0][1]['boxes'])}")
@@ -175,7 +175,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_cropped_bbox(self):
         # Open the image using PIL
-        train_set = CORD(train=True)
+        train_set = FUNSD(train=True)
         path = os.path.join(train_set.root, train_set.data[0][0])
         logger.debug(f"the path is {path}")
         image = Image.open(path).convert("L")
@@ -198,7 +198,7 @@ class TestDataLoader(unittest.TestCase):
 
     def test_image_dataloader(self):
         # Open the image using PIL
-        train_set = CORD(train=False)
+        train_set = FUNSD(train=False)
         cropped_images, boxes, labels, text_units = image_dataloader(train_set)
         path = os.path.join(train_set.root, train_set.data[0][0])
         logger.debug(f"the path is {labels}")

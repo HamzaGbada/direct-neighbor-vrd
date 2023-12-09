@@ -83,9 +83,9 @@ class FUNSD(VisionDataset):
                 data = json.load(f)
             _targets = [
                 (
-                    (block["text"].lower(), block["label"]),
+                    block["text"].lower(),
                     block["box"],
-                    block["linking"],
+                    block["label"],
                 )
                 for block in data["form"]
             ]
@@ -96,7 +96,7 @@ class FUNSD(VisionDataset):
             # data is the data of that image
             # data['form'] get the all data which is under 'form' key
             # data['form'][0] get the data under the first bbox
-            text_targets, box_targets, links = zip(*_targets)
+            text_targets, box_targets, labels = zip(*_targets)
 
             if use_polygons:
                 # xmin, ymin, xmax, ymax -> (x, y) coordinates of top left, top right, bottom right, bottom left corners
@@ -115,8 +115,8 @@ class FUNSD(VisionDataset):
                     img_path,
                     dict(
                         boxes=np.asarray(box_targets, dtype=int),
-                        labels=list(text_targets),
-                        text_units=text_units,
+                        labels=list(labels),
+                        text_units=list(text_targets),
                     ),
                 )
             )
