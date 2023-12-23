@@ -5,7 +5,7 @@ from sklearn.metrics import f1_score
 from tqdm import tqdm
 from sklearn.preprocessing import OneHotEncoder
 
-from src.graph_builder.VRD_graph import VRD2Graph
+from src.graph_pack.VRD_graph import VRD2Graph
 from src.utils.setup_logger import logger
 import warnings
 

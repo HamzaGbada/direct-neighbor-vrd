@@ -13,7 +13,7 @@ from torchmetrics.functional.classification import (
 
 from args import train_subparser
 from src.dataloader.graph_dataset import GraphDataset
-from src.graph_builder.graph_model import WGCN
+from src.graph_pack.graph_model import WGCN
 from src.utils.setup_logger import logger
 from src.utils.utils import compute_f1_score
 

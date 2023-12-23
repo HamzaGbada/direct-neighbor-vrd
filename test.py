@@ -35,8 +35,8 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
-from src.graph_builder.VRD_graph import VRD2Graph
-from src.graph_builder.graph_model import WGCN, GCN, GAT
+from src.graph_pack.VRD_graph import VRD2Graph
+from src.graph_pack.graph_model import WGCN, GCN, GAT
 from src.utils.setup_logger import logger
 from src.utils.utils import (
     convert_xmin_ymin,
