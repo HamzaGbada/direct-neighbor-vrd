@@ -84,11 +84,7 @@ class FUNSD(VisionDataset):
             ) as f:
                 data = json.load(f)
             _targets = [
-                (
-                    convert_xmin_ymin(block["box"]),
-                    block["text"].lower(),
-                    block["label"]
-                )
+                (convert_xmin_ymin(block["box"]), block["text"].lower(), block["label"])
                 for block in data["form"]
                 if get_area(convert_xmin_ymin(block["box"])) >= 50
             ]
@@ -107,8 +103,8 @@ class FUNSD(VisionDataset):
                             img_path,
                             dict(
                                 boxes=np.asarray(box_targets, dtype=int),
-                                labels=list(labels),
                                 text_units=list(text_units),
+                                labels=list(labels),
                             ),
                         )
                     )

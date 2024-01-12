@@ -157,7 +157,8 @@ class TestDataLoader(unittest.TestCase):
         self.assertEqual(labels[2], dataset.data[0][1]["labels"][2])
 
     def test_sroie(self):
-        train_set = FUNSD(train=True)
+        train_set1 = FUNSD(train=True)
+        train_set2 = CORD(train=True)
         # nbr_of_node = train_set.data[0][1]['boxes'].shape
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{nbr_of_node}")
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{len(train_set.data[0][1]['boxes'])}")
@@ -170,7 +171,8 @@ class TestDataLoader(unittest.TestCase):
         # j = 0
         # for i in train_set.data:
         #     j+=1
-        logger.debug(f"The sroie dataset: {train_set.data}")
+        logger.debug(f"The FUNSD dataset: {train_set1.data}")
+        logger.debug(f"The sroie dataset: {train_set2.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_cropped_bbox(self):
