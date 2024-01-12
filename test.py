@@ -747,6 +747,22 @@ class TestDataLoader(unittest.TestCase):
         ).to("cuda")
         train(g, model=net)
 
+    def test_docVQA_hugg(self):
+        dataset = load_dataset("prashanthpillai/docvqa_train_and_val")
+        logger.debug(f"the form of the data {dataset.data}")
+        # logger.debug(f"the form of the data {dataset.data['train']['question'].to_numpy().shape}")
+        # logger.debug(f"the question of the data {dataset.data['train']['question'].to_numpy()[0]}")
+        # logger.debug(f"the question of the data {type(dataset.data['train']['question'].to_numpy()[0])}")
+        # logger.debug(f"the form of the data {dataset.data['train']['answers'].to_numpy().shape}")
+#         logger.debug(f"the answers of the data {dataset.data['train']['answers'].to_numpy()[1]}")
+#         logger.debug(f"the answers of the data {type(dataset.data['train']['answers'].to_numpy()[1])}")
+        # logger.debug(f"the form of the data {dataset.data['train']['boxes'][0].to_numpy().shape}")
+#         logger.debug(f"the boxes of the data {dataset.data['train']['boxes'].to_numpy()[0]}")
+#         logger.debug(f"the boxes of the data {dataset.data['train']['boxes'].to_numpy()[1]}")
+#         logger.debug(f"the boxes of the data {type(dataset.data['train']['boxes'].to_numpy()[0])}")
+
+
+
 
 class DummyModel(nn.Module):
     def __init__(self):
