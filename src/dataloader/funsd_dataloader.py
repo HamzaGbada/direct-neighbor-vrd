@@ -21,6 +21,8 @@ from src.utils.setup_logger import logger
 
 __all__ = ["FUNSD"]
 
+from src.utils.utils import get_area, convert_xmin_ymin
+
 
 class FUNSD(VisionDataset):
     """FUNSD dataset from `"FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents"
@@ -83,43 +85,33 @@ class FUNSD(VisionDataset):
                 data = json.load(f)
             _targets = [
                 (
+                    convert_xmin_ymin(block["box"]),
                     block["text"].lower(),
-                    block["box"],
-                    block["label"],
+                    block["label"]
                 )
                 for block in data["form"]
+                if get_area(convert_xmin_ymin(block["box"])) >= 50
             ]
-            # TODO: Remove redundancy of text unit
-            text_units = [block["text"].lower() for block in data["form"]]
 
             # for each img_path,
             # data is the data of that image
             # data['form'] get the all data which is under 'form' key
             # data['form'][0] get the data under the first bbox
-            text_targets, box_targets, labels = zip(*_targets)
-
-            if use_polygons:
-                # xmin, ymin, xmax, ymax -> (x, y) coordinates of top left, top right, bottom right, bottom left corners
-                box_targets = [
-                    [
-                        [box[0], box[1]],
-                        [box[2], box[1]],
-                        [box[2], box[3]],
-                        [box[0], box[3]],
-                    ]
-                    for box in box_targets
-                ]
-
-            self.data.append(
-                (
-                    img_path,
-                    dict(
-                        boxes=np.asarray(box_targets, dtype=int),
-                        labels=list(labels),
-                        text_units=list(text_targets),
-                    ),
-                )
-            )
+            if _targets:
+                box_targets, text_units, labels = zip(*_targets)
+                if (
+                    len(box_targets) > 1
+                ):  # number of bounding boxes in document should be more than one
+                    self.data.append(
+                        (
+                            img_path,
+                            dict(
+                                boxes=np.asarray(box_targets, dtype=int),
+                                labels=list(labels),
+                                text_units=list(text_units),
+                            ),
+                        )
+                    )
         self.root = tmp_root
 
     def extra_repr(self) -> str:
