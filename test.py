@@ -35,6 +35,7 @@ from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
+from src.dataloader.xfund_dataloader import XFUND
 from src.graph_pack.VRD_graph import VRD2Graph
 from src.graph_pack.graph_model import WGCN, GCN, GAT
 from src.utils.setup_logger import logger
@@ -174,6 +175,10 @@ class TestDataLoader(unittest.TestCase):
         logger.debug(f"The FUNSD dataset: {train_set1.data}")
         logger.debug(f"The sroie dataset: {train_set2.data}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
+
+    def test_xfund(self):
+        dataset = XFUND(train=True, download=True)
+
 
     def test_cropped_bbox(self):
         # Open the image using PIL
