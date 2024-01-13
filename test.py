@@ -177,8 +177,10 @@ class TestDataLoader(unittest.TestCase):
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_xfund(self):
+        train_set2 = CORD(train=True)
         dataset = XFUND(data_folder="data/fr.train.json", train=True)
-
+        logger.debug(f"The XFUND dataset: {dataset.data}")
+        logger.debug(f"The sroie dataset: {train_set2.data}")
 
     def test_cropped_bbox(self):
         # Open the image using PIL
@@ -758,8 +760,6 @@ class TestDataLoader(unittest.TestCase):
         dataset = load_dataset("jordanparker6/publaynet")
         logger.debug(f"dataset data {dataset.data}")
         logger.debug(f"dataset data {dataset.shape}")
-
-
 
 
 class DummyModel(nn.Module):

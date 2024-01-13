@@ -65,8 +65,8 @@ class XFUND(VisionDataset):
                             file_name,
                             dict(
                                 boxes=np.asarray(box_targets, dtype=int),
-                                labels=list(labels),
                                 text_units=list(text_units),
+                                labels=list(labels),
                             ),
                         )
                     )
