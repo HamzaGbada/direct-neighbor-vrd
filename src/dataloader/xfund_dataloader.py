@@ -45,7 +45,6 @@ class XFUND(VisionDataset):
         json_data = json.loads(data)
         for document in json_data["documents"]:
             file_name = document["img"]["fname"]
-            logger.debug(f"data json {document}")
             annotations = document["document"]
             _targets = [
                 (
