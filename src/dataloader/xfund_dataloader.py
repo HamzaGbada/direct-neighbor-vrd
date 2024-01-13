@@ -14,7 +14,7 @@ from src.utils.utils import convert_xmin_ymin, get_area
 class XFUND(VisionDataset):
     """
     >>> # NOTE: You need to download the dataset first.
-    >>> train_set = XFUND(train=True, data_folder="data/fr.val.json")
+    >>> train_set = XFUND(train=True, data_folder="data/fr.train.json")
     >>> img, target = train_set[0]
     >>> test_set = XFUND(train=False, data_folder="data/fr.val.json")
     :return:
@@ -25,15 +25,8 @@ class XFUND(VisionDataset):
         self,
         data_folder: str,
         train: bool = True,
-        use_polygons: bool = False,
-        recognition_task: bool = False,
-        **kwargs: Any,
+
     ) -> None:
-        super().__init__(
-            data_folder,
-            pre_transforms=convert_target_to_relative if not recognition_task else None,
-            **kwargs,
-        )
         # File existence check
         if not os.path.exists(data_folder):
             raise FileNotFoundError(

@@ -177,7 +177,7 @@ class TestDataLoader(unittest.TestCase):
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_xfund(self):
-        dataset = XFUND(train=True, download=True)
+        dataset = XFUND(data_folder="data/fr.train.json", train=True)
 
 
     def test_cropped_bbox(self):
