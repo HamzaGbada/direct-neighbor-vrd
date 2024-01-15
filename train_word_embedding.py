@@ -15,6 +15,7 @@ from src.dataloader.cord_dataloader import CORD
 from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.sentence_classification_dataloader import SentenceDataset
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
+from src.dataloader.xfund_dataloader import XFUND
 from src.utils.setup_logger import logger
 from src.utils.utils import plots, process_labels
 from src.word_embedding.BERT_embedding import BertSentenceClassification
@@ -239,11 +240,15 @@ if __name__ == "__main__":
     elif args.dataset == "FUNSD":
         train_set = FUNSD(train=True, download=True)
         test_set = FUNSD(train=False, download=True)
-        num_classes = 26
+        num_classes = 3
     elif args.dataset == "WILDRECEIPT":
         train_set = WILDRECEIPT(train=True, download=True)
         test_set = WILDRECEIPT(train=False, download=True)
         num_classes = 26
+    elif args.dataset == "XFUND":
+        train_set = XFUND(train=True, data_folder="data/fr.train.json")
+        test_set = XFUND(train=False, data_folder="data/fr.val.json")
+        num_classes = 3
     else:
         logger.debug("Dataset not recognized")
 

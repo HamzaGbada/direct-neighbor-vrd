@@ -56,7 +56,15 @@ def process_labels(dataset):
     num_labels = (
         30
         if type(dataset).__name__ == "CORD"
-        else (26 if type(dataset).__name__ == "WILDRECEIPT" else 5)
+        else (
+            26
+            if type(dataset).__name__ == "WILDRECEIPT"
+            else (
+                5
+                if type(dataset).__name__ == "SROIE"
+                else (3 if type(dataset).__name__ in ["FUNSD", "XFUND"] else None)
+            )
+        )
     )
     X = torch.arange(0, num_labels).view(-1, 1)
 
@@ -92,6 +100,17 @@ def process_labels(dataset):
             "sub_total.service_price": 27,
             "menu.itemsubtotal": 28,
             "menu.sub_price": 29,
+        }
+        labels = (
+            encoded_dic[x]
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        )
+    elif type(dataset).__name__ == "XFUND" or "FUNSD":
+        encoded_dic = {
+            "question": 0,
+            "answer": 1,
+            "other": 2,
         }
         labels = (
             encoded_dic[x]

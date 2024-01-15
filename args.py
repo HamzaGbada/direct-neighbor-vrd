@@ -6,7 +6,7 @@ def build_subparser(subparsers):
         "--dataset",
         type=str,
         default="WILDRECEIPT",
-        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
+        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT", "XFUND"],
         help="Selecting the dataset for your model's training.",
     )
     parser_building.add_argument(
@@ -26,7 +26,7 @@ def train_subparser(subparsers):
         "--dataset",
         type=str,
         default="CORD",
-        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
+        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT", "XFUND"],
         help="Selecting the dataset for your model's training.",
     )
     parser_train.add_argument(
@@ -62,7 +62,7 @@ def train_embedding_subparser(subparsers):
         "--dataset",
         type=str,
         default="CORD",
-        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT"],
+        choices=["FUNSD", "SROIE", "CORD", "WILDRECEIPT", "XFUND"],
         help="Selecting the dataset for your model's training.",
     )
     parser_train.add_argument(
