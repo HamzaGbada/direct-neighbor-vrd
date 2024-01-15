@@ -40,7 +40,7 @@ if __name__ == "__main__":
     elif args.dataset == "XFUND":
         train_set = XFUND(train=True, data_folder="data/fr.train.json")
         test_set = XFUND(train=False, data_folder="data/fr.val.json")
-        num_classes = 3
+        num_classes = 4
     else:
         logger.debug("Dataset not recognized")
 

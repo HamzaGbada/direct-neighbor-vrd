@@ -62,7 +62,7 @@ def process_labels(dataset):
             else (
                 5
                 if type(dataset).__name__ == "SROIE"
-                else (3 if type(dataset).__name__ in ["FUNSD", "XFUND"] else None)
+                else (4 if type(dataset).__name__ in ["FUNSD", "XFUND"] else None)
             )
         )
     )
@@ -111,6 +111,7 @@ def process_labels(dataset):
             "question": 0,
             "answer": 1,
             "other": 2,
+            "header": 3
         }
         labels = (
             encoded_dic[x]
