@@ -34,6 +34,7 @@ from src.cnn_embedding.unet_embedding import (
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
 from src.dataloader.funsd_dataloader import FUNSD
+from src.dataloader.graph_dataset import GraphDataset
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.dataloader.xfund_dataloader import XFUND
 from src.graph_pack.VRD_graph import VRD2Graph
@@ -638,9 +639,12 @@ class TestDataLoader(unittest.TestCase):
         graph.plot_dgl_graph()
 
     def test_dataset_graph(self):
-        g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
-        logger.debug(g[0][0].num_edges())
-        logger.debug(g[0][0].edata["weight"].shape)
+        # g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
+        # logger.debug(g[0][0].num_edges())
+        # logger.debug(g[0][0].edata["weight"].shape)
+        dataset = GraphDataset("SROIE")
+        
+        graph_train = dataset[True].to("cuda")
 
     def test_train_model(self):
         # Initialize dummy model
