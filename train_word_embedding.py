@@ -240,7 +240,7 @@ if __name__ == "__main__":
     elif args.dataset == "FUNSD":
         train_set = FUNSD(train=True, download=True)
         test_set = FUNSD(train=False, download=True)
-        num_classes = 3
+        num_classes = 4
     elif args.dataset == "WILDRECEIPT":
         train_set = WILDRECEIPT(train=True, download=True)
         test_set = WILDRECEIPT(train=False, download=True)
