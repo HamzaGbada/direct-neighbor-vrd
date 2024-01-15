@@ -9,15 +9,16 @@ from src.utils.setup_logger import logger
 class GraphDataset(DGLDataset):
     def __init__(self, data_name: str, path: str = "data/"):
         dataset_paths = {
-            "FUNSD"
-            "CORD"
-            "SROIE"
-            "WILDRECEIPT"
+            "FUNSD",
+            "CORD",
+            "SROIE",
+            "WILDRECEIPT",
             "XFUND"
         }
-
+        logger.debug(f"the condition {data_name not in dataset_paths}")
         if data_name not in dataset_paths:
-            raise Exception("Invalid dataset name. Please provide a valid dataset name.")
+            logger.debug("")
+            raise Exception(f"{data_name} Invalid dataset name. Please provide a valid dataset name.")
 
         dataset_path = os.path.join(path, data_name)
         self.num_classes = {"FUNSD": 4, "CORD": 30, "SROIE": 5, "WILDRECEIPT": 26, "XFUND": 4}[
