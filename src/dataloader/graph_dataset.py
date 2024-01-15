@@ -15,9 +15,7 @@ class GraphDataset(DGLDataset):
             "WILDRECEIPT",
             "XFUND"
         }
-        logger.debug(f"the condition {data_name not in dataset_paths}")
         if data_name not in dataset_paths:
-            logger.debug("")
             raise Exception(f"{data_name} Invalid dataset name. Please provide a valid dataset name.")
 
         dataset_path = os.path.join(path, data_name)

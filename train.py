@@ -123,7 +123,6 @@ if __name__ == "__main__":
     nbr_hidden_layer = args.hidden_layers
     lr = args.learning_rate
     epochs = args.epochs
-    logger.debug(f"dataname {data_name}")
     dataset = GraphDataset(data_name, path=path)
 
     graph_train = dataset[True].to(device)
