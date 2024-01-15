@@ -159,8 +159,15 @@ class TestDataLoader(unittest.TestCase):
         self.assertEqual(labels[2], dataset.data[0][1]["labels"][2])
 
     def test_sroie(self):
-        train_set1 = FUNSD(train=True)
-        train_set2 = CORD(train=True)
+        dataset = FUNSD(train=True)
+        for doc_index in range(len(dataset)):
+            for x in dataset.data[doc_index][1]["labels"]:
+                logger.debug(x)
+        labels = [
+            x
+            for doc_index in range(len(dataset))
+            for x in dataset.data[doc_index][1]["labels"]
+        ]
         # nbr_of_node = train_set.data[0][1]['boxes'].shape
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{nbr_of_node}")
         # logger.debug(f"The shape of bbox in the first doc Dataset: \n{len(train_set.data[0][1]['boxes'])}")
@@ -173,8 +180,7 @@ class TestDataLoader(unittest.TestCase):
         # j = 0
         # for i in train_set.data:
         #     j+=1
-        logger.debug(f"The FUNSD dataset: {train_set1.data}")
-        logger.debug(f"The sroie dataset: {train_set2.data}")
+        logger.debug(f"The FUNSD dataset: {labels}")
         # self.assertEqual(train_set.data[0][0], "receipt_00425.png")
 
     def test_xfund(self):

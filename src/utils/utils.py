@@ -115,6 +115,9 @@ def process_labels(dataset):
         )
     elif type(dataset).__name__ == "FUNSD":
         encoded_dic = {"question": 0, "answer": 1, "other": 2, "header": 3}
+        for doc_index in range(len(dataset)):
+            for x in dataset.data[doc_index][1]["labels"]:
+                logger.debug(x)
         labels = (
             encoded_dic[x]
             for doc_index in range(len(dataset))

@@ -1,11 +1,10 @@
 import argparse
 import warnings
 
-from doctr.datasets import FUNSD
-
 from args import build_subparser
 from src.dataloader.SROIE_dataloader import SROIE
 from src.dataloader.cord_dataloader import CORD
+from src.dataloader.funsd_dataloader import FUNSD
 from src.dataloader.wildreceipt_dataloader import WILDRECEIPT
 from src.dataloader.xfund_dataloader import XFUND
 from src.utils.setup_logger import logger
