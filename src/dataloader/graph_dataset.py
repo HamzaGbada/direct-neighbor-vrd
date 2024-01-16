@@ -7,6 +7,7 @@ from src.utils.setup_logger import logger
 
 
 class GraphDataset(DGLDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     def __init__(self, data_name: str, path: str = "data/"):
         dataset_paths = {
             "FUNSD": "FUNSD",

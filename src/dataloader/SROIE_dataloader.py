@@ -14,6 +14,7 @@ from src.utils.utils import get_area
 
 
 class SROIE(VisionDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     """SROIE dataset from `"ICDAR2019 Competition on Scanned Receipt OCR and Information Extraction"
     <https://arxiv.org/pdf/2103.10213.pdf>`_.
 

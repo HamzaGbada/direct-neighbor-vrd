@@ -26,6 +26,7 @@ def convert_format2(box):
 
 
 def convert_xmin_ymin(box):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     if len(box) == 4:
         return box
     x1, y1, x2, y2, x3, y3, x4, y4 = box
@@ -107,24 +108,14 @@ def process_labels(dataset):
             for x in dataset.data[doc_index][1]["labels"]
         )
     elif type(dataset).__name__ == "XFUND":
-        encoded_dic = {
-            "question": 0,
-            "answer": 1,
-            "other": 2,
-            "header": 3
-        }
+        encoded_dic = {"question": 0, "answer": 1, "other": 2, "header": 3}
         labels = (
             encoded_dic[x]
             for doc_index in range(len(dataset))
             for x in dataset.data[doc_index][1]["labels"]
         )
     elif type(dataset).__name__ == "FUNSD":
-        encoded_dic = {
-            "question": 0,
-            "answer": 1,
-            "other": 2,
-            "header": 3
-        }
+        encoded_dic = {"question": 0, "answer": 1, "other": 2, "header": 3}
         labels = (
             encoded_dic[x]
             for doc_index in range(len(dataset))
