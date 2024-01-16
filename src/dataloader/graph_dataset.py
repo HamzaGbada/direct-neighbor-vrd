@@ -10,18 +10,17 @@ class GraphDataset(DGLDataset):
     # FIXME: CONVERT THIS TO X, Y, W, H
     def __init__(self, data_name: str, path: str = "data/"):
         dataset_paths = {
-            "FUNSD": "FUNSD",
-            "CORD": "CORD",
-            "SROIE": "SROIE",
-            "WILDRECEIPT": "WILDRECEIPT",
+            "FUNSD",
+            "CORD",
+            "SROIE",
+            "WILDRECEIPT",
+            "XFUND"
         }
-
         if data_name not in dataset_paths:
-            logger.debug("Invalid dataset name. Please provide a valid dataset name.")
-            return
+            raise Exception(f"{data_name} Invalid dataset name. Please provide a valid dataset name.")
 
-        dataset_path = os.path.join(path, dataset_paths[data_name])
-        self.num_classes = {"FUNSD": 4, "CORD": 30, "SROIE": 5, "WILDRECEIPT": 26}[
+        dataset_path = os.path.join(path, data_name)
+        self.num_classes = {"FUNSD": 4, "CORD": 30, "SROIE": 5, "WILDRECEIPT": 26, "XFUND": 4}[
             data_name
         ]
 

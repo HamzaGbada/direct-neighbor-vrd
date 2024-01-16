@@ -88,6 +88,7 @@ class FUNSD(VisionDataset):
                 (convert_xmin_ymin(block["box"]), block["text"].lower(), block["label"])
                 for block in data["form"]
                 if get_area(convert_xmin_ymin(block["box"])) >= 50
+                or block["label"] in ["question", "answer", "other", "header"]
             ]
 
             # for each img_path,
