@@ -23,6 +23,7 @@ from src.utils.utils import get_area
 
 # TODO: create a documentation for each dataloader especially the json of the output
 class CORD(VisionDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
 
     """CORD dataset from `"CORD: A Consolidated Receipt Dataset forPost-OCR Parsing"
     <https://openreview.net/pdf?id=SJl3z659UH>`_.

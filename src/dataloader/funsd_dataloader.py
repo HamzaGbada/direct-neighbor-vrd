@@ -25,6 +25,7 @@ from src.utils.utils import get_area, convert_xmin_ymin
 
 
 class FUNSD(VisionDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     """FUNSD dataset from `"FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents"
     <https://arxiv.org/pdf/1905.13538.pdf>`_.
 

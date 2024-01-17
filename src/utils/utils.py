@@ -26,6 +26,7 @@ def convert_format2(box):
 
 
 def convert_xmin_ymin(box):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     if len(box) == 4:
         return box
     x1, y1, x2, y2, x3, y3, x4, y4 = box

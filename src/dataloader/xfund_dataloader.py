@@ -12,6 +12,7 @@ from src.utils.utils import convert_xmin_ymin, get_area
 
 
 class XFUND(VisionDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     """
     >>> # NOTE: You need to download the dataset first.
     >>> train_set = XFUND(train=True, data_folder="data/fr.train.json")

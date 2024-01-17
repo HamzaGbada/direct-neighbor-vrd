@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 
 
 class ImageDataset(Dataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     def __init__(self, cropped_bbox, labels, name="CORD"):
         self.cropped_bbox = cropped_bbox
         self.labels = labels

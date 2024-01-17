@@ -10,6 +10,7 @@ from src.utils.utils import convert_xmin_ymin, get_area
 
 
 class WILDRECEIPT(VisionDataset):
+    # FIXME: CONVERT THIS TO X, Y, W, H
     """
     :return:
         Bounding boxes are in the Format (xmin, ymin, xmax, ymax) top left, bottom right corners

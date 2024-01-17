@@ -636,13 +636,66 @@ class TestDataLoader(unittest.TestCase):
             # (21, 32, 17, 10),  # low
         ]
         feat = torch.zeros(len(bounding_boxes), dtype=torch.float32)
-        graph = VRD2Graph(np.array(bounding_boxes), labels, feat)
+        graph = VRD2Graph(np.array(bounding_boxes), labels, feat, device="cpu")
         graph.connect_boxes()
         graph.create_graph()
         logger.debug(graph.edges)
         graph.save_graph(path="data/samir", graph_name="bob")
         graph.load_graph(path="data/samir", graph_name="bob")
         graph.plot_dgl_graph()
+
+    def test_plot_fig(self):
+        train_set = SROIE(train=True)
+        logger.debug(train_set.data[5])
+        file_path = os.path.join(train_set.root, train_set.data[5][0])
+        # Convert the image to a NumPy array (optional but may be needed)
+        img_array = plt.imread(file_path)
+
+        # Plot the image
+
+        bbox = train_set.data[5][1]["boxes"][:2]
+        labels = torch.zeros(len(bbox), dtype=torch.float32)
+        feat = torch.zeros(len(bbox), dtype=torch.float32)
+        # logger.debug(f" debug first {bounding_boxes}")
+        # bounding_boxes.sort()
+        # logger.debug(f" debug second {bounding_boxes}")
+
+        graph = VRD2Graph(bbox, labels, feat)
+        graph.connect_boxes()
+        connected_indices = graph.connection_index
+        logger.debug(connected_indices)
+
+        fig, ax = plt.subplots()
+
+        # Draw bounding boxes on the white array
+        for b in bbox:
+            rect = patches.Rectangle(
+                (b[0], b[1]),
+                b[2],
+                b[3],
+                linewidth=1,
+                edgecolor="r",
+                facecolor="none",
+            )
+
+            # Add the patch to the Axes
+            ax.add_patch(rect)
+            # draw_bounding_box(white_array, bbox)
+
+        for i in range(len(connected_indices)):
+            for j in connected_indices[i]:
+                logger.debug(i)
+                logger.debug(j)
+                draw_line_between_bounding_boxes(bbox[i], bbox[j])
+        # Draw lines from the center of the bounding boxes to the other center
+        # for bbox1, bbox2 in zip(bounding_boxes, bounding_boxes[1:]):
+        #     draw_line_between_bounding_boxes(bbox1, bbox2)
+
+        # Display the white array with the bounding boxes and lines
+
+        plt.imshow(img_array, cmap="gray")
+        plt.axis("off")
+        plt.show()
 
     def test_dataset_graph(self):
         # g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
