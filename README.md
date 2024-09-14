@@ -68,23 +68,6 @@ python train.py -h
 python train.py -d CORD -hs 64 -hl 128
 ```
 
-## Code Overview
-
-### `args.py`
-
-Contains argument parsers for different commands:
-- `build_subparser`: For building datasets.
-- `train_subparser`: For training models.
-- `train_embedding_subparser`: For embedding tasks.
-
-### `builder.py`
-
-Builds the graph-based dataset from the specified dataset. It processes and saves the dataset for training and evaluation.
-
-### `train.py`
-
-Trains the GCN model on the selected dataset. It includes functionality for forward and backward passes, model optimization, and performance evaluation.
-
 ## Acknowledgments
 
 We acknowledge the contributions of the authors of the paper and the developers of the libraries used in this project.
