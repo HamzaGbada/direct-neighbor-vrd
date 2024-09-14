@@ -3,7 +3,7 @@ import random
 import unittest
 import warnings
 from pathlib import Path
-
+from DocumentAI_std.datasets.wildreceipt import Wildreceipt
 import dgl
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
@@ -11,7 +11,8 @@ import numpy as np
 import torch
 import torch.optim as optim
 from PIL import Image
-from datasets import load_dataset
+
+# from datasets.load import load_dataset
 from dgl import load_graphs
 from dgl.data import KarateClubDataset
 from dgl.dataloading import DataLoader, GraphDataLoader
@@ -653,7 +654,7 @@ class TestDataLoader(unittest.TestCase):
 
         # Plot the image
 
-        bbox = train_set.data[5][1]["boxes"][:2]
+        bbox = train_set.data[5][1]["boxes"][16:20]
         labels = torch.zeros(len(bbox), dtype=torch.float32)
         feat = torch.zeros(len(bbox), dtype=torch.float32)
         # logger.debug(f" debug first {bounding_boxes}")
@@ -671,10 +672,10 @@ class TestDataLoader(unittest.TestCase):
         for b in bbox:
             rect = patches.Rectangle(
                 (b[0], b[1]),
-                b[2],
-                b[3],
+                b[2] - b[0],
+                b[3] - b[1],
                 linewidth=1,
-                edgecolor="r",
+                edgecolor="b",
                 facecolor="none",
             )
 
@@ -695,14 +696,80 @@ class TestDataLoader(unittest.TestCase):
 
         plt.imshow(img_array, cmap="gray")
         plt.axis("off")
+        plt.savefig("output_figure.png")
         plt.show()
+
+    def test_plot_fig1(self):
+        train_set = CORD(train=True)
+        logger.debug(train_set.data[6])
+        file_path = os.path.join(train_set.root, train_set.data[6][0])
+        img_array = plt.imread(file_path)
+
+        bbox = train_set.data[6][1]["boxes"][0:5]
+        labels = torch.zeros(len(bbox), dtype=torch.float32)
+        feat = torch.zeros(len(bbox), dtype=torch.float32)
+
+        graph = VRD2Graph(bbox, labels, feat)
+        graph.connect_boxes()
+        connected_indices = graph.connection_index
+        logger.debug(connected_indices)
+
+        fig, ax = plt.subplots(
+            figsize=(img_array.shape[1] / 100, img_array.shape[0] / 100)
+        )
+
+        # Draw bounding boxes on the white array
+        for b in bbox:
+            rect = patches.Rectangle(
+                (b[0], b[1]),
+                b[2] - b[0],
+                b[3] - b[1],
+                linewidth=1,
+                edgecolor="b",
+                facecolor="none",
+            )
+            ax.add_patch(rect)
+
+        for i in range(len(connected_indices)):
+            for j in connected_indices[i]:
+                logger.debug(i)
+                logger.debug(j)
+                draw_line_between_bounding_boxes(bbox[i], bbox[j])
+
+        # Display the white array with the bounding boxes and lines
+        plt.imshow(img_array, cmap="gray")
+        plt.axis("off")
+
+        # Save the figure with the same size and quality as the original image
+        plt.savefig(
+            "output_figure.png",
+            bbox_inches="tight",
+            pad_inches=0,
+            dpi=img_array.shape[1],
+        )
+
+        plt.show()
+
+    def test_doc_ai(self):
+        train_set = Wildreceipt(
+            train=True,
+            img_folder="/home/bobmarley/PycharmProjects/DocumentAI-std/data/wildreceipt/",
+            label_path="/home/bobmarley/PycharmProjects/DocumentAI-std/data/wildreceipt/train.txt",
+        )
+        test_set = Wildreceipt(
+            train=False,
+            img_folder="/home/bobmarley/PycharmProjects/DocumentAI-std/data/wildreceipt/",
+            label_path="/home/bobmarley/PycharmProjects/DocumentAI-std/data/wildreceipt/test.txt",
+        )
+        assert len(train_set.data) == 1267
+        assert len(test_set.data) == 472
 
     def test_dataset_graph(self):
         # g = load_graphs("data/CORD/train/CORD_train_graph0.bin")
         # logger.debug(g[0][0].num_edges())
         # logger.debug(g[0][0].edata["weight"].shape)
         dataset = GraphDataset("SROIE")
-        
+
         graph_train = dataset[True].to("cuda")
 
     def test_train_model(self):
@@ -834,15 +901,34 @@ class DummyModel(nn.Module):
         return self.fc(x)
 
 
-def draw_line_between_bounding_boxes(bbox1, bbox2):
-    x1, y1, w1, h1 = bbox1
-    x2, y2, w2, h2 = bbox2
+def draw_line_between_bounding_boxes(bbox1, bbox2, arrow_color="c"):
+    x1, y1, x_max1, y_max1 = bbox1
+    x2, y2, x_max2, y_max2 = bbox2
+
+    w1, h1 = x_max1 - x1, y_max1 - y1
+    w2, h2 = x_max2 - x2, y_max2 - y2
 
     center1 = (x1 + w1 // 2, y1 + h1 // 2)
     center2 = (x2 + w2 // 2, y2 + h2 // 2)
 
-    plt.plot(
-        [center1[0], center2[0]], [center1[1], center2[1]], color="blue", linewidth=2
+    # Calculate the arrow direction
+    dx = center2[0] - center1[0]
+    dy = center2[1] - center1[1]
+
+    arrow_length = np.sqrt(dx**2 + dy**2)
+
+    # Draw the arrow
+    plt.arrow(
+        center1[0],
+        center1[1],
+        dx,
+        dy,
+        color="c",
+        linewidth=0.5,
+        head_width=5,
+        head_length=5,
+        fc="c",
+        ec="c",
     )
 
 

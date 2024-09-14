@@ -9,20 +9,20 @@ from src.utils.setup_logger import logger
 class GraphDataset(DGLDataset):
     # FIXME: CONVERT THIS TO X, Y, W, H
     def __init__(self, data_name: str, path: str = "data/"):
-        dataset_paths = {
-            "FUNSD",
-            "CORD",
-            "SROIE",
-            "WILDRECEIPT",
-            "XFUND"
-        }
+        dataset_paths = {"FUNSD", "CORD", "SROIE", "WILDRECEIPT", "XFUND"}
         if data_name not in dataset_paths:
-            raise Exception(f"{data_name} Invalid dataset name. Please provide a valid dataset name.")
+            raise Exception(
+                f"{data_name} Invalid dataset name. Please provide a valid dataset name."
+            )
 
         dataset_path = os.path.join(path, data_name)
-        self.num_classes = {"FUNSD": 4, "CORD": 30, "SROIE": 5, "WILDRECEIPT": 26, "XFUND": 4}[
-            data_name
-        ]
+        self.num_classes = {
+            "FUNSD": 4,
+            "CORD": 30,
+            "SROIE": 5,
+            "WILDRECEIPT": 26,
+            "XFUND": 4,
+        }[data_name]
 
         ext = "bin"
         graph_list_train = [
