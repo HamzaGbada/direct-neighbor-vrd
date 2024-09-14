@@ -50,7 +50,7 @@ python builder.py build -d FUNSD
 To train the model, use the following command:
 
 ```bash
-python train.py
+python train.py -h
 ```
 
 **Arguments:**
