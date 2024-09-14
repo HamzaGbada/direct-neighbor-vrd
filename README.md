@@ -42,7 +42,7 @@ This command creates a graph-based dataset for node classification for a specifi
 **Example:**
 
 ```bash
-python builder.py build -d FUNSD
+python builder.py build -d CORD
 ```
 
 ### Training the Model
@@ -65,7 +65,7 @@ python train.py -h
 **Example:**
 
 ```bash
-python train.py -d FUNSD -hs 64 -hl 128
+python train.py -d CORD -hs 64 -hl 128
 ```
 
 ## Code Overview
